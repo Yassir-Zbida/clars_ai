@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
@@ -39,6 +42,11 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        /* Palette extras */
+        surface: 'hsl(var(--surface))',
+        'card-elevated': 'hsl(var(--card-elevated))',
+        'light-bg': 'hsl(var(--light-bg))',
+        'border-light': 'hsl(var(--border-light))',
       },
       borderRadius: {
         lg: 'var(--radius)',
