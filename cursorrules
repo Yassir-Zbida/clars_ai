@@ -1,0 +1,237 @@
+# clars.ai — Cursor Rules
+# CRM Intelligent pour Freelancers & Solopreneurs
+# Stack: Next.js 14 · Prisma · Gemini · Whop . 
+
+## Project Overview
+clars.ai is a SaaS CRM built for freelancers and solopreneurs. It covers client management,
+project tracking, invoicing, payment follow-up, and an AI assistant — all in one platform.
+Target markets: Mena & Morocco (EN/AR/FR multilingual).
+
+---
+
+## Tech Stack
+
+### Frontend
+- **Framework**: Next.js 14 with App Router and Server Components
+- **Styling**: Tailwind CSS + shadcn/ui + Radix UI
+- **State**: Zustand (global) + TanStack Query (server state)
+- **Charts**: Recharts + Tremor + ChartJs
+- **PDF Generation**: Puppeteer (server-side invoice rendering)
+- **E-Signature**: DocuSeal (open source)
+
+### Backend
+- **API Layer**: Next.js API Routes + tRPC
+- **Auth**: NextAuth.js v5 (Google OAuth, Magic Link, Credentials)
+- **ORM**: Prisma with PostgreSQL (Supabase)
+- **Cache**: Redis via Upstash
+- **Job Queue**: BullMQ (reminders, auto-reminders, report generation)
+- **Storage**: Cloudflare R2 (invoices, deliverables)
+
+### AI & Integrations
+- **LLM**: Gemini (assistant, email drafting, forecasting)
+- **Payments**: Whop + Whop Billing
+- **Email**: Resend (transactional + automated reminders)
+- **Analytics**: PostHog
+
+### Infrastructure
+- **CI/CD**: GitHub Actions
+- **Monitoring**: Sentry + Better Uptime
+
+### Validation & Security
+- **Validation**: Zod on all API routes
+- **Tests**: Jest (unit) + Playwright (E2E) — target ≥ 70% coverage
+- **Linting**: ESLint + Prettier
+
+---
+
+## Code Style & Conventions
+
+### General
+- Use **TypeScript** strictly — no `any`, no implicit `any`
+- Prefer `const` over `let`; never use `var`
+- Use named exports for components, default exports only for pages
+- File names: `kebab-case` for files/folders, `PascalCase` for components
+- Keep components small and focused — split when a file exceeds ~150 lines
+- Write self-documenting code; add JSDoc only for non-obvious logic
+
+### Next.js App Router
+- Prefer **Server Components** by default; add `"use client"` only when needed
+- Use `loading.tsx` and `error.tsx` in every route segment
+- Fetch data in Server Components using tRPC server-side caller
+- Never fetch data inside Client Components directly — use TanStack Query
+- Use `next/image` for all images, `next/font` for fonts
+- Route groups: `(dashboard)`, `(auth)`, `(public)` for layout isolation
+
+
+
+### Prisma & Database
+- Schema file: `prisma/schema.prisma`
+- Always run `prisma generate` after schema changes
+- Use transactions for multi-table writes
+- Add Row-Level Security policies in Supabase for tenant isolation
+- Soft-delete pattern: use `deletedAt DateTime?` instead of hard deletes
+- Enum values: SCREAMING_SNAKE_CASE in Prisma, map to camelCase in app
+
+### Zustand
+- One store per domain: `useClientStore`, `useProjectStore`, `useInvoiceStore`
+- Store files in `src/stores/`
+- Use `immer` middleware for nested state updates
+- Keep stores minimal — only truly global UI state (not server data)
+
+### Tailwind & UI
+- Use shadcn/ui components as base; extend, don't override internals
+- Use CSS variables for theme tokens (`--primary`, `--background`, etc.)
+- Dark mode support required on all new components
+- RTL support: use `rtl:` prefix utilities for Arabic layout
+- Never use inline styles; never write raw CSS outside of `globals.css`
+
+### AI / Gemini
+- All AI calls go through `src/lib/ai/` — never call Gemini directly in components
+- Always stream responses for long-form generation (email drafts, summaries)
+- Include user context (client name, project data) in system prompts
+- Cap token usage: `max_tokens: 1000` for short outputs, `2000` for documents
+- Handle rate limit errors gracefully with retry logic (exponential backoff)
+
+### Whop
+- Use Whop Connect for payment processing (freelancer receives funds)
+
+### BullMQ Jobs
+- Define all jobs in `src/jobs/`
+- Job names: `invoice:reminder`, `report:generate`, `email:send`
+- Always handle job failures and set `attempts: 3` with backoff
+- Log job start/end/failure to audit log
+
+---
+
+## Architecture Rules
+
+### Multi-tenancy
+- Every DB query must be scoped to `userId` or `organizationId`
+- Never fetch data without a where clause on tenant ID
+- Use Supabase RLS as a safety net, not as the primary guard
+
+### Error Handling
+- Use typed errors: never throw raw strings
+- API errors return `{ error: string, code: string }` with appropriate HTTP status
+- Client-side: always show user-friendly messages, log technical details to Sentry
+- Use `tryCatch` wrapper in service layer
+
+### Environment Variables
+- All secrets in `.env.local` (never committed)
+- Validate env vars at startup using Zod in `src/env.ts`
+- Prefix browser-safe vars with `NEXT_PUBLIC_`
+
+
+### Security
+- Validate ALL user inputs with Zod before touching the DB
+- Rate limit: 100 req/min per IP, 1000 req/min per Pro account
+- Use `bcrypt` (cost 12) for any password hashing
+- CORS: whitelist only known domains
+- Audit log: track all sensitive actions (invoice created, payment recorded, etc.)
+- GDPR: implement data export + erasure endpoints
+
+---
+
+## Module Structure
+
+```
+src/
+├── app/                        # Next.js App Router
+│   ├── (auth)/                 # Login, signup, magic link
+│   ├── (dashboard)/            # Protected app routes
+│   │   ├── clients/
+│   │   ├── projects/
+│   │   ├── invoices/
+│   │   ├── payments/
+│   │   ├── ai/
+│   │   └── analytics/
+│   └── api/
+│       ├── trpc/
+│       └── webhooks/
+├── components/
+│   ├── ui/                     # shadcn/ui base components
+│   ├── clients/
+│   ├── projects/
+│   ├── invoices/
+│   └── shared/
+├── server/
+│   ├── routers/                # tRPC routers per module
+│   ├── services/               # Business logic
+│   └── db.ts                   # Prisma client singleton
+├── stores/                     # Zustand stores
+├── lib/
+│   ├── ai/                     # OpenAI wrappers
+│   ├── stripe/                 # Stripe helpers
+│   ├── email/                  # Resend templates
+│   └── pdf/                    # Puppeteer invoice renderer
+├── jobs/                       # BullMQ job definitions
+├── hooks/                      # Custom React hooks
+├── types/                      # Shared TypeScript types
+└── env.ts                      # Env validation (Zod)
+```
+
+---
+
+## Feature-Specific Rules
+
+### Invoices
+- Invoice number format: `INV-{YEAR}-{SEQUENCE}` e.g. `INV-2026-0042`
+- Quote number format: `QUO-{YEAR}-{SEQUENCE}`
+- Always store amounts in **cents** (integer) in DB; display formatted with currency
+- Support: MAD, EUR, USD, GBP, SAR
+- PDF template must include: logo, legal mentions, payment terms, QR code (optional)
+
+### Client Health Score (AI)
+- Score 0–100 computed async via BullMQ job on relevant events
+- Factors: payment regularity, communication frequency, project volume, overdue invoices
+- Stored in `Client.healthScore`, recalculated max once per day per client
+
+### Multilingual (i18n)
+- Use `next-intl` for translations
+- Locales: `fr` (default), `en`, `ar`
+- RTL layout activates automatically for `ar` locale
+- All AI-generated content should match the user's selected language
+
+### Auto-Reminders
+- Sequences: J+7, J+14, J+30 after invoice due date
+- Tone adapts to client profile (friendly → firm → formal)
+- Never send reminders to clients marked as "disputed" without manual override
+- Reminder emails use Resend with tracked opens
+
+---
+
+## Do's & Don'ts
+
+### ✅ Do
+- Use Server Components for data fetching
+- Use `useQuery` / `useMutation` from TanStack Query in client components
+- Scope every DB query to the authenticated user
+- Write Zod schemas for all API inputs and form validation
+- Use `cn()` utility (clsx + tailwind-merge) for conditional classes
+- Handle loading, empty, and error states in every data view
+- Write E2E tests for critical flows: auth, create invoice, record payment
+
+### ❌ Don't
+- Never use `fetch` directly in Client Components for server data
+- Never expose raw Prisma models to the frontend — use DTOs/select fields
+- Never store sensitive data (IBAN, tokens) unencrypted
+- Never skip input validation even for "internal" endpoints
+- Never use `console.log` in production — use structured logging
+- Never hardcode currency symbols — use `Intl.NumberFormat`
+- Never call OpenAI in a synchronous request without streaming or a job queue
+
+---
+
+## Git Conventions
+- Branch naming: `feat/`, `fix/`, `chore/`, `docs/`
+- Commits: Conventional Commits (`feat: add invoice PDF export`)
+- PRs: require at least one review before merge to `main`
+- Never commit `.env` files or secrets
+
+---
+
+## Testing
+- Unit tests: Jest — focus on services, utils, and AI prompt builders
+- E2E tests: Playwright — cover auth flow, invoice creation, Stripe payment
+- Run tests on every PR via GitHub Actions
+- Target: ≥ 70% code coverage on `src/server/services/`
