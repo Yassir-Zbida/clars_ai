@@ -1,23 +1,31 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
+import type { Metadata } from "next"
+import "./globals.css"
+import { DM_Sans } from "next/font/google"
+import { cn } from "@/lib/utils"
+import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
-  title: 'clars.ai — CRM Intelligent',
-  description: 'CRM pour Freelancers & Solopreneurs',
-};
+  title: "Clars.ai — Intelligent CRM",
+  description: "CRM for Freelancers & Solopreneurs",
+  icons: { icon: "/favicon.svg" },
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="fr" className={cn("font-sans", geist.variable)}>
-      <body className="min-h-screen antialiased">{children}</body>
+    <html lang="en" className={cn("font-sans", dmSans.variable)}>
+      <body className="min-h-screen antialiased">
+        <TooltipProvider>
+          {children}
+          <Toaster />
+        </TooltipProvider>
+      </body>
     </html>
-  );
+  )
 }
