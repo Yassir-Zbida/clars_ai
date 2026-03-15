@@ -71,3 +71,71 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Sonner toasts: bottom-right, smooth slide-in, longer visible */
+@keyframes sonner-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes sonner-slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+[data-sonner-toast] {
+  animation: sonner-slide-in 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+}
+
+[data-sonner-toast][data-removed="true"] {
+  animation: sonner-slide-out 0.35s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
+}
+
+/* Sonner toast layout + sizing – neutral bg (no green/colored success) */
+.cn-toast,
+[data-sonner-toast][data-type="success"],
+[data-sonner-toast][data-type="error"],
+[data-sonner-toast][data-type="info"],
+[data-sonner-toast][data-type="warning"] {
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground));
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  min-width: 26rem;
+  max-width: min(32rem, 92vw);
+  line-height: 1.45;
+}
+
+.cn-toast [data-icon] {
+  width: 1rem;
+  height: 1rem;
+}
+
+.cn-toast [data-close-button] {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Give description text room so long content isn't cramped */
+.cn-toast [data-description],
+[data-sonner-toast] [data-description] {
+  margin-top: 0.25rem;
+  line-height: 1.5;
+  white-space: normal;
+  word-wrap: break-word;
+}

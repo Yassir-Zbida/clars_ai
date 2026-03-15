@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -30,7 +31,6 @@ export function LoginForm({
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const successMessage =
     searchParams.get("signup") === "success"
@@ -42,7 +42,6 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
     try {
       const res = await signIn("credentials", {
         email,
@@ -50,10 +49,18 @@ export function LoginForm({
         redirect: false,
       })
       if (res?.error) {
-        setError("Invalid email or password.")
+        toast.error("Login failed", {
+          description: "Invalid email or password. Please try again.",
+          duration: 8000,
+        })
         return
       }
-      if (res?.ok) window.location.href = "/dashboard"
+      if (res?.ok) {
+        toast.success("Signed in successfully", { duration: 8000 })
+        setTimeout(() => {
+          window.location.href = "/dashboard"
+        }, 2500)
+      }
     } finally {
       setLoading(false)
     }
@@ -74,11 +81,6 @@ export function LoginForm({
               {successMessage && (
                 <p className="text-sm text-green-600 dark:text-green-400" role="status">
                   {successMessage}
-                </p>
-              )}
-              {error && (
-                <p className="text-sm text-destructive" role="alert">
-                  {error}
                 </p>
               )}
               <Field>

@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,12 +27,10 @@ export function ForgotPasswordForm({
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
@@ -40,9 +39,16 @@ export function ForgotPasswordForm({
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        setError(data?.error ?? "Something went wrong. Please try again.")
+        toast.error("Request failed", {
+          description: data?.error ?? "Something went wrong. Please try again.",
+          duration: 8000,
+        })
         return
       }
+      toast.success("Check your email", {
+        description: "If an account exists, we sent a reset link to your email.",
+        duration: 8000,
+      })
       setSent(true)
     } finally {
       setLoading(false)
@@ -86,11 +92,6 @@ export function ForgotPasswordForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
-              {error && (
-                <p className="text-sm text-destructive" role="alert">
-                  {error}
-                </p>
-              )}
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input

@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { useState } from "react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -32,18 +33,22 @@ export function SignupForm({
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError(null)
 
     if (password.length < MIN_PASSWORD_LENGTH) {
-      setError("Password must be at least 8 characters long.")
+      toast.error("Invalid password", {
+        description: "Password must be at least 8 characters long.",
+        duration: 8000,
+      })
       return
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match.")
+      toast.error("Passwords do not match", {
+        description: "Please make sure both password fields match.",
+        duration: 8000,
+      })
       return
     }
 
@@ -57,7 +62,10 @@ export function SignupForm({
       const data = await res.json().catch(() => ({}))
 
       if (!res.ok) {
-        setError(data?.error ?? "Something went wrong. Please try again.")
+        toast.error("Sign up failed", {
+          description: data?.error ?? "Something went wrong. Please try again.",
+          duration: 8000,
+        })
         return
       }
 
@@ -68,12 +76,17 @@ export function SignupForm({
         redirect: false,
       })
       if (signInRes?.error) {
-        // Account created but sign-in failed (e.g. session issue) – send to login
-        window.location.href = "/login?signup=success"
+        toast.info("Please sign in with your new account", { duration: 8000 })
+        setTimeout(() => {
+          window.location.href = "/login?signup=success"
+        }, 2500)
         return
       }
       if (signInRes?.ok) {
-        window.location.href = "/dashboard"
+        toast.success("Signed in successfully", { duration: 8000 })
+        setTimeout(() => {
+          window.location.href = "/dashboard"
+        }, 2500)
       }
     } finally {
       setLoading(false)
@@ -92,11 +105,6 @@ export function SignupForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
-              {error && (
-                <p className="text-sm text-destructive" role="alert">
-                  {error}
-                </p>
-              )}
               <Field>
                 <FieldLabel htmlFor="name">Full Name</FieldLabel>
                 <Input

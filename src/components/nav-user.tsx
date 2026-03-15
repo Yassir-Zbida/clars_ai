@@ -1,6 +1,7 @@
 "use client"
 
 import { signOut } from "next-auth/react"
+import { toast } from "sonner"
 import {
   Avatar,
   AvatarFallback,
@@ -98,9 +99,15 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
-              <LogOutIcon
-              />
+            <DropdownMenuItem
+              onClick={() => {
+                toast.success("Logged out", { duration: 6000 })
+                setTimeout(() => {
+                  signOut({ callbackUrl: "/login", redirect: true })
+                }, 2000)
+              }}
+            >
+              <LogOutIcon />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

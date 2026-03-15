@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
-import type { User } from 'next-auth';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import type { User } from "next-auth";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { href: '/dashboard', label: 'Tableau de bord' },
@@ -51,7 +52,12 @@ export function DashboardNav({ user }: { user: User }) {
           variant="ghost"
           size="sm"
           className="w-full justify-start"
-          onClick={() => signOut({ callbackUrl: '/login' })}
+          onClick={() => {
+            toast.success("Logged out", { duration: 6000 });
+            setTimeout(() => {
+              signOut({ callbackUrl: "/login", redirect: true });
+            }, 2000);
+          }}
         >
           Déconnexion
         </Button>

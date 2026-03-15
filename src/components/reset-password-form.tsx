@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -34,20 +35,24 @@ export function ResetPasswordForm({
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (password !== confirm) {
-      setError("Passwords do not match.")
+      toast.error("Passwords do not match", {
+        description: "Please make sure both password fields match.",
+        duration: 8000,
+      })
       return
     }
     if (password.length < 8) {
-      setError("Password must be at least 8 characters.")
+      toast.error("Password too short", {
+        description: "Password must be at least 8 characters.",
+        duration: 8000,
+      })
       return
     }
     setLoading(true)
-    setError(null)
     try {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
@@ -56,10 +61,19 @@ export function ResetPasswordForm({
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        setError(data?.error ?? "Something went wrong. Please try again.")
+        toast.error("Update failed", {
+          description: data?.error ?? "Something went wrong. Please try again.",
+          duration: 8000,
+        })
         return
       }
-      router.push("/login?reset=success")
+      toast.success("Password updated", {
+        description: "You can sign in with your new password.",
+        duration: 8000,
+      })
+      setTimeout(() => {
+        router.push("/login?reset=success")
+      }, 2500)
     } finally {
       setLoading(false)
     }
@@ -100,11 +114,6 @@ export function ResetPasswordForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
-              {error && (
-                <p className="text-sm text-destructive" role="alert">
-                  {error}
-                </p>
-              )}
               <Field>
                 <FieldLabel htmlFor="password">New password</FieldLabel>
                 <PasswordInput
