@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema(
     emailVerified: { type: Date },
     image: { type: String },
     password: { type: String },
+    passwordResetToken: { type: String },
+    passwordResetTokenExpiry: { type: Date },
     deletedAt: { type: Date },
   },
   {

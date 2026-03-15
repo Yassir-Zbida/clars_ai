@@ -1,5 +1,4 @@
 import NextAuth from 'next-auth';
-import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
 import Resend from 'next-auth/providers/resend';
 import { MongooseAdapter } from '@/lib/auth-mongoose-adapter';
@@ -8,21 +7,14 @@ import { User } from '@/server/models/user';
 import bcrypt from 'bcryptjs';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   adapter: MongooseAdapter(),
   session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
   pages: {
     signIn: '/login',
+    error: '/login',
   },
   providers: [
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          Google({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            allowDangerousEmailAccountLinking: true,
-          }),
-        ]
-      : []),
     ...(process.env.RESEND_API_KEY
       ? [
           Resend({
@@ -40,8 +32,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         await getDb();
+        const email = String(credentials.email).trim();
         const user = await User.findOne({
-          email: String(credentials.email),
+          email: { $regex: new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
           deletedAt: { $in: [null, undefined] },
         })
           .select('+password')
