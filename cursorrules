@@ -1,6 +1,6 @@
 # clars.ai — Cursor Rules
 # CRM Intelligent pour Freelancers & Solopreneurs
-# Stack: Next.js 14 · Prisma · Gemini · Whop . 
+# Stack: Next.js 14 · MongoDB (Mongoose) · Gemini · Whop . 
 
 ## Project Overview
 clars.ai is a SaaS CRM built for freelancers and solopreneurs. It covers client management,
@@ -22,7 +22,7 @@ Target markets: Mena & Morocco (EN/AR/FR multilingual).
 ### Backend
 - **API Layer**: Next.js API Routes + tRPC
 - **Auth**: NextAuth.js v5 (Google OAuth, Magic Link, Credentials)
-- **ORM**: Prisma with PostgreSQL (Supabase)
+- **Database**: MongoDB with Mongoose (ODM)
 - **Cache**: Redis via Upstash
 - **Job Queue**: BullMQ (reminders, auto-reminders, report generation)
 - **Storage**: Cloudflare R2 (invoices, deliverables)
@@ -64,13 +64,13 @@ Target markets: Mena & Morocco (EN/AR/FR multilingual).
 
 
 
-### Prisma & Database
-- Schema file: `prisma/schema.prisma`
-- Always run `prisma generate` after schema changes
-- Use transactions for multi-table writes
-- Add Row-Level Security policies in Supabase for tenant isolation
-- Soft-delete pattern: use `deletedAt DateTime?` instead of hard deletes
-- Enum values: SCREAMING_SNAKE_CASE in Prisma, map to camelCase in app
+### Mongoose & Database
+- Models in `src/server/models/` (User, Account, Session, Client, Project, Invoice, Payment)
+- Use `getDb()` before any model query to ensure connection
+- Use transactions for multi-document writes when needed
+- All queries scoped to `userId` (ObjectId) for tenant isolation
+- Soft-delete pattern: use `deletedAt Date?` instead of hard deletes
+- Enum values: SCREAMING_SNAKE_CASE in schemas, map to camelCase in app
 
 ### Zustand
 - One store per domain: `useClientStore`, `useProjectStore`, `useInvoiceStore`
@@ -157,7 +157,7 @@ src/
 ├── server/
 │   ├── routers/                # tRPC routers per module
 │   ├── services/               # Business logic
-│   └── db.ts                   # Prisma client singleton
+│   └── db.ts                   # Mongoose connection (getDb)
 ├── stores/                     # Zustand stores
 ├── lib/
 │   ├── ai/                     # OpenAI wrappers
@@ -213,7 +213,7 @@ src/
 
 ### ❌ Don't
 - Never use `fetch` directly in Client Components for server data
-- Never expose raw Prisma models to the frontend — use DTOs/select fields
+- Never expose raw Mongoose documents to the frontend — use DTOs / .lean() and map
 - Never store sensitive data (IBAN, tokens) unencrypted
 - Never skip input validation even for "internal" endpoints
 - Never use `console.log` in production — use structured logging

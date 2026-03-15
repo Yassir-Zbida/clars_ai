@@ -2,12 +2,13 @@ import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
 import Resend from 'next-auth/providers/resend';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import { prisma } from '@/server/db';
+import { MongooseAdapter } from '@/lib/auth-mongoose-adapter';
+import { getDb } from '@/server/db';
+import { User } from '@/server/models/user';
 import bcrypt from 'bcryptjs';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: MongooseAdapter(),
   session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
   pages: {
     signIn: '/login',
@@ -38,17 +39,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.user.findFirst({
-          where: { email: String(credentials.email), deletedAt: null },
-        });
-        if (!user?.password) return null;
-        const ok = await bcrypt.compare(String(credentials.password), user.password);
+        await getDb();
+        const user = await User.findOne({
+          email: String(credentials.email),
+          deletedAt: { $in: [null, undefined] },
+        })
+          .select('+password')
+          .lean();
+        const doc = user as { _id: { toString(): string }; email?: string; name?: string; image?: string; password?: string } | null;
+        if (!doc?.password) return null;
+        const ok = await bcrypt.compare(String(credentials.password), doc.password);
         if (!ok) return null;
         return {
-          id: user.id,
-          email: user.email ?? undefined,
-          name: user.name ?? undefined,
-          image: user.image ?? undefined,
+          id: String(doc._id),
+          email: doc.email ?? undefined,
+          name: doc.name ?? undefined,
+          image: doc.image ?? undefined,
         };
       },
     }),

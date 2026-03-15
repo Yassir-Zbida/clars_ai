@@ -1,31 +1,45 @@
 import { z } from 'zod';
+import mongoose from 'mongoose';
 import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import { prisma } from '@/server/db';
+import { getDb } from '@/server/db';
+import { Client } from '@/server/models/client';
+
+const objectIdString = z.string().refine((v) => mongoose.Types.ObjectId.isValid(v), 'Invalid id');
 
 export const clientsRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
-    const list = await prisma.client.findMany({
-      where: { userId: ctx.userId, deletedAt: null },
-      orderBy: { name: 'asc' },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        company: true,
-        healthScore: true,
-        createdAt: true,
-      },
-    });
-    return list;
+    await getDb();
+    const list = await Client.find({
+      userId: new mongoose.Types.ObjectId(ctx.userId),
+      deletedAt: { $in: [null, undefined] },
+    })
+      .sort({ name: 1 })
+      .lean() as unknown as { _id: mongoose.Types.ObjectId; name: string; email?: string; company?: string; healthScore?: number; createdAt?: Date }[];
+    return list.map((doc) => ({
+      id: doc._id.toString(),
+      name: doc.name,
+      email: doc.email,
+      company: doc.company,
+      healthScore: doc.healthScore,
+      createdAt: doc.createdAt,
+    }));
   }),
 
   getById: protectedProcedure
-    .input(z.object({ id: z.string().cuid() }))
+    .input(z.object({ id: objectIdString }))
     .query(async ({ ctx, input }) => {
-      const client = await prisma.client.findFirst({
-        where: { id: input.id, userId: ctx.userId, deletedAt: null },
-      });
-      return client;
+      await getDb();
+      const client = await Client.findOne({
+        _id: new mongoose.Types.ObjectId(input.id),
+        userId: ctx.userId,
+        deletedAt: { $in: [null, undefined] },
+      }).lean() as { _id: mongoose.Types.ObjectId; userId: mongoose.Types.ObjectId; name: string; email?: string; phone?: string; company?: string; address?: string; notes?: string; healthScore?: number; createdAt?: Date; updatedAt?: Date } | null;
+      if (!client) return null;
+      return {
+        ...client,
+        id: client._id.toString(),
+        userId: client.userId.toString(),
+      };
     }),
 
   create: protectedProcedure
@@ -40,24 +54,23 @@ export const clientsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const client = await prisma.client.create({
-        data: {
-          userId: ctx.userId,
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          company: input.company,
-          address: input.address,
-          notes: input.notes,
-        },
+      await getDb();
+      const doc = await Client.create({
+        userId: new mongoose.Types.ObjectId(ctx.userId),
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        company: input.company,
+        address: input.address,
+        notes: input.notes,
       });
-      return client;
+      return doc.toJSON();
     }),
 
   update: protectedProcedure
     .input(
       z.object({
-        id: z.string().cuid(),
+        id: objectIdString,
         name: z.string().min(1).optional(),
         email: z.string().email().optional().nullable(),
         phone: z.string().optional().nullable(),
@@ -67,21 +80,38 @@ export const clientsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      await getDb();
       const { id, ...data } = input;
-      const client = await prisma.client.updateMany({
-        where: { id, userId: ctx.userId, deletedAt: null },
-        data,
-      });
-      return client.count > 0;
+      const cleanData: Record<string, unknown> = {};
+      if (data.name !== undefined) cleanData.name = data.name;
+      if (data.email !== undefined) cleanData.email = data.email;
+      if (data.phone !== undefined) cleanData.phone = data.phone;
+      if (data.company !== undefined) cleanData.company = data.company;
+      if (data.address !== undefined) cleanData.address = data.address;
+      if (data.notes !== undefined) cleanData.notes = data.notes;
+      const result = await Client.updateOne(
+        {
+          _id: new mongoose.Types.ObjectId(id),
+          userId: ctx.userId,
+          deletedAt: { $in: [null, undefined] },
+        },
+        { $set: cleanData }
+      );
+      return result.matchedCount > 0;
     }),
 
   delete: protectedProcedure
-    .input(z.object({ id: z.string().cuid() }))
+    .input(z.object({ id: objectIdString }))
     .mutation(async ({ ctx, input }) => {
-      await prisma.client.updateMany({
-        where: { id: input.id, userId: ctx.userId, deletedAt: null },
-        data: { deletedAt: new Date() },
-      });
+      await getDb();
+      await Client.updateOne(
+        {
+          _id: new mongoose.Types.ObjectId(input.id),
+          userId: ctx.userId,
+          deletedAt: { $in: [null, undefined] },
+        },
+        { $set: { deletedAt: new Date() } }
+      );
       return true;
     }),
 });
