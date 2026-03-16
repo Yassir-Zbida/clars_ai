@@ -1,8 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import * as React from "react"
 
+import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -17,61 +17,110 @@ import {
 } from "@/components/ui/sidebar"
 import {
   LayoutDashboardIcon,
-  FolderIcon,
-  UsersIcon,
-  FileTextIcon,
+  Users2Icon,
+  FolderKanbanIcon,
+  ReceiptTextIcon,
   CreditCardIcon,
-  BotIcon,
-  ChartBarIcon,
+  SparklesIcon,
+  BarChart3Icon,
+  FileChartColumnIcon,
+  LayoutTemplateIcon,
   Settings2Icon,
   CircleHelpIcon,
-  SearchIcon,
-  CommandIcon,
 } from "lucide-react"
 
-const navMain = [
-  { title: "Dashboard", url: "/dashboard", icon: <LayoutDashboardIcon /> },
-  { title: "Clients", url: "/dashboard/clients", icon: <UsersIcon /> },
-  { title: "Projects", url: "/dashboard/projects", icon: <FolderIcon /> },
-  { title: "Invoices", url: "/dashboard/invoices", icon: <FileTextIcon /> },
-  { title: "Payments", url: "/dashboard/payments", icon: <CreditCardIcon /> },
-  { title: "AI Assistant", url: "/dashboard/ai", icon: <BotIcon /> },
-  { title: "Analytics", url: "/dashboard/analytics", icon: <ChartBarIcon /> },
-]
+const data = {
+  user: {
+    name: "Clars.ai",
+    email: "you@clars.ai",
+    avatar: "/logo.svg",
+  },
+  navMain: [
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: <LayoutDashboardIcon />,
+    },
+    {
+      title: "Clients",
+      url: "/dashboard/clients",
+      icon: <Users2Icon />,
+    },
+    {
+      title: "Projects",
+      url: "/dashboard/projects",
+      icon: <FolderKanbanIcon />,
+    },
+    {
+      title: "Invoices",
+      url: "/dashboard/invoices",
+      icon: <ReceiptTextIcon />,
+    },
+    {
+      title: "Payments",
+      url: "/dashboard/payments",
+      icon: <CreditCardIcon />,
+    },
+  ],
+  navTools: [
+    {
+      name: "AI Assistant",
+      url: "/dashboard/ai",
+      icon: <SparklesIcon />,
+    },
+    {
+      name: "Analytics",
+      url: "/dashboard/analytics",
+      icon: <BarChart3Icon />,
+    },
+    {
+      name: "Reports",
+      url: "/dashboard/reports",
+      icon: <FileChartColumnIcon />,
+    },
+    {
+      name: "Templates",
+      url: "/dashboard/templates",
+      icon: <LayoutTemplateIcon />,
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Settings",
+      url: "/dashboard/settings",
+      icon: <Settings2Icon />,
+    },
+    {
+      title: "Get Help",
+      url: "/dashboard/help",
+      icon: <CircleHelpIcon />,
+    },
+  ],
+}
 
-const navSecondary = [
-  { title: "Settings", url: "#", icon: <Settings2Icon /> },
-  { title: "Get Help", url: "#", icon: <CircleHelpIcon /> },
-  { title: "Search", url: "#", icon: <SearchIcon /> },
-]
-
-export function AppSidebar({
-  user,
-  ...props
-}: React.ComponentProps<typeof Sidebar> & {
-  user: { name: string | null; email: string | null; image?: string | null }
-}) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
-              render={<Link href="/dashboard" />}
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              render={<a href="/dashboard" />}
             >
-              <CommandIcon className="size-5!" />
-              <span className="text-base font-semibold">clars.ai</span>
+              <SparklesIcon className="!size-5 text-primary" />
+              <span className="text-base font-semibold">Clars.ai</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
-        <NavSecondary items={navSecondary} className="mt-auto" />
+        <NavMain items={data.navMain} />
+        <NavDocuments items={data.navTools} label="Tools" />
+        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
   )

@@ -20,6 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("font-sans", dmSans.variable)}>
+      <head>
+        <link
+          href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-screen antialiased">
         <TooltipProvider>
           {children}

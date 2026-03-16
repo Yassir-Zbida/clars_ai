@@ -10,6 +10,7 @@
    * Border #2A2A2A | Border light #E0E0E0
    */
   :root {
+    --spacing: 0.25rem; /* mirrors Tailwind v4's --spacing so calc(var(--spacing)*N) works */
     /* Dark theme (default) */
     --background: 0 0% 0%; /* #000000 page bg */
     --foreground: 0 0% 96%; /* body text, slightly brighter for readability */
@@ -36,6 +37,15 @@
     --card-elevated: 0 0% 13.3%; /* #222222 */
     --light-bg: 0 0% 96.1%; /* #F5F5F5 */
     --border-light: 0 0% 87.8%; /* #E0E0E0 */
+    /* Sidebar */
+    --sidebar: 0 0% 6.7%; /* #111111 surface */
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 84 76% 55%; /* #A3E635 accent */
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 13.3%; /* #222222 hover */
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 84 76% 55%;
   }
 
   .light {
@@ -62,6 +72,15 @@
     --card-elevated: 0 0% 100%;
     --light-bg: 0 0% 96.1%;
     --border-light: 0 0% 87.8%;
+    /* Sidebar */
+    --sidebar: 0 0% 96.1%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 84 76% 55%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 90%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 87.8%;
+    --sidebar-ring: 84 76% 55%;
   }
 
   * {

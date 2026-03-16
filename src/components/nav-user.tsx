@@ -2,6 +2,7 @@
 
 import { signOut } from "next-auth/react"
 import { toast } from "sonner"
+
 import {
   Avatar,
   AvatarFallback,
@@ -28,15 +29,12 @@ export function NavUser({
   user,
 }: {
   user: {
-    name: string | null
-    email: string | null
-    image?: string | null
+    name: string
+    email: string
+    avatar: string
   }
 }) {
   const { isMobile } = useSidebar()
-  const name = user.name ?? "User"
-  const email = user.email ?? ""
-  const initials = name.slice(0, 2).toUpperCase()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -47,13 +45,13 @@ export function NavUser({
             }
           >
             <Avatar className="size-8 rounded-lg grayscale">
-              <AvatarImage src={user.image ?? undefined} alt={name} />
-              <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{name}</span>
+              <span className="truncate font-medium">{user.name}</span>
               <span className="truncate text-xs text-foreground/70">
-                {email}
+                {user.email}
               </span>
             </div>
             <EllipsisVerticalIcon className="ml-auto size-4" />
@@ -68,13 +66,13 @@ export function NavUser({
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="size-8">
-                    <AvatarImage src={user.image ?? undefined} alt={name} />
-                    <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{name}</span>
+                    <span className="truncate font-medium">{user.name}</span>
                     <span className="truncate text-xs text-muted-foreground">
-                      {email}
+                      {user.email}
                     </span>
                   </div>
                 </div>
@@ -101,13 +99,14 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
-                toast.success("Logged out", { duration: 6000 })
+                toast.success("Logged out", { duration: 4000 })
                 setTimeout(() => {
                   signOut({ callbackUrl: "/login", redirect: true })
-                }, 2000)
+                }, 500)
               }}
             >
-              <LogOutIcon />
+              <LogOutIcon
+              />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

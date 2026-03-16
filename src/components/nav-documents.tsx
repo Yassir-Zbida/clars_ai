@@ -20,17 +20,19 @@ import { MoreHorizontalIcon, FolderIcon, ShareIcon, Trash2Icon } from "lucide-re
 
 export function NavDocuments({
   items,
+  label = "Documents",
 }: {
   items: {
     name: string
     url: string
     icon: React.ReactNode
   }[]
+  label?: string
 }) {
   const { isMobile } = useSidebar()
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Documents</SidebarGroupLabel>
+      <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>

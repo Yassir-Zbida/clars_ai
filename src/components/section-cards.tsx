@@ -28,12 +28,12 @@ export function SectionCards() {
             </Badge>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex min-w-0 flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex min-w-0 gap-2 font-medium">
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
             Trending up this month{" "}
-            <TrendingUpIcon className="size-4 shrink-0" />
+            <TrendingUpIcon className="size-4" />
           </div>
-          <div className="min-w-0 text-muted-foreground">
+          <div className="text-muted-foreground">
             Visitors for the last 6 months
           </div>
         </CardFooter>
@@ -52,12 +52,12 @@ export function SectionCards() {
             </Badge>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex min-w-0 flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex min-w-0 gap-2 font-medium">
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
             Down 20% this period{" "}
-            <TrendingDownIcon className="size-4 shrink-0" />
+            <TrendingDownIcon className="size-4" />
           </div>
-          <div className="min-w-0 text-muted-foreground">
+          <div className="text-muted-foreground">
             Acquisition needs attention
           </div>
         </CardFooter>
@@ -76,12 +76,12 @@ export function SectionCards() {
             </Badge>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex min-w-0 flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex min-w-0 gap-2 font-medium">
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
             Strong user retention{" "}
-            <TrendingUpIcon className="size-4 shrink-0" />
+            <TrendingUpIcon className="size-4" />
           </div>
-          <div className="min-w-0 text-muted-foreground">Engagement exceeds targets</div>
+          <div className="text-muted-foreground">Engagement exceed targets</div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
@@ -98,12 +98,12 @@ export function SectionCards() {
             </Badge>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex min-w-0 flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex min-w-0 gap-2 font-medium">
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
             Steady performance increase{" "}
-            <TrendingUpIcon className="size-4 shrink-0" />
+            <TrendingUpIcon className="size-4" />
           </div>
-          <div className="min-w-0 text-muted-foreground">Meets growth projections</div>
+          <div className="text-muted-foreground">Meets growth projections</div>
         </CardFooter>
       </Card>
     </div>
