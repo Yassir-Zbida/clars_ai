@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const css = `
 /* ─── DESIGN TOKENS ─────────────────────────────── */
@@ -40,11 +40,11 @@ body::after {
   pointer-events: none; z-index: 9999; opacity: .35;
 }
 
-#smooth-wrapper { overflow: hidden; }
-#smooth-content { will-change: transform; }
+#smooth-wrapper { }
+#smooth-content { }
 
 /* ─── UTILITY ─────────────────── */
-.cl-container { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+.cl-container { max-width: 1280px; margin: 0 auto; padding: 0 28px; }
 
 .cl-badge {
   display: inline-flex; align-items: center; gap: 8px;
@@ -85,14 +85,13 @@ body::after {
 /* ─── NAV ──────────────────────── */
 .cl-nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-  padding: 0 28px;
   background: hsla(0, 0%, 0%, 0.7);
   backdrop-filter: blur(24px);
   border-bottom: 1px solid var(--border);
   transition: background .3s;
 }
 .cl-nav-inner {
-  max-width: 1180px; margin: 0 auto;
+  max-width: 1280px; margin: 0 auto; padding: 0 28px;
   display: flex; align-items: center; justify-content: space-between;
   height: 64px; gap: 32px;
 }
@@ -145,7 +144,7 @@ body::after {
   background: radial-gradient(circle, hsla(84, 76%, 35%, 0.08) 0%, transparent 70%);
   bottom: 0; right: 10%;
 }
-.cl-hero-inner { position: relative; z-index: 2; max-width: 860px; margin: 0 auto; }
+.cl-hero-inner { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: 0 28px; }
 #hero-badge { margin-bottom: 28px; }
 
 .cl-hero h1 {
@@ -244,7 +243,7 @@ body::after {
 .m-chip i { font-size: 13px; }
 .m-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
 .m-stat { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
-.m-stat-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: .6px; color: hsl(0,0%,45%); margin-bottom: 5px; display: flex; align-items: center; gap: 4px; }
+.m-stat-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: .6px; color: hsl(0,0%,58%); margin-bottom: 5px; display: flex; align-items: center; gap: 4px; }
 .m-stat-lbl i { font-size: 11px; }
 .m-stat-val { font-size: 18px; font-weight: 800; color: var(--fg); }
 .m-stat-delta { font-size: 9px; color: var(--primary); margin-top: 2px; display: flex; align-items: center; gap: 2px; }
@@ -253,7 +252,7 @@ body::after {
 .m-pipe-head {
   display: flex; align-items: center; justify-content: space-between;
   font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px;
-  color: hsl(0,0%,40%); margin-bottom: 6px; padding: 0 2px;
+  color: hsl(0,0%,55%); margin-bottom: 6px; padding: 0 2px;
 }
 .m-pipe-count {
   background: var(--secondary); color: hsl(0,0%,55%);
@@ -265,7 +264,7 @@ body::after {
   transition: transform .2s, border-color .2s;
 }
 .m-pipe-card-name { font-size: 10px; font-weight: 600; color: var(--fg); margin-bottom: 3px; }
-.m-pipe-card-val { font-size: 10px; color: hsl(0,0%,45%); }
+.m-pipe-card-val { font-size: 10px; color: hsl(0,0%,58%); }
 .m-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 8px; font-weight: 700; padding: 2px 7px; border-radius: 100px; margin-top: 5px; }
 .tag-lime { background: hsla(84,76%,55%,0.15); color: var(--primary); }
 .tag-yellow { background: rgba(251,191,36,.12); color: #FBBF24; }
@@ -281,15 +280,15 @@ body::after {
 }
 .cl-logos-label {
   text-align: center; font-size: 11px; text-transform: uppercase;
-  letter-spacing: 1.2px; color: hsl(0,0%,35%); font-weight: 700; margin-bottom: 28px;
+  letter-spacing: 1.2px; color: hsl(0,0%,55%); font-weight: 700; margin-bottom: 28px;
 }
 .cl-logos-row { display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; }
 .cl-logo-item {
   display: flex; align-items: center; gap: 8px;
-  font-size: 15px; font-weight: 800; color: hsl(0,0%,28%);
+  font-size: 15px; font-weight: 800; color: hsl(0,0%,52%);
   letter-spacing: -.3px; transition: color .2s;
 }
-.cl-logo-item:hover { color: hsl(0,0%,50%); }
+.cl-logo-item:hover { color: hsl(0,0%,72%); }
 .cl-logo-item i { font-size: 17px; }
 
 /* ─── SECTION BASE ──────────────── */
@@ -334,14 +333,14 @@ body::after {
 }
 .cl-f-icon-wrap i { font-size: 20px; color: var(--primary); }
 .cl-f-card.cl-highlight .cl-f-icon-wrap { background: hsla(84,76%,55%,0.15); border-color: hsla(84,76%,55%,0.25); }
-.cl-f-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; font-weight: 700; color: hsl(0,0%,45%); margin-bottom: 8px; }
+.cl-f-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; font-weight: 700; color: hsl(0,0%,58%); margin-bottom: 8px; }
 .cl-f-card.cl-highlight .cl-f-eyebrow { color: hsl(84,76%,45%); }
 .cl-f-card h3 { font-size: 18px; font-weight: 800; margin-bottom: 10px; line-height: 1.3; letter-spacing: -.3px; }
 .cl-f-card p { font-size: 13px; color: var(--muted-fg); line-height: 1.75; }
 
 .cl-f-pipeline-mini { margin-top: 24px; display: flex; gap: 8px; }
 .cl-f-pipe-mini-col { flex: 1; }
-.cl-f-pipe-mini-head { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: hsl(0,0%,35%); margin-bottom: 6px; }
+.cl-f-pipe-mini-head { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: hsl(0,0%,52%); margin-bottom: 6px; }
 .cl-f-pipe-mini-item {
   background: var(--secondary); border: 1px solid var(--border);
   border-radius: 5px; padding: 7px 8px; margin-bottom: 4px;
@@ -371,6 +370,19 @@ body::after {
 }
 .cl-f-int-chip i { font-size: 13px; color: var(--primary); }
 
+.cl-f-schedule { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+.cl-f-schedule-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--secondary); border: 1px solid var(--border);
+  border-radius: 7px; padding: 8px 10px;
+}
+.cl-f-schedule-time { font-size: 10px; font-weight: 700; color: var(--primary); min-width: 52px; flex-shrink: 0; }
+.cl-f-schedule-label { font-size: 11px; color: hsl(0,0%,65%); flex: 1; }
+.cl-f-schedule-pill {
+  font-size: 9px; font-weight: 700; padding: 3px 7px; border-radius: 4px;
+  background: hsla(84,76%,55%,0.15); color: var(--primary); white-space: nowrap;
+}
+
 /* ─── HOW IT WORKS ──────────────── */
 .cl-steps-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
@@ -378,7 +390,7 @@ body::after {
 }
 .cl-step-block { background: var(--card); padding: 40px 36px; position: relative; }
 .cl-step-num {
-  font-size: 52px; font-weight: 900; color: hsl(0,0%,10%); line-height: 1;
+  font-size: 52px; font-weight: 900; color: hsl(0,0%,17%); line-height: 1;
   margin-bottom: 24px; letter-spacing: -2px;
   position: absolute; top: 24px; right: 24px;
 }
@@ -454,11 +466,13 @@ body::after {
 }
 .cl-ptab.active .save { background: rgba(0,0,0,.15); color: #000; }
 
-.cl-pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
+.cl-pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: stretch; }
 .cl-p-card {
   background: var(--card); border: 1.5px solid var(--border);
   border-radius: 12px; padding: 26px; transition: border-color .25s, transform .2s;
+  display: flex; flex-direction: column;
 }
+.cl-p-feats { list-style: none; margin-bottom: 24px; flex: 1; }
 .cl-p-card:hover { transform: translateY(-4px); }
 .cl-p-card.featured {
   background: linear-gradient(160deg, hsl(84,76%,14%) 0%, hsl(84,50%,7%) 100%);
@@ -472,14 +486,13 @@ body::after {
   padding: 4px 12px; border-radius: 100px; margin-bottom: 16px;
 }
 .cl-p-popular i { font-size: 12px; }
-.cl-p-tier { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: hsl(0,0%,40%); margin-bottom: 10px; }
+.cl-p-tier { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: hsl(0,0%,58%); margin-bottom: 10px; }
 .cl-p-card.featured .cl-p-tier { color: hsl(84,60%,45%); }
 .cl-p-price { font-size: 42px; font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 4px; }
 .cl-p-price sup { font-size: 18px; font-weight: 700; vertical-align: super; letter-spacing: 0; }
 .cl-p-mo { font-size: 12px; color: var(--muted-fg); margin-bottom: 14px; }
 .cl-p-desc { font-size: 12px; color: var(--muted-fg); line-height: 1.6; padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
 .cl-p-card.featured .cl-p-desc { border-bottom-color: hsla(84,76%,55%,0.15); }
-.cl-p-feats { list-style: none; margin-bottom: 24px; }
 .cl-p-feat { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--fg); padding: 5px 0; }
 .cl-p-feat i { font-size: 14px; color: var(--primary); flex-shrink: 0; margin-top: 1px; }
 .cl-p-card:not(.featured) .cl-p-feat { color: hsl(0,0%,70%); }
@@ -502,11 +515,11 @@ body::after {
   background: var(--border); border: 1px solid var(--border);
   border-radius: 12px; overflow: hidden; max-width: 900px; margin: 0 auto;
 }
-.cl-faq-item { background: var(--card); padding: 24px 28px; cursor: pointer; transition: background .2s; }
+.cl-faq-item { background: var(--card); padding: 16px 22px; cursor: pointer; transition: background .2s; }
 .cl-faq-item:hover { background: var(--card-el); }
-.cl-faq-q { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
-.cl-faq-q i { font-size: 18px; color: var(--primary); flex-shrink: 0; margin-top: 2px; }
-.cl-faq-a { font-size: 13px; color: var(--muted-fg); line-height: 1.7; overflow: hidden; }
+.cl-faq-q { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.cl-faq-q i { font-size: 16px; color: var(--primary); flex-shrink: 0; }
+.cl-faq-a { font-size: 12px; color: var(--muted-fg); line-height: 1.5; overflow: hidden; }
 
 /* ─── CTA ───────────────────────── */
 .cl-cta-section { padding: 100px 0; text-align: center; position: relative; overflow: hidden; }
@@ -523,38 +536,90 @@ body::after {
 .cl-cta-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
 
 /* ─── FOOTER ────────────────────── */
-.cl-footer { background: var(--surface); border-top: 1px solid var(--border); padding: 64px 0 36px; }
-.cl-footer-top { display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 52px; }
-.cl-footer-brand .fb-logo { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
-.cl-footer-brand .fb-logo .lm { width: 28px; height: 28px; border-radius: 7px; background: var(--primary); display: flex; align-items: center; justify-content: center; }
-.cl-footer-brand .fb-logo .lm i { font-size: 14px; color: #000; }
-.cl-footer-brand .fb-logo .ln { font-size: 16px; font-weight: 800; color: var(--fg); }
-.cl-footer-brand .fb-logo .ln span { color: var(--primary); }
-.cl-footer-brand p { font-size: 13px; color: hsl(0,0%,40%); line-height: 1.7; max-width: 220px; margin-bottom: 20px; }
-.cl-footer-brand .cl-social { display: flex; gap: 8px; }
-.cl-social-link {
-  width: 32px; height: 32px; border-radius: 7px;
-  background: var(--card); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  text-decoration: none; color: hsl(0,0%,45%); font-size: 15px;
-  transition: background .2s, color .2s, border-color .2s;
-}
-.cl-social-link:hover { background: var(--primary-glow); border-color: hsla(84,76%,55%,0.3); color: var(--primary); }
-.cl-footer-col h4 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; color: hsl(0,0%,40%); margin-bottom: 14px; }
-.cl-footer-col a { display: flex; align-items: center; gap: 7px; font-size: 13px; color: hsl(0,0%,45%); text-decoration: none; padding: 5px 0; transition: color .15s; }
-.cl-footer-col a:hover { color: var(--fg); }
-.cl-footer-col a i { font-size: 13px; }
-.cl-footer-bottom { border-top: 1px solid var(--border); padding-top: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.cl-footer-bottom p { font-size: 12px; color: hsl(0,0%,35%); }
-.cl-footer-bottom .fl { display: flex; gap: 16px; }
-.cl-footer-bottom .fl a { font-size: 12px; color: hsl(0,0%,35%); text-decoration: none; }
-.cl-footer-bottom .fl a:hover { color: var(--fg); }
+.cl-footer { overflow: hidden; background: var(--bg); }
 
-/* ─── GSAP INIT STATES ──────────── */
-.g-fade  { opacity: 0; transform: translateY(32px); }
-.g-left  { opacity: 0; transform: translateX(-32px); }
-.g-right { opacity: 0; transform: translateX(32px); }
-.g-scale { opacity: 0; transform: scale(.92); }
+/* CTA card */
+.cl-footer-card {
+  margin: 0 0px 0;
+  background: hsl(0,0%,9%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.cl-footer-card-left h4 {
+  font-size: 20px; font-weight: 800; letter-spacing: -.4px;
+  margin-bottom: 10px; color: var(--fg);
+}
+.cl-footer-card-left p {
+  font-size: 14px; color: var(--muted-fg); line-height: 1.65;
+  max-width: 380px;
+}
+.cl-footer-chat-btn {
+  display: flex; align-items: center; gap: 14px;
+  background: hsl(0,0%,13%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  text-decoration: none;
+  transition: border-color .2s, background .2s;
+  flex-shrink: 0;
+}
+.cl-footer-chat-btn:hover {
+  border-color: hsla(84,76%,55%,0.4);
+  background: hsl(0,0%,16%);
+}
+.cl-footer-chat-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.cl-footer-chat-icon img { width: 22px; height: 22px; filter: brightness(0); }
+.cl-footer-chat-icon i { font-size: 20px; color: #000; }
+.cl-footer-chat-text { display: flex; flex-direction: column; gap: 2px; }
+.cl-footer-chat-text strong { font-size: 14px; font-weight: 700; color: var(--fg); }
+.cl-footer-chat-text span { font-size: 12px; color: var(--muted-fg); }
+.cl-footer-chat-arrow {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--primary-glow); border: 1px solid hsla(84,76%,55%,0.25);
+  display: flex; align-items: center; justify-content: center;
+}
+.cl-footer-chat-arrow i { font-size: 16px; color: var(--primary); }
+
+/* Bottom row */
+.cl-footer-bottom {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 48px;
+  align-items: start;
+  padding: 36px 0 48px;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+.cl-footer-copy { font-size: 15px; color: hsl(0,0%,70%); line-height: 1.5; font-weight: 500; }
+.cl-footer-nav-col { display: flex; flex-direction: column; gap: 2px; }
+.cl-footer-nav-col a, .cl-footer-social-col a {
+  font-size: 15px; color: hsl(0,0%,65%);
+  text-decoration: none; padding: 5px 0;
+  transition: color .15s; display: flex; align-items: center; gap: 8px;
+}
+.cl-footer-nav-col a:hover, .cl-footer-social-col a:hover { color: var(--fg); }
+.cl-footer-social-col { display: flex; flex-direction: column; gap: 2px; }
+.cl-footer-social-col a i { font-size: 15px; }
+
+@media(max-width:768px) {
+  .cl-footer-card { flex-direction: column; padding: 28px 24px; }
+  .cl-footer-bottom { grid-template-columns: 1fr; gap: 28px; }
+  .cl-footer-card { margin: 0 0; border-radius: 0; border-left: none; border-right: none; }
+}
+
+/* ─── GSAP INIT STATES (set by JS, not CSS – so content is visible if GSAP fails) ── */
+.g-fade, .g-left, .g-right, .g-scale { transition: none; }
 
 /* ─── RESPONSIVE ────────────────── */
 @media(max-width: 960px) {
@@ -563,7 +628,7 @@ body::after {
   .cl-step-arrow { display: none; }
   .cl-pricing-grid { grid-template-columns: 1fr 1fr; }
   .cl-testi-grid { grid-template-columns: 1fr; }
-  .cl-footer-top { grid-template-columns: 1fr 1fr; }
+  .cl-footer-cols { grid-template-columns: 1fr; gap: 32px; }
   .cl-faq-grid { grid-template-columns: 1fr; }
   .cl-proof-bar { flex-direction: column; }
   .cl-proof-stat + .cl-proof-stat::before { display: none; }
@@ -573,7 +638,6 @@ body::after {
 @media(max-width: 640px) {
   .cl-nav-links, .cl-nav-actions .cl-btn-ghost { display: none; }
   .cl-pricing-grid { grid-template-columns: 1fr; }
-  .cl-footer-top { grid-template-columns: 1fr; }
   .cl-mockup-app { height: auto; }
   .m-pipeline { grid-template-columns: 1fr 1fr; }
   .cl-m-sidebar { display: none; }
@@ -581,6 +645,9 @@ body::after {
 `;
 
 export default function HomePage() {
+  const [plan, setPlan] = useState<'monthly' | 'annual'>('monthly');
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
   useEffect(() => {
     // ── Inject fonts & icons ──────────────────
     const fontLink = document.createElement('link');
@@ -605,21 +672,11 @@ export default function HomePage() {
     (async () => {
       await loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js');
       await loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js');
-      await loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollSmoother.min.js');
 
       const { gsap } = window as any;
-      const { ScrollTrigger, ScrollSmoother } = window as any;
+      const { ScrollTrigger } = window as any;
 
-      gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
-
-      // Smooth scroll
-      ScrollSmoother.create({
-        wrapper: '#smooth-wrapper',
-        content: '#smooth-content',
-        smooth: 1.4,
-        effects: true,
-        normalizeScroll: true,
-      });
+      gsap.registerPlugin(ScrollTrigger);
 
       // ── Hero entrance ─────────────────────
       const tl = gsap.timeline({ delay: 0.1 });
@@ -698,25 +755,6 @@ export default function HomePage() {
         card.addEventListener('mouseleave', () => gsap.to(card, { scale:1, borderColor:'var(--border)', duration:.2 }));
       });
 
-      // FAQ accordion
-      document.querySelectorAll('.cl-faq-item').forEach((item: any) => {
-        const icon = item.querySelector('.cl-faq-q i');
-        const ans = item.querySelector('.cl-faq-a');
-        gsap.set(ans, { height:0, opacity:0, overflow:'hidden' });
-        item.addEventListener('click', () => {
-          const open = item.classList.contains('open');
-          document.querySelectorAll('.cl-faq-item.open').forEach((o: any) => {
-            o.classList.remove('open');
-            gsap.to(o.querySelector('.cl-faq-a'), { height:0, opacity:0, duration:.3, ease:'power2.in' });
-            gsap.to(o.querySelector('.cl-faq-q i'), { rotation:0, duration:.3 });
-          });
-          if (!open) {
-            item.classList.add('open');
-            gsap.fromTo(ans, { height:0, opacity:0 }, { height:'auto', opacity:1, duration:.35, ease:'power2.out' });
-            gsap.to(icon, { rotation:45, duration:.3 });
-          }
-        });
-      });
     })();
 
     return () => {
@@ -794,7 +832,7 @@ export default function HomePage() {
                   <div className="m-dot" /><div className="m-dot" /><div className="m-dot" />
                   <div className="m-url"><i className="ri-lock-line" />app.clars.ai/pipeline</div>
                   <div style={{ display:'flex', gap:8, marginLeft:'auto' }}>
-                    <div style={{ background:'var(--secondary)', borderRadius:4, padding:'4px 10px', fontSize:10, color:'hsl(0,0%,45%)', display:'flex', alignItems:'center', gap:4 }}>
+                    <div style={{ background:'var(--secondary)', borderRadius:4, padding:'4px 10px', fontSize:10, color:'hsl(0,0%,60%)', display:'flex', alignItems:'center', gap:4 }}>
                       <i className="ri-notification-3-line" style={{ fontSize:11 }} /> 3
                     </div>
                   </div>
@@ -857,7 +895,7 @@ export default function HomePage() {
                         ]},
                         { head:'Won', count:'8', cards:[
                           { name:'Kevin — WooCommerce', val:'$1,800', tag:'tag-lime', icon:'ri-verified-badge-line', label:'Signed' },
-                          { name:'Blemnon — Store', val:'$4,500', tag:'tag-lime', icon:'ri-verified-badge-line', label:'Signed' },
+                          { name:'Wendy — Store', val:'$4,500', tag:'tag-lime', icon:'ri-verified-badge-line', label:'Signed' },
                         ]},
                       ].map((col, ci) => (
                         <div key={ci}>
@@ -912,15 +950,15 @@ export default function HomePage() {
               </div>
               <div className="cl-feat-bento">
                 <div className="cl-f-card cl-highlight cl-col8">
-                  <div className="cl-f-icon-wrap"><i className="ri-kanban-view-fill" /></div>
+                  <div className="cl-f-icon-wrap"><i className="ri-layout-grid-2-fill" /></div>
                   <div className="cl-f-eyebrow">AI Pipeline</div>
                   <h3>Your deals move forward —<br />even when you&apos;re not watching.</h3>
                   <p>Clars reads your messages, extracts deal status, and keeps your pipeline accurate without manual updates.</p>
                   <div className="cl-f-pipeline-mini">
                     {[
-                      { head:'Lead', items:[{color:'hsl(0,0%,35%)', label:'Ahmed K.'},{color:'hsl(0,0%,35%)', label:'Sara M.'}] },
+                      { head:'Lead', items:[{color:'hsl(0,0%,55%)', label:'Ahmed K.'},{color:'hsl(0,0%,55%)', label:'Sara M.'}] },
                       { head:'Proposal', items:[{color:'#FBBF24', label:'TechCorp'}] },
-                      { head:'Won ✓', items:[{color:'var(--primary)', label:'Kevin'},{color:'var(--primary)', label:'Blemnon'}] },
+                      { head:'Won ✓', items:[{color:'var(--primary)', label:'Kevin'},{color:'var(--primary)', label:'Wendy'}] },
                     ].map((col, ci) => (
                       <div className="cl-f-pipe-mini-col" key={ci}>
                         <div className="cl-f-pipe-mini-head">{col.head}</div>
@@ -937,13 +975,13 @@ export default function HomePage() {
                   <div className="cl-f-icon-wrap"><i className="ri-robot-2-fill" /></div>
                   <div className="cl-f-eyebrow">AI Inbox</div>
                   <h3>Draft client replies in seconds</h3>
-                  <p>Context-aware responses in Arabic, French, or English — ready to send.</p>
+                  <p>Context-aware responses in Arabic or English — ready to send.</p>
                   <div className="cl-f-ai-mock">
                     <div className="cl-f-ai-mock-label"><i className="ri-sparkling-fill" /> AI Drafting…</div>
-                    <div className="cl-f-ai-msg">Bonjour Sarah, merci pour votre retour. Je serais ravi…<span className="cl-f-ai-cursor" /></div>
+                    <div className="cl-f-ai-msg">Hi Sarah, thanks so much for your message. I would be happy to help…<span className="cl-f-ai-cursor" /></div>
                   </div>
                 </div>
-                <div className="cl-f-card cl-col4">
+                <div className="cl-f-card cl-col6">
                   <div className="cl-f-icon-wrap"><i className="ri-bar-chart-grouped-fill" /></div>
                   <div className="cl-f-eyebrow">Revenue Tracking</div>
                   <h3>Know where every dollar is</h3>
@@ -954,17 +992,30 @@ export default function HomePage() {
                     ))}
                   </div>
                 </div>
-                <div className="cl-f-card cl-col4">
+                <div className="cl-f-card cl-col6 g-right">
                   <div className="cl-f-icon-wrap"><i className="ri-calendar-todo-fill" /></div>
                   <div className="cl-f-eyebrow">Smart Scheduling</div>
                   <h3>Never miss a follow-up</h3>
                   <p>AI analyzes deal patterns and pings you at the exact moment a client is about to go cold.</p>
+                  <div className="cl-f-schedule">
+                    {[
+                      { time: "09:30", label: "Reply to Sara · Website", tone: "Warm", pill: "Now" },
+                      { time: "14:00", label: "Nudge TechCorp · CRM", tone: "At risk", pill: "3 days quiet" },
+                      { time: "Tomorrow", label: "Check-in with Ahmed · Logo", tone: "Stable", pill: "Scheduled" },
+                    ].map((row, i) => (
+                      <div className="cl-f-schedule-row" key={i}>
+                        <span className="cl-f-schedule-time">{row.time}</span>
+                        <span className="cl-f-schedule-label">{row.label}</span>
+                        <span className="cl-f-schedule-pill">{row.pill}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className="cl-f-card cl-col6">
                   <div className="cl-f-icon-wrap"><i className="ri-translate-2" /></div>
                   <div className="cl-f-eyebrow">Multilingual</div>
-                  <h3>Arabic, French, English — natively</h3>
-                  <p>Full RTL support, bilingual client profiles, and AI that writes naturally in all three — built first for MENA freelancers.</p>
+                  <h3>Arabic and English — natively</h3>
+                  <p>Full RTL support, bilingual client profiles, and AI that writes naturally in both — built first for MENA freelancers.</p>
                 </div>
                 <div className="cl-f-card cl-col6">
                   <div className="cl-f-icon-wrap"><i className="ri-links-fill" /></div>
@@ -977,7 +1028,7 @@ export default function HomePage() {
                       { icon:'ri-whatsapp-line', label:'WhatsApp' },
                       { icon:'ri-store-2-line', label:'Fiverr' },
                       { icon:'ri-global-line', label:'Upwork' },
-                      { icon:'ri-bank-card-line', label:'Stripe' },
+                      { icon:'ri-bank-card-line', label:'Whop' },
                       { icon:'ri-calendar-2-line', label:'Calendly' },
                     ].map((chip, i) => (
                       <div className="cl-f-int-chip" key={i}><i className={chip.icon} /> {chip.label}</div>
@@ -1007,7 +1058,6 @@ export default function HomePage() {
                     <div className="cl-step-ico"><i className={step.icon} /></div>
                     <h3>{step.title}</h3>
                     <p>{step.desc}</p>
-                    {step.arrow && <div className="cl-step-arrow"><i className="ri-arrow-right-s-line" /></div>}
                   </div>
                 ))}
               </div>
@@ -1015,7 +1065,7 @@ export default function HomePage() {
           </section>
 
           {/* ══ PROOF ══ */}
-          <section className="cl-section cl-proof-bg">
+          <section className="cl-section cl-proof-bg" id="testimonials">
             <div className="cl-container">
               <div className="cl-proof-bar g-scale">
                 {[
@@ -1061,9 +1111,9 @@ export default function HomePage() {
                 <h2>Start free.<br />Scale when you&apos;re ready.</h2>
                 <p>No hidden fees. No per-seat traps. Built for how freelancers actually work.</p>
               </div>
-              <div className="cl-pricing-tabs g-fade" id="pricingTabs">
-                <div className="cl-ptab active" data-plan="monthly">Monthly</div>
-                <div className="cl-ptab" data-plan="annual">Annual <span className="save">Save 30%</span></div>
+              <div className="cl-pricing-tabs g-fade">
+                <div className={`cl-ptab${plan==='monthly'?' active':''}`} onClick={()=>setPlan('monthly')}>Monthly</div>
+                <div className={`cl-ptab${plan==='annual'?' active':''}`} onClick={()=>setPlan('annual')}>Annual <span className="save">Save 30%</span></div>
               </div>
               <div className="cl-pricing-grid">
                 <div className="cl-p-card g-fade">
@@ -1078,8 +1128,8 @@ export default function HomePage() {
                 </div>
                 <div className="cl-p-card g-fade">
                   <div className="cl-p-tier">Growth</div>
-                  <div className="cl-p-price" id="gPrice"><sup>$</sup>19</div>
-                  <div className="cl-p-mo" id="gMo">per month</div>
+                  <div className="cl-p-price"><sup>$</sup>{plan==='annual'?'13':'19'}</div>
+                  <div className="cl-p-mo">{plan==='annual'?'per month, billed annually':'per month'}</div>
                   <div className="cl-p-desc">For solo operators ready to automate and close more deals.</div>
                   <ul className="cl-p-feats">
                     {['Unlimited deals','AI Inbox (50 drafts/mo)','All integrations','Revenue forecasting'].map((f,i)=><li className="cl-p-feat" key={i}><i className="ri-check-line"/>{f}</li>)}
@@ -1089,11 +1139,11 @@ export default function HomePage() {
                 <div className="cl-p-card featured g-fade">
                   <div className="cl-p-popular"><i className="ri-flashlight-fill" /> Most Popular</div>
                   <div className="cl-p-tier">Pro</div>
-                  <div className="cl-p-price" id="pPrice"><sup>$</sup>39</div>
-                  <div className="cl-p-mo" id="pMo">per month</div>
+                  <div className="cl-p-price"><sup>$</sup>{plan==='annual'?'27':'39'}</div>
+                  <div className="cl-p-mo">{plan==='annual'?'per month, billed annually':'per month'}</div>
                   <div className="cl-p-desc">For power freelancers running a real business, not a side hustle.</div>
                   <ul className="cl-p-feats">
-                    {['Everything in Growth','Unlimited AI drafts','Arabic / French AI','Invoice & payment tracking','Priority support'].map((f,i)=><li className="cl-p-feat" key={i}><i className="ri-check-line"/>{f}</li>)}
+                    {['Everything in Growth','Unlimited AI drafts','Arabic / English AI','Invoice & payment tracking','Priority support'].map((f,i)=><li className="cl-p-feat" key={i}><i className="ri-check-line"/>{f}</li>)}
                   </ul>
                   <a href="/signup" className="cl-pb cl-pb-primary">Get Started</a>
                 </div>
@@ -1123,16 +1173,38 @@ export default function HomePage() {
                 {[
                   { q:'How is Clars.ai different from regular CRMs?', a:'Regular CRMs were built for sales teams. Clars.ai was made specifically for freelancers — lighter, smarter, and AI-first from day one. No sales-speak, no bloat.' },
                   { q:'Does it work with Fiverr and Upwork?', a:'Yes. Clars integrates with Fiverr, Upwork, Gmail, WhatsApp Business, and more. Conversations are auto-synced and turned into deal records.' },
-                  { q:'Is Arabic and French supported?', a:'Absolutely. Clars was built with the MENA market in mind. Full RTL, Arabic AI drafts, French and English — all first-class citizens.' },
+                  { q:'Is Arabic and English supported?', a:'Absolutely. Clars was built with the MENA market in mind. Full RTL, Arabic AI drafts and English — both first-class citizens.' },
                   { q:'Can I import my existing client data?', a:'Yes. Import from Google Sheets, CSV, or directly from HubSpot, Notion, and other CRMs. Migration takes under 10 minutes.' },
                   { q:'Is my data safe and private?', a:'All data is encrypted at rest and in transit. GDPR compliant. Your data is never used to train AI models without explicit consent.' },
                   { q:'Can I cancel anytime?', a:'Yes, cancel anytime — no penalties. Annual plan cancellations get prorated refunds for unused months, no questions asked.' },
-                ].map((item, i) => (
-                  <div className="cl-faq-item" key={i}>
-                    <div className="cl-faq-q"><span>{item.q}</span><i className="ri-add-line" /></div>
-                    <div className="cl-faq-a">{item.a}</div>
-                  </div>
-                ))}
+                ].map((item, i) => {
+                  const isOpen = openFaq === i;
+                  return (
+                    <div
+                      className={`cl-faq-item${isOpen ? ' open' : ''}`}
+                      key={i}
+                      onClick={() => setOpenFaq(isOpen ? null : i)}
+                    >
+                      <div className="cl-faq-q">
+                        <span>{item.q}</span>
+                        <i
+                          className="ri-add-line"
+                          style={{ transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)', transition: 'transform .2s' }}
+                        />
+                      </div>
+                      <div
+                        className="cl-faq-a"
+                        style={{
+                          maxHeight: isOpen ? 400 : 0,
+                          opacity: isOpen ? 1 : 0,
+                          transition: 'max-height .25s ease, opacity .2s ease',
+                        }}
+                      >
+                        {item.a}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -1153,54 +1225,56 @@ export default function HomePage() {
           </section>
 
           {/* ══ FOOTER ══ */}
-          <footer className="cl-footer">
-            <div className="cl-container">
-              <div className="cl-footer-top">
-                <div className="cl-footer-brand">
-                  <div className="fb-logo">
-                    <a href="/" className="flex items-center gap-2">
-                      <img
-                        src="/logo.svg"
-                        alt="Clars.ai"
-                        className="h-8 w-auto"
-                      />
-                    </a>
-                  </div>
-                  <p>Every client relationship, intelligently managed. Built for freelancers and solo entrepreneurs.</p>
-                  <div className="cl-social">
-                    {[
-                      { icon:'ri-twitter-x-line', href:'#' },
-                      { icon:'ri-linkedin-line', href:'#' },
-                      { icon:'ri-instagram-line', href:'#' },
-                      { icon:'ri-youtube-line', href:'#' },
-                    ].map((s, i) => (
-                      <a href={s.href} className="cl-social-link" key={i}><i className={s.icon} /></a>
-                    ))}
-                  </div>
-                </div>
-                {[
-                  { title:'Product', links:[{label:'Features',href:'#features'},{label:'Pricing',href:'#pricing'},{label:'Integrations',href:'#'},{label:'Changelog',href:'#'},{label:'Roadmap',href:'#'}] },
-                  { title:'Company', links:[{label:'About us',href:'#'},{label:'Blog',href:'#'},{label:'Careers',href:'#'},{label:'Contact',href:'/contact'}] },
-                  { title:'Legal', links:[{label:'Privacy Policy',href:'#'},{label:'Terms of Service',href:'#'},{label:'Cookie Policy',href:'#'},{label:'GDPR',href:'#'}] },
-                ].map((col, ci) => (
-                  <div className="cl-footer-col" key={ci}>
-                    <h4>{col.title}</h4>
-                    {col.links.map((l, li) => (
-                      <a href={l.href} key={li}><i className="ri-arrow-right-s-line" />{l.label}</a>
-                    ))}
-                  </div>
-                ))}
-              </div>
-              <div className="cl-footer-bottom">
-                <p>© 2025 Clars.ai · All rights reserved.</p>
-                <div className="fl">
-                  <a href="#">Privacy</a>
-                  <a href="#">Terms</a>
-                  <a href="#">Cookies</a>
-                </div>
-              </div>
-            </div>
-          </footer>
+<footer className="cl-footer">
+  {/* Ghost wordmark */}
+  {/* Giant logo mark */}
+  {/* Talk to us card */}
+  <div className="cl-container">
+    <div className="cl-footer-card g-fade">
+      <div className="cl-footer-card-left">
+        <h4>Would you like to talk to us?</h4>
+        <p>We are moving fast, and your feedback is super important. Feel free to schedule a chat with our team =)</p>
+      </div>
+      <a href="/contact" className="cl-footer-chat-btn">
+        <div className="cl-footer-chat-icon">
+          <i className="ri-calendar-schedule-line" />
+        </div>
+        <div className="cl-footer-chat-text">
+          <strong>Schedule a chat</strong>
+          <span>with one of our founders</span>
+        </div>
+        <div className="cl-footer-chat-arrow">
+          <i className="ri-arrow-right-s-line" />
+        </div>
+      </a>
+    </div>
+
+    {/* Bottom links row */}
+    <div className="cl-footer-bottom">
+      <p className="cl-footer-copy">© 2026 Clars.ai</p>
+
+      <nav className="cl-footer-nav-col">
+        {[
+          { label:'Home',           href:'/' },
+          { label:'Features',       href:'#features' },
+          { label:'Pricing',        href:'#pricing' },
+          { label:'Testimonials',   href:'#testimonials' },
+          { label:'Privacy Policy', href:'/privacy' },
+        ].map((l, i) => <a href={l.href} key={i}>{l.label}</a>)}
+      </nav>
+
+      <div className="cl-footer-social-col">
+        {[
+          { icon:'ri-twitter-x-line', label:'X / Twitter', href:'#' },
+          { icon:'ri-linkedin-line',  label:'LinkedIn',    href:'#' },
+          { icon:'ri-instagram-line', label:'Instagram',   href:'#' },
+        ].map((s, i) => (
+          <a href={s.href} key={i}><i className={s.icon} />{s.label}</a>
+        ))}
+      </div>
+    </div>
+  </div>
+</footer>
 
         </div>{/* #smooth-content */}
       </div>{/* #smooth-wrapper */}
