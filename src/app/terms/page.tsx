@@ -63,7 +63,12 @@ body {
   background: hsla(0, 0%, 0%, 0.7);
   backdrop-filter: blur(24px);
   border-bottom: 1px solid var(--border);
-  transition: background .3s;
+  transition: background .3s, transform .5s cubic-bezier(0.16,1,0.3,1);
+  will-change: transform;
+}
+.cl-nav--hidden {
+  transform: translateY(-110%);
+  pointer-events: none;
 }
 .cl-nav-inner {
   max-width: 1280px; margin: 0 auto; padding: 0 28px;
@@ -71,13 +76,13 @@ body {
   height: 64px; gap: 32px;
 }
 .cl-nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.cl-nav-links { display: flex; align-items: center; gap: 2px; }
+.cl-nav-links { display: flex; align-items: center; gap: 4px; }
 .cl-nav-links a {
-  font-size: 13px; font-weight: 500; color: var(--muted-fg);
-  text-decoration: none; padding: 7px 14px; border-radius: 6px;
-  transition: color .15s, background .15s;
+  font-size: 15px; font-weight: 500; color: var(--muted-fg);
+  text-decoration: none; padding: 8px 16px; border-radius: 6px;
+  transition: color .2s;
 }
-.cl-nav-links a:hover { color: var(--fg); background: var(--secondary); }
+.cl-nav-links a:hover, .cl-nav-links a.active { color: var(--primary); }
 .cl-nav-actions { display: flex; align-items: center; gap: 10px; }
 .cl-nav-actions .cl-btn-primary { padding: 9px 18px; font-size: 13px; }
 .cl-nav-actions .cl-btn-ghost   { padding: 8px 18px;  font-size: 13px; }
@@ -226,7 +231,7 @@ export default function TermsPage() {
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
       {/* ══ NAV ══ */}
-      <nav className="cl-nav">
+      <nav className="cl-nav" id="main-nav">
         <div className="cl-nav-inner">
           <a href="/" className="cl-nav-logo">
             <img src="/logo.svg" alt="Clars.ai" className="h-8 w-auto" />
@@ -238,11 +243,29 @@ export default function TermsPage() {
             <a href="/#faq">FAQ</a>
           </div>
           <div className="cl-nav-actions">
-            <a href="/login" className="cl-btn-ghost"><i className="ri-user-line" /> Log in</a>
             <a href="/signup" className="cl-btn-primary"><i className="ri-arrow-right-up-line" /> Start Free</a>
           </div>
         </div>
       </nav>
+      {/* Hide-on-scroll-down / reveal-on-scroll-up */}
+      <script dangerouslySetInnerHTML={{ __html: `
+        (function(){
+          var nav = document.getElementById('main-nav');
+          var lastY = 0, hidden = false, ticking = false;
+          window.addEventListener('scroll', function(){
+            if(!ticking){ requestAnimationFrame(function(){
+              var y = window.scrollY;
+              nav.style.background = y > 60 ? 'hsla(0,0%,4%,0.96)' : 'hsla(0,0%,0%,0.7)';
+              if(y - lastY > 6 && !hidden && y > 80){
+                hidden = true; nav.classList.add('cl-nav--hidden');
+              } else if(lastY - y > 6 && hidden){
+                hidden = false; nav.classList.remove('cl-nav--hidden');
+              }
+              lastY = y; ticking = false;
+            }); ticking = true; }
+          }, { passive: true });
+        })();
+      `}} />
 
       {/* ══ CONTENT ══ */}
       <main className="pp-page">
@@ -445,6 +468,7 @@ export default function TermsPage() {
                 { label: 'Home',             href: '/' },
                 { label: 'Features',         href: '/#features' },
                 { label: 'Pricing',          href: '/#pricing' },
+                { label: 'Log in',           href: '/login' },
                 { label: 'Privacy Policy',   href: '/privacy' },
                 { label: 'Terms of Service', href: '/terms' },
               ].map((l, i) => <a href={l.href} key={i}>{l.label}</a>)}

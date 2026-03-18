@@ -89,6 +89,10 @@ body::after {
   backdrop-filter: blur(24px);
   border-bottom: 1px solid var(--border);
   transition: background .3s;
+  will-change: transform;
+}
+.cl-nav--hidden {
+  pointer-events: none;
 }
 .cl-nav-inner {
   max-width: 1280px; margin: 0 auto; padding: 0 28px;
@@ -105,13 +109,13 @@ body::after {
 .cl-logo-text { font-size: 18px; font-weight: 800; color: var(--fg); letter-spacing: -.3px; }
 .cl-logo-text span { color: var(--primary); }
 
-.cl-nav-links { display: flex; align-items: center; gap: 2px; }
+.cl-nav-links { display: flex; align-items: center; gap: 4px; }
 .cl-nav-links a {
-  font-size: 13px; font-weight: 500; color: var(--muted-fg);
-  text-decoration: none; padding: 7px 14px; border-radius: 6px;
-  transition: color .15s, background .15s;
+  font-size: 15px; font-weight: 500; color: var(--muted-fg);
+  text-decoration: none; padding: 8px 16px; border-radius: 6px;
+  transition: color .2s;
 }
-.cl-nav-links a:hover { color: var(--fg); background: var(--secondary); }
+.cl-nav-links a:hover, .cl-nav-links a.active { color: var(--primary); }
 .cl-nav-actions { display: flex; align-items: center; gap: 10px; }
 .cl-nav-actions .cl-btn-primary { padding: 9px 18px; font-size: 13px; }
 .cl-nav-actions .cl-btn-ghost { padding: 8px 18px; font-size: 13px; }
@@ -598,8 +602,8 @@ body::after {
   gap: 48px;
   align-items: start;
   padding: 36px 0 48px;
-  border-top: 1px solid var(--border);
-  margin-top: 48px;
+  border-top: 0px solid var(--border);
+  margin-top: 0px;
 }
 .cl-footer-copy { font-size: 15px; color: hsl(0,0%,70%); line-height: 1.5; font-weight: 500; }
 .cl-footer-nav-col { display: flex; flex-direction: column; gap: 2px; }
@@ -740,14 +744,46 @@ export default function HomePage() {
         gsap.to(el, { y:-30, ease:'none', scrollTrigger:{ trigger:el, start:'top bottom', end:'bottom top', scrub:true } });
       });
 
-      // Nav scroll effect
-      ScrollTrigger.create({
-        start: 'top -60',
-        onUpdate(self: any) {
-          const nav = document.getElementById('main-nav');
-          if (nav) nav.style.background = self.progress > 0 ? 'hsla(0,0%,0%,0.95)' : 'hsla(0,0%,0%,0.7)';
-        }
-      });
+      // Nav — hide on scroll down, slide back in on scroll up
+      const nav = document.getElementById('main-nav');
+      if (nav) {
+        let lastY = 0;
+        let isHidden = false;
+        ScrollTrigger.create({
+          start: 'top -80',
+          onUpdate(self: any) {
+            const y = self.scroll();
+            const diff = y - lastY;
+
+            // darken background once past hero
+            nav.style.background = y > 60 ? 'hsla(0,0%,4%,0.96)' : 'hsla(0,0%,0%,0.7)';
+
+            if (diff > 4 && !isHidden) {
+              // scrolling down → hide
+              isHidden = true;
+              nav.classList.add('cl-nav--hidden');
+              gsap.to(nav, {
+                yPercent: -110,
+                duration: 0.45,
+                ease: 'power3.in',
+              });
+            } else if (diff < -4 && isHidden) {
+              // scrolling up → reveal
+              isHidden = false;
+              nav.classList.remove('cl-nav--hidden');
+              gsap.fromTo(nav,
+                { yPercent: -110 },
+                {
+                  yPercent: 0,
+                  duration: 0.5,
+                  ease: 'expo.out',
+                }
+              );
+            }
+            lastY = y;
+          },
+        });
+      }
 
       // Pipeline card hover
       document.querySelectorAll('.m-pipe-card').forEach((card: any) => {
@@ -789,7 +825,6 @@ export default function HomePage() {
                 <a href="#faq">FAQ</a>
               </div>
               <div className="cl-nav-actions">
-                <a href="/login" className="cl-btn-ghost"><i className="ri-user-line" /> Log in</a>
                 <a href="/signup" className="cl-btn-primary"><i className="ri-arrow-right-up-line" /> Start Free</a>
               </div>
             </div>
@@ -1267,7 +1302,9 @@ export default function HomePage() {
           { label:'Features',       href:'#features' },
           { label:'Pricing',        href:'#pricing' },
           { label:'Testimonials',   href:'#testimonials' },
+          { label:'Log in',         href:'/login' },
           { label:'Privacy Policy', href:'/privacy' },
+          { label:'Terms of Service', href:'/terms' },
         ].map((l, i) => <a href={l.href} key={i}>{l.label}</a>)}
       </nav>
 
