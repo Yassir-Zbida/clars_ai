@@ -76,17 +76,13 @@ export function SignupForm({
         redirect: false,
       })
       if (signInRes?.error) {
-        toast.info("Please sign in with your new account", { duration: 8000 })
-        setTimeout(() => {
-          window.location.href = "/login?signup=success"
-        }, 2500)
+        sessionStorage.setItem("pendingAuthToast", "signup_created")
+        window.location.href = "/login"
         return
       }
       if (signInRes?.ok) {
-        toast.success("Signed in successfully", { duration: 8000 })
-        setTimeout(() => {
-          window.location.href = "/dashboard"
-        }, 2500)
+        sessionStorage.setItem("pendingAuthToast", "signup")
+        window.location.href = "/dashboard"
       }
     } finally {
       setLoading(false)

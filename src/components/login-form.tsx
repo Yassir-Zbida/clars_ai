@@ -2,7 +2,6 @@
 
 import { signIn } from "next-auth/react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -27,17 +26,9 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-
-  const successMessage =
-    searchParams.get("signup") === "success"
-      ? "Account created. You can sign in below."
-      : searchParams.get("reset") === "success"
-        ? "Password updated. You can sign in below."
-        : null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,10 +47,8 @@ export function LoginForm({
         return
       }
       if (res?.ok) {
-        toast.success("Signed in successfully", { duration: 8000 })
-        setTimeout(() => {
-          window.location.href = "/dashboard"
-        }, 2500)
+        sessionStorage.setItem("pendingAuthToast", "login")
+        window.location.href = "/dashboard"
       }
     } finally {
       setLoading(false)
@@ -78,11 +67,6 @@ export function LoginForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
-              {successMessage && (
-                <p className="text-sm text-green-600 dark:text-green-400" role="status">
-                  {successMessage}
-                </p>
-              )}
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input

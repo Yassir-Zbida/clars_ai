@@ -67,13 +67,8 @@ export function ResetPasswordForm({
         })
         return
       }
-      toast.success("Password updated", {
-        description: "You can sign in with your new password.",
-        duration: 8000,
-      })
-      setTimeout(() => {
-        router.push("/login?reset=success")
-      }, 2500)
+      sessionStorage.setItem("pendingAuthToast", "reset")
+      router.push("/login")
     } finally {
       setLoading(false)
     }
