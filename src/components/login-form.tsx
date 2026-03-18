@@ -108,6 +108,7 @@ export function LoginForm({
                 <PasswordInput
                   id="password"
                   required
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
@@ -133,11 +134,11 @@ export function LoginForm({
       </Card>
       <FieldDescription className="px-6 text-center text-muted-foreground">
         By clicking continue, you agree to our{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-foreground">
+        <a href="/terms" className="underline underline-offset-4 hover:text-foreground">
           Terms of Service
         </a>{" "}
         and{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-foreground">
+        <a href="/privacy" className="underline underline-offset-4 hover:text-foreground">
           Privacy Policy
         </a>
         .
