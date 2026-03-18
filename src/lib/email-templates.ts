@@ -51,7 +51,7 @@ export function resetPasswordEmail({
 
                     <!-- Body -->
                     <p style="margin: 0 0 36px 0; font-size: 15px; color: #888888; line-height: 1.75;">
-                      We received a request to reset the password associated with your <span style="color: #f5f5f5; font-weight: 500;">clars.ai</span> account. Click the button below to set a new password. This link expires in <span style="color: #f0f0f0; font-weight: 500;">1 hour</span>.
+                      We received a request to reset the password associated with your <span style="color: #f5f5f5; font-weight: 500;">clars&#46;ai</span> account. Click the button below to set a new password. This link expires in <span style="color: #f0f0f0; font-weight: 500;">1 hour</span>.
                     </p>
 
                     <!-- CTA Button -->
@@ -104,7 +104,7 @@ export function resetPasswordEmail({
           <tr>
             <td align="center" style="padding: 40px 0 0 0;">
               <p style="margin: 0 0 12px 0; font-size: 13px; color: #333333; line-height: 1.5;">
-                Sent by <a href="${appUrl}" style="color: #3a3a3a; text-decoration: none;">clars.ai</a>
+                Sent by <a href="${appUrl}" style="color: #3a3a3a; text-decoration: none;">clars&#46;ai</a>
               </p>
               <p style="margin: 0; font-size: 12px; color: #2a2a2a; line-height: 1.5;">
                 <a href="${appUrl}/privacy" style="color: #3a3a3a; text-decoration: none;">Privacy Policy</a>
