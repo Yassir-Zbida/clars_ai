@@ -1,5 +1,7 @@
 "use client"
 
+import * as React from "react"
+
 import { signOut } from "next-auth/react"
 import { toast } from "sonner"
 
@@ -35,18 +37,27 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const initials = React.useMemo(() => {
+    if (!user?.name) return "CL"
+    const parts = String(user.name).split(" ").filter(Boolean)
+    if (!parts.length) return "CL"
+    const chars = parts.map((p) => p[0]?.toUpperCase() ?? "").join("")
+    return chars.slice(0, 2) || "CL"
+  }, [user?.name])
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
+              <SidebarMenuButton size="default" className="h-[34px] aria-expanded:bg-muted" />
             }
           >
-            <Avatar className="size-8 rounded-lg grayscale">
+            <Avatar className="size-7 rounded-full">
               <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <AvatarFallback className="rounded-full">
+                {initials}
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
@@ -65,9 +76,11 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="size-8">
+                  <Avatar className="size-7 rounded-full">
                     <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    <AvatarFallback className="rounded-full">
+                      {initials}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">{user.name}</span>

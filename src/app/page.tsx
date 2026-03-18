@@ -517,7 +517,7 @@ body::after {
 }
 .cl-faq-item { background: var(--card); padding: 16px 22px; cursor: pointer; transition: background .2s; }
 .cl-faq-item:hover { background: var(--card-el); }
-.cl-faq-q { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.cl-faq-q { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 0px; }
 .cl-faq-q i { font-size: 16px; color: var(--primary); flex-shrink: 0; }
 .cl-faq-a { font-size: 12px; color: var(--muted-fg); line-height: 1.5; overflow: hidden; }
 
@@ -838,9 +838,15 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="cl-mockup-app">
-                  <div className="cl-m-sidebar">
+                    <div className="cl-m-sidebar">
                     <div className="cl-m-brand">
-                      <div className="m-logo"><i className="ri-flashlight-fill" /></div>
+                      <div className="m-logo">
+                        <img
+                          src="/logo.svg"
+                          alt="Clars.ai logo"
+                          style={{ width: 18, height: 18 }}
+                        />
+                      </div>
                       <span className="m-name">clars.ai</span>
                     </div>
                     <div className="m-nav-section">
@@ -1086,15 +1092,17 @@ export default function HomePage() {
               </div>
               <div className="cl-testi-grid">
                 {[
-                  { text:'"I was tracking 60 clients in a Google Sheet. Clars.ai replaced three tools in a week. My pipeline visibility went from zero to $22k — because I finally knew what to focus on."', name:'Kevin R.', role:'WooCommerce Developer', color:'var(--primary)', letter:'K' },
-                  { text:'"The AI inbox is insane. It reads my email threads and writes the reply before I even think about it. 40% less time on email and closing more than ever."', name:'Leila M.', role:'Brand Designer, Casablanca', color:'hsl(180,60%,40%)', letter:'L' },
-                  { text:'"As a solo dev with 10+ clients in KSA, Clars.ai is like having a junior account manager who never sleeps. The Arabic RTL support alone made me switch."', name:'Omar A.', role:'Fullstack Dev, Dubai', color:'hsl(24,80%,50%)', letter:'O' },
+                  { text:'"I was tracking 60 clients in a Google Sheet. Clars.ai replaced three tools in a week. My pipeline visibility went from zero to $22k — because I finally knew what to focus on."', name:'Kevin R.', role:'WooCommerce Developer', color:'var(--primary)' },
+                  { text:'"The AI inbox is insane. It reads my email threads and writes the reply before I even think about it. 40% less time on email and closing more than ever."', name:'Leila M.', role:'Brand Designer, Casablanca', color:'hsl(180,60%,40%)' },
+                  { text:'"As a solo dev with 10+ clients in KSA, Clars.ai is like having a junior account manager who never sleeps. The Arabic RTL support alone made me switch."', name:'Omar A.', role:'Fullstack Dev, Dubai', color:'hsl(24,80%,50%)' },
                 ].map((t, i) => (
                   <div className="cl-testi-card g-fade" key={i}>
                     <div className="cl-testi-stars">{[...Array(5)].map((_,j)=><i className="ri-star-fill" key={j}/>)}</div>
                     <p className="cl-testi-text">{t.text}</p>
                     <div className="cl-testi-author">
-                      <div className="cl-testi-ava" style={{ background:t.color }}>{t.letter}</div>
+                      <div className="cl-testi-ava" style={{ background:t.color }}>
+                        <i className="ri-user-3-fill" />
+                      </div>
                       <div><div className="cl-testi-name">{t.name}</div><div className="cl-testi-role">{t.role}</div></div>
                     </div>
                   </div>

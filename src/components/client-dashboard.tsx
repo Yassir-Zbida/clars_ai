@@ -102,7 +102,7 @@ export function ClientDashboard() {
           {recentClients.map((client) => (
             <div
               key={client.name}
-              className="flex items-center justify-between rounded-md border border-border/50 px-3 py-2 text-sm"
+              className="flex items-center justify-between rounded-lg border border-border/50 px-3 py-2 text-sm"
             >
               <div className="flex flex-col">
                 <span className="font-medium">{client.name}</span>
