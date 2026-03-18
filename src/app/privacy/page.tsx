@@ -187,7 +187,7 @@ body {
 }
 .pp-section { margin-bottom: 52px; }
 .pp-section-num {
-  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  font-size: 22px; font-weight: 800; letter-spacing: -.4px;
   color: var(--primary); margin-bottom: 10px;
 }
 .pp-section h2 {
@@ -436,7 +436,8 @@ export default function PrivacyPage() {
                 { label: 'Features',       href: '/#features' },
                 { label: 'Pricing',        href: '/#pricing' },
                 { label: 'Testimonials',   href: '/#testimonials' },
-                { label: 'Privacy Policy', href: '/privacy' },
+                { label: 'Privacy Policy',   href: '/privacy' },
+                { label: 'Terms of Service', href: '/terms' },
               ].map((l, i) => <a href={l.href} key={i}>{l.label}</a>)}
             </nav>
 
