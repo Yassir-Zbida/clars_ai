@@ -1,124 +1,118 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 
-import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarInput,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import {
-  LayoutDashboardIcon,
-  Users2Icon,
-  FolderKanbanIcon,
-  ReceiptTextIcon,
-  CreditCardIcon,
-  SparklesIcon,
-  BarChart3Icon,
-  FileChartColumnIcon,
-  LayoutTemplateIcon,
-  Settings2Icon,
-  CircleHelpIcon,
-} from "lucide-react"
+import { BellIcon } from "lucide-react"
 
 const data = {
   user: {
     name: "Clars.ai",
     email: "you@clars.ai",
-    avatar: "/logo.svg",
+    avatar: "",
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: <LayoutDashboardIcon />,
-    },
-    {
-      title: "Clients",
-      url: "/dashboard/clients",
-      icon: <Users2Icon />,
-    },
-    {
-      title: "Projects",
-      url: "/dashboard/projects",
-      icon: <FolderKanbanIcon />,
-    },
-    {
-      title: "Invoices",
-      url: "/dashboard/invoices",
-      icon: <ReceiptTextIcon />,
-    },
-    {
-      title: "Payments",
-      url: "/dashboard/payments",
-      icon: <CreditCardIcon />,
-    },
-  ],
-  navTools: [
-    {
-      name: "AI Assistant",
-      url: "/dashboard/ai",
-      icon: <SparklesIcon />,
-    },
-    {
-      name: "Analytics",
-      url: "/dashboard/analytics",
-      icon: <BarChart3Icon />,
-    },
-    {
-      name: "Reports",
-      url: "/dashboard/reports",
-      icon: <FileChartColumnIcon />,
-    },
-    {
-      name: "Templates",
-      url: "/dashboard/templates",
-      icon: <LayoutTemplateIcon />,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: <Settings2Icon />,
-    },
-    {
-      title: "Get Help",
-      url: "/dashboard/help",
-      icon: <CircleHelpIcon />,
-    },
-  ],
+}
+
+function SidebarSearchRow() {
+  const router = useRouter()
+
+  React.useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault()
+        document.getElementById("sidebar-search-input")?.focus()
+      }
+    }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [])
+
+  return (
+    <div className="flex items-center gap-2">
+      <SidebarInput
+        id="sidebar-search-input"
+        type="search"
+        placeholder="Search…"
+        className="h-8 min-w-0 flex-1 rounded-md text-xs bg-sidebar"
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none">
+          <i className="ri-add-line text-sm" />
+          New
+          <i className="ri-arrow-down-s-line text-sm" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="bottom" align="end" className="w-44">
+          <DropdownMenuItem onClick={() => router.push("/dashboard/clients/new")}>
+            <i className="ri-user-add-line mr-2" />
+            New Client
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/dashboard/projects/new")}>
+            <i className="ri-folder-add-line mr-2" />
+            New Project
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/dashboard/invoices/new")}>
+            <i className="ri-file-add-line mr-2" />
+            New Invoice
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/dashboard/invoices/new?type=quote")}>
+            <i className="ri-receipt-line mr-2" />
+            New Quote
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="flex flex-row items-center justify-between gap-2 p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               className="data-[slot=sidebar-menu-button]:!p-1.5"
               render={<a href="/dashboard" />}
+              tooltip="Workspace home"
             >
-              <SparklesIcon className="!size-5 text-primary" />
-              <span className="text-base font-semibold">Clars.ai</span>
+              <img src="/logo.svg" alt="Clars.ai" className="h-7 w-auto" />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <button
+          type="button"
+          className="flex size-8 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          aria-label="Notifications"
+        >
+          <BellIcon className="size-4" />
+        </button>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.navTools} label="Tools" />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+
+      <SidebarContent className="overflow-y-auto">
+        <div className="p-2">
+          <SidebarSearchRow />
+        </div>
+        <NavMain />
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
