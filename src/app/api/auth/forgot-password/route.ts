@@ -4,6 +4,7 @@ import { Resend } from "resend"
 import { getDb } from "@/server/db"
 import { User } from "@/server/models/user"
 import bcrypt from "bcryptjs"
+import { resetPasswordEmail } from "@/lib/email-templates"
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -72,11 +73,7 @@ export async function POST(request: Request) {
         from,
         to: [recipientEmail],
         subject: "Reset your password – clars.ai",
-        html: `
-          <p>You requested a password reset for clars.ai.</p>
-          <p><a href="${resetUrl}">Reset your password</a></p>
-          <p>This link expires in 1 hour. If you didn't request this, you can ignore this email.</p>
-        `,
+        html: resetPasswordEmail({ resetUrl, appUrl: APP_URL }),
       })
 
       if (error) {
