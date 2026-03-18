@@ -38,7 +38,7 @@
     --light-bg: 0 0% 96.1%; /* #F5F5F5 */
     --border-light: 0 0% 87.8%; /* #E0E0E0 */
     /* Sidebar */
-    --sidebar: 0 0% 6.7%; /* #111111 surface */
+    --sidebar: 0 0% 0%; /* match page bg */
     --sidebar-foreground: 0 0% 96%;
     --sidebar-primary: 84 76% 55%; /* #A3E635 accent */
     --sidebar-primary-foreground: 0 0% 0%;
