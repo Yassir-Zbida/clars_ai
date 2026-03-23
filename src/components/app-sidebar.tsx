@@ -60,21 +60,21 @@ function SidebarSearchRow() {
           <i className="ri-arrow-down-s-line text-sm" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="end" className="w-44">
-          <DropdownMenuItem onClick={() => router.push("/dashboard/clients/new")}>
+          <DropdownMenuItem onClick={() => router.push("/dashboard/clients")}>
             <i className="ri-user-add-line mr-2" />
-            New Client
+            Contact
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/projects/new")}>
+          <DropdownMenuItem onClick={() => router.push("/dashboard/projects")}>
             <i className="ri-folder-add-line mr-2" />
-            New Project
+            Project
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/invoices/new")}>
+          <DropdownMenuItem onClick={() => router.push("/dashboard/invoices")}>
             <i className="ri-file-add-line mr-2" />
-            New Invoice
+            New invoice
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/invoices/new?type=quote")}>
+          <DropdownMenuItem onClick={() => router.push("/dashboard/invoices?type=quote")}>
             <i className="ri-receipt-line mr-2" />
-            New Quote
+            New quote
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

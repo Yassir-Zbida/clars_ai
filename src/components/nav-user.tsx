@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 
 import { signOut } from "next-auth/react"
 import { toast } from "sonner"
@@ -36,6 +37,7 @@ export function NavUser({
     avatar: string
   }
 }) {
+  const router = useRouter()
   const { isMobile } = useSidebar()
   const initials = React.useMemo(() => {
     if (!user?.name) return "CL"
@@ -93,20 +95,17 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CircleUserRoundIcon
-                />
-                Account
+              <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}>
+                <CircleUserRoundIcon />
+                Settings
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon
-                />
+              <DropdownMenuItem onClick={() => router.push("/dashboard/billing")}>
+                <CreditCardIcon />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon
-                />
-                Notifications
+              <DropdownMenuItem onClick={() => router.push("/dashboard/help")}>
+                <BellIcon />
+                Help
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
