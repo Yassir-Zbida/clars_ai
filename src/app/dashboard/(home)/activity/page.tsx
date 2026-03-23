@@ -52,14 +52,11 @@ export default function ActivityPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pb-8 pt-0 lg:px-6 lg:pt-0">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight">Activity feed</h1>
-          <p className="text-xs text-muted-foreground">
-            A unified timeline of contacts, projects, billing, and logged touchpoints.
-          </p>
-        </div>
-        <Link href="/dashboard/insights" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 w-fit text-xs")}>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs text-muted-foreground">
+          Newest events first · unified timeline across contacts, projects, billing, and touchpoints.
+        </p>
+        <Link href="/dashboard/insights" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 w-fit shrink-0 text-xs")}>
           Smart insights
         </Link>
       </div>
@@ -67,7 +64,7 @@ export default function ActivityPage() {
       <Card className="border-input">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Recent events</CardTitle>
-          <CardDescription className="text-xs">Newest first · last 60 items</CardDescription>
+          <CardDescription className="text-xs">Showing up to 60 items</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (

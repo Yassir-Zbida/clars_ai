@@ -41,6 +41,8 @@ import { useClientsUiStore } from "@/stores/clients-ui-store"
 function getPageTitle(pathname: string | null): string {
   if (!pathname) return "Overview"
   if (pathname === "/dashboard") return "Overview"
+  if (pathname.startsWith("/dashboard/insights")) return "Smart Insights"
+  if (pathname.startsWith("/dashboard/activity")) return "Activity feed"
   if (pathname.startsWith("/dashboard/clients/pipeline")) return "Clients · Pipeline"
   if (pathname.startsWith("/dashboard/clients/segments")) return "Clients · Segments"
   if (pathname.startsWith("/dashboard/clients/import")) return "Clients · Import / Export"

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
-import { AlertTriangleIcon, ArrowRightIcon, LightbulbIcon, Loader2, SparklesIcon, TrendingUpIcon } from "lucide-react"
+import { AlertTriangleIcon, ArrowRightIcon, LightbulbIcon, Loader2, TrendingUpIcon } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { buttonVariants } from "@/components/ui/button"
@@ -42,20 +42,11 @@ export default function InsightsPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pb-8 pt-0 lg:px-6 lg:pt-0">
-      <div className="space-y-1">
-        <h1 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
-          <SparklesIcon className="size-6 text-violet-400" />
-          Smart Insights
-        </h1>
-        <p className="text-xs text-muted-foreground">
-          Rule-based signals from your CRM and finance data—priorities, risks, and next steps.
+      {dataUpdatedAt ? (
+        <p className="text-[10px] text-muted-foreground/80">
+          Updated {new Date(dataUpdatedAt).toLocaleString()}
         </p>
-        {dataUpdatedAt ? (
-          <p className="text-[10px] text-muted-foreground/80">
-            Updated {new Date(dataUpdatedAt).toLocaleString()}
-          </p>
-        ) : null}
-      </div>
+      ) : null}
 
       {isLoading ? (
         <div className="flex min-h-[200px] items-center justify-center text-sm text-muted-foreground">
