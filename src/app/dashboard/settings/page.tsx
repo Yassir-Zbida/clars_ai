@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from "react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
-import { KeyRoundIcon, Loader2, ShieldIcon, UserIcon } from "lucide-react"
+import { KeyRoundIcon, Loader2, MailIcon, ShieldCheckIcon, ShieldIcon, UserIcon } from "lucide-react"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -83,14 +83,14 @@ export default function SettingsPage() {
   const email = session?.user?.email ?? ""
 
   return (
-    <div className="flex flex-1 flex-col gap-4 px-4 pb-8 pt-0 lg:px-6 lg:pt-0">
-      <div>
+    <div className="flex flex-1 flex-col gap-6 px-4 pb-8 pt-0 lg:px-6 lg:pt-0">
+      <div className="space-y-1">
         <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
-        <p className="text-xs text-muted-foreground">Account and security essentials—no unused submenu pages.</p>
+        <p className="text-sm text-muted-foreground">Manage your profile and account security.</p>
       </div>
 
-      <Tabs defaultValue="profile" className="gap-4">
-        <TabsList variant="line" className="w-full max-w-md justify-start">
+      <Tabs defaultValue="profile" className="gap-5">
+        <TabsList variant="line" className="w-full max-w-lg justify-start border-b">
           <TabsTrigger value="profile" className="gap-1.5">
             <UserIcon className="size-3.5" />
             Profile
@@ -102,60 +102,101 @@ export default function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profile">
-          <Card className="max-w-lg border-input">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Profile</CardTitle>
-              <CardDescription className="text-xs">Display name and sign-in email.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={onSaveProfile} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" value={email} disabled className="bg-muted/50" />
-                  <p className="text-[11px] text-muted-foreground">Email change is not enabled in this build.</p>
+          <div className="grid gap-4 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,36rem)]">
+            <Card className="border-input bg-muted/15">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Profile checklist</CardTitle>
+                <CardDescription className="text-xs">Keep your account details up to date.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2 pb-4 text-sm">
+                <div className="flex items-center gap-2 rounded-md border border-input/70 bg-card px-3 py-2">
+                  <ShieldCheckIcon className="size-4 text-emerald-500" />
+                  <span>Name is visible across your workspace</span>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="name">Display name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
+                <div className="flex items-center gap-2 rounded-md border border-input/70 bg-card px-3 py-2">
+                  <MailIcon className="size-4 text-blue-500" />
+                  <span>Email is currently read-only</span>
                 </div>
-                <Button type="submit" disabled={saving}>
-                  {saving ? <Loader2 className="size-4 animate-spin" /> : "Save"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            <Card className="border-input shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Profile details</CardTitle>
+                <CardDescription className="text-xs">Display name and sign-in email.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={onSaveProfile} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" value={email} disabled className="bg-muted/50" />
+                    <p className="text-[11px] text-muted-foreground">Email change is not enabled in this build.</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Display name</Label>
+                    <Input id="name" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button type="submit" disabled={saving} className="min-w-24">
+                      {saving ? <Loader2 className="size-4 animate-spin" /> : "Save changes"}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">Updates apply immediately.</p>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="security">
-          <Card className="max-w-lg border-input">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Security</CardTitle>
-              <CardDescription className="text-xs">Password and session basics.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-lg border border-input bg-muted/20 p-4">
-                <div className="flex items-start gap-3">
-                  <KeyRoundIcon className="mt-0.5 size-5 text-muted-foreground" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Password</p>
-                    <p className="text-xs text-muted-foreground">
-                      Use the reset flow if you signed up with email & password.
-                    </p>
-                    <Link
-                      href="/forgot-password"
-                      className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-2 inline-flex h-8 text-xs")}
-                    >
-                      Forgot password
-                    </Link>
-                  </div>
+          <div className="grid gap-4 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,36rem)]">
+            <Card className="border-input bg-muted/15">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Security status</CardTitle>
+                <CardDescription className="text-xs">Current protection level for this workspace.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2 pb-4 text-sm">
+                <div className="flex items-center gap-2 rounded-md border border-input/70 bg-card px-3 py-2">
+                  <ShieldCheckIcon className="size-4 text-emerald-500" />
+                  <span>Password reset flow is enabled</span>
+                </div>
+                <div className="flex items-center gap-2 rounded-md border border-input/70 bg-card px-3 py-2">
+                  <ShieldIcon className="size-4 text-amber-500" />
+                  <span>2FA not enabled yet</span>
                 </div>
               </div>
-              <p className="text-[11px] text-muted-foreground">
-                Two-factor auth and device sessions are not configured yet—this keeps the product lean until you need
-                them.
-              </p>
-            </CardContent>
-          </Card>
+            </Card>
+
+            <Card className="border-input shadow-sm">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Password and access</CardTitle>
+                <CardDescription className="text-xs">Password and session basics.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="rounded-lg border border-input bg-muted/20 p-4">
+                  <div className="flex items-start gap-3">
+                    <KeyRoundIcon className="mt-0.5 size-5 text-muted-foreground" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">Password</p>
+                      <p className="text-xs text-muted-foreground">
+                        Use the reset flow if you signed up with email & password.
+                      </p>
+                      <Link
+                        href="/forgot-password"
+                        className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-2 inline-flex h-8 text-xs")}
+                      >
+                        Forgot password
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Two-factor auth and device sessions are not configured yet—this keeps the product lean until you need
+                  them.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
