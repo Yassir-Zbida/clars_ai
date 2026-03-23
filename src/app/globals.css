@@ -3,84 +3,102 @@
 @tailwind utilities;
 
 @layer base {
-  /*
-   * Palette:
-   * Background #000000 | Surface #111111 | Card #222222 | Light bg #F5F5F5
-   * White #FFFFFF | Accent #A3E635 | Body text #F0F0F0 | Muted #888888
-   * Border #2A2A2A | Border light #E0E0E0
-   */
   :root {
     --spacing: 0.25rem; /* mirrors Tailwind v4's --spacing so calc(var(--spacing)*N) works */
-    /* Dark theme (default) */
-    --background: 0 0% 0%; /* #000000 page bg */
-    --foreground: 0 0% 96%; /* body text, slightly brighter for readability */
-    --card: 0 0% 7%; /* #121212 surface: cards, sidebars, modals */
-    --card-foreground: 0 0% 96%;
-    --primary: 84 76% 55%; /* #A3E635 accent — use sparingly */
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 13.3%; /* #222222 elevated cards, dropdowns */
-    --secondary-foreground: 0 0% 96%;
-    --muted: 0 0% 13.3%; /* #222222 */
-    --muted-foreground: 0 0% 62%; /* slightly lighter than #888 for readability */
-    --accent: 84 76% 55%; /* #A3E635 */
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
+    --background: 230 33% 97%; /* #f5f6fa */
+    --foreground: 240 23% 8%; /* #0f0f18 */
+    --card: 0 0% 100%;
+    --card-foreground: 240 23% 8%;
+    --primary: 216 55% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 230 20% 96%;
+    --secondary-foreground: 240 23% 8%;
+    --muted: 230 20% 96%;
+    --muted-foreground: 240 14% 34%; /* #4a4a62 */
+    --accent: 216 55% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%; /* slightly lighter than #2A2A2A so edges read clearly */
-    --input: 0 0% 20%;
-    --ring: 84 76% 55%;
+    --border: 230 18% 86%;
+    --input: 230 18% 82%;
+    --ring: 216 55% 54%;
+    /* UI radius — buttons, inputs, cards (restraint-first, subtle rounding) */
     --radius: 0.5rem;
-    --popover: 0 0% 13.3%; /* #222222 dropdowns */
-    --popover-foreground: 0 0% 96%;
-    /* Extra palette tokens for components */
-    --surface: 0 0% 6.7%; /* #111111 */
-    --card-elevated: 0 0% 13.3%; /* #222222 */
-    --light-bg: 0 0% 96.1%; /* #F5F5F5 */
-    --border-light: 0 0% 87.8%; /* #E0E0E0 */
+    --radius-md: calc(var(--radius) - 2px);
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 23% 8%;
+    --surface: 0 0% 100%;
+    --surface-hover: 240 20% 95%;
+    --card-elevated: 0 0% 100%;
+    --light-bg: 230 33% 97%;
+    --border-light: 230 18% 90%;
+    --text-primary: #0f0f18;
+    --text-secondary: #4a4a62;
+    --text-tertiary: #9898aa;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --ai: #8b5cf6;
+    --accent-light: #6b9fd4;
+    --accent-dim: rgba(73, 125, 203, 0.1);
+    --brand: #a3e635;
     /* Sidebar */
-    --sidebar: 0 0% 0%; /* match page bg */
-    --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 84 76% 55%; /* #A3E635 accent */
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 13.3%; /* #222222 hover */
-    --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 84 76% 55%;
+    --sidebar: 230 33% 97%;
+    --sidebar-foreground: 240 14% 34%;
+    --sidebar-primary: 216 55% 54%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 20% 95%;
+    --sidebar-accent-foreground: 240 23% 8%;
+    --sidebar-border: 230 18% 86%;
+    --sidebar-ring: 216 55% 54%;
   }
 
-  .light {
-    --background: 0 0% 100%; /* #FFFFFF light mode bg */
-    --foreground: 0 0% 9%;
-    --card: 0 0% 96.1%; /* #F5F5F5 light sections */
-    --card-foreground: 0 0% 9%;
-    --primary: 84 76% 55%; /* #A3E635 accent */
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 84 76% 55%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
+  .dark {
+    --spacing: 0.25rem; /* mirrors Tailwind v4's --spacing so calc(var(--spacing)*N) works */
+    --background: 240 11% 5%; /* #0c0c0f */
+    --foreground: 240 16% 94%; /* #eeeef3 */
+    --card: 240 13% 8%; /* #111116 */
+    --card-foreground: 240 16% 94%;
+    --primary: 216 55% 54%; /* #497dcb */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 11% 12%;
+    --secondary-foreground: 240 16% 94%;
+    --muted: 240 11% 12%;
+    --muted-foreground: 240 10% 63%; /* #9898aa */
+    --accent: 216 55% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 87.8%; /* #E0E0E0 light surfaces */
-    --input: 0 0% 87.8%;
-    --ring: 84 76% 55%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
-    --surface: 0 0% 96.1%;
-    --card-elevated: 0 0% 100%;
-    --light-bg: 0 0% 96.1%;
-    --border-light: 0 0% 87.8%;
-    /* Sidebar */
-    --sidebar: 0 0% 96.1%;
-    --sidebar-foreground: 0 0% 9%;
-    --sidebar-primary: 84 76% 55%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 90%;
-    --sidebar-accent-foreground: 0 0% 9%;
-    --sidebar-border: 0 0% 87.8%;
-    --sidebar-ring: 84 76% 55%;
+    --border: 240 8% 24%;
+    --input: 240 8% 28%;
+    --ring: 216 55% 54%;
+    --radius: 0.5rem;
+    --radius-md: calc(var(--radius) - 2px);
+    --popover: 240 13% 8%;
+    --popover-foreground: 240 16% 94%;
+    --surface: 240 13% 8%;
+    --surface-hover: 240 11% 12%;
+    --card-elevated: 240 11% 12%;
+    --light-bg: 230 33% 97%;
+    --border-light: 240 8% 30%;
+    --text-primary: #eeeef3;
+    --text-secondary: #9898aa;
+    --text-tertiary: #55556a;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --ai: #8b5cf6;
+    --accent-light: #6b9fd4;
+    --accent-dim: rgba(73, 125, 203, 0.1);
+    --brand: #a3e635;
+    --sidebar: 240 11% 5%;
+    --sidebar-foreground: 240 10% 63%;
+    --sidebar-primary: 216 55% 54%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 11% 12%;
+    --sidebar-accent-foreground: 240 16% 94%;
+    --sidebar-border: 240 8% 24%;
+    --sidebar-ring: 216 55% 54%;
   }
 
   * {
