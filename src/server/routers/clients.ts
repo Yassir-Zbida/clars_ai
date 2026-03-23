@@ -13,11 +13,11 @@ export const clientsRouter = createTRPCRouter({
       userId: new mongoose.Types.ObjectId(ctx.userId),
       deletedAt: { $in: [null, undefined] },
     })
-      .sort({ name: 1 })
-      .lean() as unknown as { _id: mongoose.Types.ObjectId; name: string; email?: string; company?: string; healthScore?: number; createdAt?: Date }[];
+    .sort({ fullName: 1 })
+      .lean() as unknown as { _id: mongoose.Types.ObjectId; fullName?: string; name?: string; email?: string; company?: string; healthScore?: number; createdAt?: Date }[];
     return list.map((doc) => ({
       id: doc._id.toString(),
-      name: doc.name,
+      name: doc.fullName ?? doc.name ?? 'Unknown',
       email: doc.email,
       company: doc.company,
       healthScore: doc.healthScore,
@@ -33,10 +33,11 @@ export const clientsRouter = createTRPCRouter({
         _id: new mongoose.Types.ObjectId(input.id),
         userId: ctx.userId,
         deletedAt: { $in: [null, undefined] },
-      }).lean() as { _id: mongoose.Types.ObjectId; userId: mongoose.Types.ObjectId; name: string; email?: string; phone?: string; company?: string; address?: string; notes?: string; healthScore?: number; createdAt?: Date; updatedAt?: Date } | null;
+      }).lean() as { _id: mongoose.Types.ObjectId; userId: mongoose.Types.ObjectId; fullName?: string; name?: string; email?: string; phone?: string; company?: string; address?: string; notes?: string; healthScore?: number; createdAt?: Date; updatedAt?: Date } | null;
       if (!client) return null;
       return {
         ...client,
+        name: client.fullName ?? client.name ?? 'Unknown',
         id: client._id.toString(),
         userId: client.userId.toString(),
       };
@@ -57,7 +58,7 @@ export const clientsRouter = createTRPCRouter({
       await getDb();
       const doc = await Client.create({
         userId: new mongoose.Types.ObjectId(ctx.userId),
-        name: input.name,
+        fullName: input.name,
         email: input.email,
         phone: input.phone,
         company: input.company,
@@ -83,7 +84,7 @@ export const clientsRouter = createTRPCRouter({
       await getDb();
       const { id, ...data } = input;
       const cleanData: Record<string, unknown> = {};
-      if (data.name !== undefined) cleanData.name = data.name;
+      if (data.name !== undefined) cleanData.fullName = data.name;
       if (data.email !== undefined) cleanData.email = data.email;
       if (data.phone !== undefined) cleanData.phone = data.phone;
       if (data.company !== undefined) cleanData.company = data.company;
