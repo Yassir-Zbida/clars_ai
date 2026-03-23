@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema(
     passwordResetToken: { type: String },
     passwordResetTokenExpiry: { type: Date },
     deletedAt: { type: Date },
+    /** Set when the user submits or skips the post-signup survey */
+    onboardingSurveyCompletedAt: { type: Date },
+    /** Raw survey payload (answers or `{ skipped: true }`) */
+    onboardingSurvey: { type: mongoose.Schema.Types.Mixed },
   },
   {
     timestamps: true,

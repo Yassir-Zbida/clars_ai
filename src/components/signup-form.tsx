@@ -82,7 +82,7 @@ export function SignupForm({
       }
       if (signInRes?.ok) {
         sessionStorage.setItem("pendingAuthToast", "signup")
-        window.location.href = "/dashboard"
+        window.location.href = "/dashboard/survey"
       }
     } finally {
       setLoading(false)

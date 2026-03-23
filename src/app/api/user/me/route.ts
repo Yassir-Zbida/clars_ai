@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { needsOnboardingSurveyForUser } from "@/lib/onboarding-survey"
 import { getDb } from "@/server/db"
 import { User } from "@/server/models/user"
 import { auth } from "@/auth"
@@ -25,17 +26,25 @@ export async function GET() {
       _id: new mongoose.Types.ObjectId(userId),
       deletedAt: { $in: [null, undefined] },
     })
-      .select("name email image")
+      .select("name email image createdAt onboardingSurveyCompletedAt")
       .lean()
     if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-    const u = doc as { name?: string; email?: string; image?: string }
+    const u = doc as {
+      name?: string
+      email?: string
+      image?: string
+      createdAt?: Date
+      onboardingSurveyCompletedAt?: Date
+    }
+    const needsOnboardingSurvey = needsOnboardingSurveyForUser(u.createdAt, u.onboardingSurveyCompletedAt)
     return NextResponse.json({
       data: {
         id: userId,
         name: u.name ?? session.user?.name ?? "",
         email: u.email ?? session.user?.email ?? "",
         image: u.image ?? session.user?.image ?? null,
+        needsOnboardingSurvey,
       },
     })
   } catch (error) {
