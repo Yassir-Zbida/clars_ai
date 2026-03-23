@@ -5,6 +5,8 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
+    // Next 14: keep Mongoose on the server (avoids duplicate instances / broken models in API routes).
+    serverComponentsExternalPackages: ['mongoose'],
   },
 };
 
