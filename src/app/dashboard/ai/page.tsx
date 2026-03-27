@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { getDicebearUrl } from "@/lib/dicebear"
 import {
   ArrowUpIcon,
   CheckIcon,
@@ -155,10 +156,15 @@ function TypingDots() {
   )
 }
 
-function UserAvatar({ initials }: { initials: string }) {
+function UserAvatar({ initials, seed }: { initials: string; seed: string }) {
   return (
-    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-      {initials}
+    <div className="flex size-7 shrink-0 items-center justify-center rounded-full overflow-hidden">
+      <img
+        src={getDicebearUrl(seed || initials)}
+        alt={initials}
+        className="size-full object-cover"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
+      />
     </div>
   )
 }
@@ -390,7 +396,7 @@ export default function AiChatPage() {
         return
       }
       if (action.type === "create_client") {
-        const res = await fetch("/api/clients", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fullName: action.data.fullName, company: action.data.company || undefined, type: action.data.company ? "COMPANY" : "INDIVIDUAL", status: "LEAD", currency: "EUR" }) })
+        const res = await fetch("/api/clients", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fullName: action.data.fullName, company: action.data.company || undefined, type: action.data.company ? "COMPANY" : "INDIVIDUAL", status: "LEAD", currency: "USD" }) })
         if (!res.ok) throw new Error()
         const { data } = (await res.json()) as { data?: { id?: string } }
         setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
@@ -508,7 +514,7 @@ export default function AiChatPage() {
                       )}
                       <p className="mt-1 text-right text-[10px] text-muted-foreground/60">{relativeTime(msg.ts)}</p>
                     </div>
-                    <UserAvatar initials={initials} />
+                    <UserAvatar initials={initials} seed={session?.user?.name || session?.user?.email || initials} />
                   </div>
                 ) : (
                   /* Assistant */

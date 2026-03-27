@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useClientsFiltersStore } from "@/stores/clients-filters-store"
 import { cn } from "@/lib/utils"
+import { getDicebearUrl } from "@/lib/dicebear"
 
 type ContactListItem = {
   id: string
@@ -408,8 +409,12 @@ export default function ClientsPage() {
                   <tr key={c.id} className="group transition hover:bg-muted/40">
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                          {(c.fullName || c.name || "?").slice(0, 1).toUpperCase()}
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-full overflow-hidden">
+                          <img
+                            src={getDicebearUrl(c.fullName || c.name || c.email || c.id)}
+                            alt={c.fullName || c.name || ""}
+                            className="size-full object-cover"
+                          />
                         </span>
                         <div>
                           <p className="font-medium text-foreground leading-none">

@@ -11,6 +11,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+import { getDicebearUrl } from "@/lib/dicebear"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +47,8 @@ export function NavUser({
     const chars = parts.map((p) => p[0]?.toUpperCase() ?? "").join("")
     return chars.slice(0, 2) || "CL"
   }, [user?.name])
+
+  const avatarSrc = user.avatar || getDicebearUrl(user.name || user.email || "user")
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -56,7 +59,7 @@ export function NavUser({
             }
           >
             <Avatar className="size-7 rounded-full">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={avatarSrc} alt={user.name} />
               <AvatarFallback className="rounded-full bg-primary text-primary-foreground font-semibold">
                 {initials}
               </AvatarFallback>
@@ -79,7 +82,7 @@ export function NavUser({
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="size-7 rounded-full">
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage src={avatarSrc} alt={user.name} />
                     <AvatarFallback className="rounded-full bg-primary text-primary-foreground font-semibold">
                       {initials}
                     </AvatarFallback>
