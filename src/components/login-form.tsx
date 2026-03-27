@@ -48,7 +48,7 @@ export function LoginForm({
       }
       if (res?.ok) {
         sessionStorage.setItem("pendingAuthToast", "login")
-        window.location.href = "/dashboard"
+        window.location.href = "/dashboard/ai"
       }
     } finally {
       setLoading(false)
