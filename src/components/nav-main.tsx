@@ -53,7 +53,7 @@ const MAIN_SECTIONS: NavSection[] = [
 const AI_SECTIONS: NavSection[] = [
   {
     id: "ai",
-    label: "AI Assistant",
+    label: "Clars Assistant",
     icon: <Ri name="sparkling-line" />,
     items: [
       { label: "Chat", href: "/dashboard/ai" },
@@ -61,6 +61,9 @@ const AI_SECTIONS: NavSection[] = [
       { label: "Reports Generator", href: "/dashboard/ai/reports" },
     ],
   },
+]
+
+const AUTOMATION_SECTIONS: NavSection[] = [
   {
     id: "automation",
     label: "Automation",
@@ -105,6 +108,11 @@ export function NavMain() {
   return (
     <SidebarGroup className="p-2 pt-0">
       <SidebarGroupContent className="flex flex-col gap-0.5">
+        {/* Clars Assistant — first */}
+        <SectionGroup sections={AI_SECTIONS} defaultOpen={false} />
+
+        <SidebarDivider />
+
         <NavDashboardSection />
 
         <SidebarDivider />
@@ -113,12 +121,7 @@ export function NavMain() {
 
         <SidebarDivider />
 
-        <div className="mb-0.5 px-2">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/55">
-            AI Zone
-          </span>
-        </div>
-        <SectionGroup sections={AI_SECTIONS} defaultOpen={false} />
+        <SectionGroup sections={AUTOMATION_SECTIONS} defaultOpen={false} />
 
         <SidebarDivider />
 
