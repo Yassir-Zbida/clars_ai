@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react"
 import Link from "next/link"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeftIcon, Loader2, Trash2Icon } from "lucide-react"
+import { ArrowLeftIcon, Loader2, PrinterIcon, Trash2Icon } from "lucide-react"
 
 import { DocumentTypeBadge, InvoiceStatusBadge } from "@/components/finance/status-badges"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -171,11 +171,20 @@ export default function InvoiceDetailPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pb-8 pt-0 lg:px-6 lg:pt-0">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <Link href="/dashboard/invoices" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8 gap-1 text-xs")}>
           <ArrowLeftIcon className="size-3.5" />
           Back
         </Link>
+        <a
+          href={`/print/invoice/${id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 gap-1.5 text-xs")}
+        >
+          <PrinterIcon className="size-3.5" />
+          Print / PDF
+        </a>
       </div>
 
       <div className="flex flex-col gap-1">
