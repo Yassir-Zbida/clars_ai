@@ -1,15 +1,16 @@
-/** Format integer cents as major currency (e.g. EUR). */
-export function formatCents(cents: number, currency = "EUR", locale?: string) {
+/** Format integer cents as major currency (e.g. USD → $1,000.00). */
+export function formatCents(cents: number, currency = "USD", locale = "en-US") {
   const safe = Number.isFinite(cents) ? cents : 0
+  const cur  = currency.length === 3 ? currency : "USD"
   try {
     return new Intl.NumberFormat(locale, {
       style: "currency",
-      currency: currency.length === 3 ? currency : "EUR",
+      currency: cur,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(safe / 100)
   } catch {
-    return `${(safe / 100).toFixed(2)} ${currency}`
+    return `${(safe / 100).toFixed(2)} ${cur}`
   }
 }
 

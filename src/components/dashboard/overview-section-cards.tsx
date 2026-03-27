@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { formatCents } from "@/lib/money"
+import { useCurrency } from "@/contexts/currency-context"
 import type { AnalyticsOverviewData } from "@/components/dashboard/types"
 
 function pctChange(current: number, previous: number): number | null {
@@ -47,6 +48,8 @@ function StatCard({ icon, iconBg, iconColor, label, value, badge, footer, href }
 }
 
 export function OverviewSectionCards({ data }: { data: AnalyticsOverviewData }) {
+  const { currency } = useCurrency()
+  const fmt = (cents: number) => formatCents(cents, currency)
   const { finance, productivity, revenueExpenseSeries, projectsByStatus } = data
   const series = revenueExpenseSeries
   const lastMonth = series.length >= 2 ? series[series.length - 1] : null
@@ -69,7 +72,7 @@ export function OverviewSectionCards({ data }: { data: AnalyticsOverviewData }) 
         iconBg="bg-emerald-500/10"
         iconColor="text-emerald-600 dark:text-emerald-400"
         label="Collected revenue (MTD)"
-        value={formatCents(finance.revenueMtdCents)}
+        value={fmt(finance.revenueMtdCents)}
         badge={
           revMom !== null ? (
             <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium tabular-nums ${
@@ -89,7 +92,7 @@ export function OverviewSectionCards({ data }: { data: AnalyticsOverviewData }) 
         footer={
           <>
             Net after expenses:{" "}
-            <span className="font-medium text-foreground">{formatCents(finance.netMtdCents)}</span>
+            <span className="font-medium text-foreground">{fmt(finance.netMtdCents)}</span>
             <span className="ml-1 opacity-60">from recorded payments</span>
           </>
         }
@@ -125,12 +128,12 @@ export function OverviewSectionCards({ data }: { data: AnalyticsOverviewData }) 
         iconBg={finance.overdueCents > 0 ? "bg-amber-500/10" : "bg-violet-500/10"}
         iconColor={finance.overdueCents > 0 ? "text-amber-600 dark:text-amber-400" : "text-violet-600 dark:text-violet-400"}
         label="Outstanding on invoices"
-        value={formatCents(finance.outstandingCents)}
+        value={fmt(finance.outstandingCents)}
         badge={
           finance.overdueCents > 0 ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
               <i className="ri-error-warning-line" />
-              Overdue {formatCents(finance.overdueCents)}
+              Overdue {fmt(finance.overdueCents)}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 rounded-full border border-input px-2 py-0.5 text-[11px] text-muted-foreground">

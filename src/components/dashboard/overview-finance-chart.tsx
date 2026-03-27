@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { formatCents } from "@/lib/money"
+import { useCurrency } from "@/contexts/currency-context"
 import type { AnalyticsOverviewData } from "@/components/dashboard/types"
 
 const chartConfig = {
@@ -57,6 +58,9 @@ export function OverviewFinanceChart({ series }: { series: AnalyticsOverviewData
       expenses: row.expensesCents / 100,
     }))
   }, [series, range])
+
+  const { currency } = useCurrency()
+  const fmt = (cents: number) => formatCents(cents, currency)
 
   const totalRevenueCents = chartData.reduce((s, row) => s + Math.round(row.revenue * 100), 0)
   const totalExpensesCents = chartData.reduce((s, row) => s + Math.round(row.expenses * 100), 0)
@@ -122,14 +126,14 @@ export function OverviewFinanceChart({ series }: { series: AnalyticsOverviewData
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-emerald-600 dark:text-emerald-400">
             <span className="size-1.5 rounded-full bg-emerald-500" />
-            Revenue {formatCents(totalRevenueCents)}
+            Revenue {fmt(totalRevenueCents)}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-red-600 dark:text-red-400">
             <span className="size-1.5 rounded-full bg-red-500" />
-            Expenses {formatCents(totalExpensesCents)}
+            Expenses {fmt(totalExpensesCents)}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-foreground">
-            Net {formatCents(netCents)}
+            Net {fmt(netCents)}
           </span>
         </div>
         {chartData.length === 0 ? (
@@ -166,14 +170,14 @@ export function OverviewFinanceChart({ series }: { series: AnalyticsOverviewData
                   const n = Number(v)
                   if (!Number.isFinite(n)) return ""
                   try {
-                    return new Intl.NumberFormat(undefined, {
+                    return new Intl.NumberFormat("en-US", {
                       style: "currency",
-                      currency: "EUR",
+                      currency: currency.length === 3 ? currency : "USD",
                       notation: "compact",
                       maximumFractionDigits: 1,
                     }).format(n)
                   } catch {
-                    return `€${Math.round(n)}`
+                    return `${Math.round(n)}`
                   }
                 }}
               />
@@ -193,13 +197,13 @@ export function OverviewFinanceChart({ series }: { series: AnalyticsOverviewData
                       <p className="flex justify-between gap-4 text-muted-foreground">
                         <span className="text-emerald-600 dark:text-emerald-400">Revenue</span>
                         <span className="font-mono text-foreground tabular-nums">
-                          {formatCents(Math.round((row.revenue ?? 0) * 100))}
+                          {fmt(Math.round((row.revenue ?? 0) * 100))}
                         </span>
                       </p>
                       <p className="flex justify-between gap-4 text-muted-foreground">
                         <span className="text-red-600 dark:text-red-400">Expenses</span>
                         <span className="font-mono text-foreground tabular-nums">
-                          {formatCents(Math.round((row.expenses ?? 0) * 100))}
+                          {fmt(Math.round((row.expenses ?? 0) * 100))}
                         </span>
                       </p>
                     </div>
