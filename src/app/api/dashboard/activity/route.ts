@@ -42,21 +42,21 @@ export async function GET(request: Request) {
 
     const [interactions, clientsNew, projectsUp, invoicesRecent, expensesRecent, userInvoices] = await Promise.all([
       Interaction.find({ userId: uid }).sort({ date: -1, createdAt: -1 }).limit(30).lean(),
-      Client.find(clientMatch).sort({ createdAt: -1 }).limit(20).select("fullName company").lean(),
+      Client.find(clientMatch).sort({ createdAt: -1 }).limit(20).select("fullName company createdAt").lean(),
       Project.find({ userId: uid, deletedAt: { $in: [null, undefined] } })
         .sort({ updatedAt: -1 })
         .limit(20)
-        .select("name status")
+        .select("name status updatedAt createdAt")
         .lean(),
       Invoice.find({ userId: uid, deletedAt: null })
         .sort({ createdAt: -1 })
         .limit(20)
-        .select("number documentType status amountCents clientId")
+        .select("number documentType status amountCents clientId createdAt")
         .lean(),
       Expense.find({ userId: uid, deletedAt: null })
         .sort({ createdAt: -1 })
         .limit(15)
-        .select("vendor category amountCents")
+        .select("vendor category amountCents createdAt")
         .lean(),
       Invoice.find({ userId: uid, deletedAt: null }).distinct("_id") as Promise<mongoose.Types.ObjectId[]>,
     ])
