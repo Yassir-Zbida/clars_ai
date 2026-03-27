@@ -113,7 +113,7 @@ export async function POST(request: Request) {
       startDate: payload.startDate ? new Date(payload.startDate) : undefined,
       endDate: payload.endDate ? new Date(payload.endDate) : undefined,
       budgetCents: payload.budgetCents,
-      currency: payload.currency?.trim() || "EUR",
+      currency: payload.currency?.trim() || "USD",
       assignedClientIds: idList,
       clientId: idList[0],
     }

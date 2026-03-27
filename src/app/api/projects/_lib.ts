@@ -31,7 +31,7 @@ export const CreateProjectSchema = z.object({
   currency: z
     .string()
     .optional()
-    .transform((v) => (v && v.trim() ? v.trim() : "EUR")),
+    .transform((v) => (v && v.trim() ? v.trim() : "USD")),
   /** Single contact (legacy) */
   clientId: z.string().optional(),
   /** Multiple contacts assigned to this project */

@@ -64,7 +64,7 @@ export async function PUT(request: Request, { params }: Params) {
     if (input.startDate !== undefined) setPayload.startDate = input.startDate ? new Date(input.startDate) : undefined
     if (input.endDate !== undefined) setPayload.endDate = input.endDate ? new Date(input.endDate) : undefined
     if (input.budgetCents !== undefined) setPayload.budgetCents = input.budgetCents
-    if (input.currency !== undefined) setPayload.currency = input.currency?.trim() ? input.currency.trim() : "EUR"
+      if (input.currency !== undefined) setPayload.currency = input.currency?.trim() ? input.currency.trim() : "USD"
 
     if (input.assignedClientIds !== undefined) {
       const assigned = dedupeObjectIds(input.assignedClientIds)

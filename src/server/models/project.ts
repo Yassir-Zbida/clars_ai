@@ -21,7 +21,7 @@ const projectSchema = new mongoose.Schema(
     startDate: { type: Date },
     endDate: { type: Date },
     budgetCents: { type: Number },
-    currency: { type: String, default: 'EUR' },
+    currency: { type: String, default: 'USD' },
     deletedAt: { type: Date },
   },
   {
