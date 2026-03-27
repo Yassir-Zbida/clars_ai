@@ -9,6 +9,7 @@ function getMongoUri(): string {
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
+  indexesSynced: boolean;
 }
 
 const globalForMongoose = globalThis as unknown as MongooseCache;
@@ -21,6 +22,19 @@ async function connect(): Promise<typeof mongoose> {
     globalForMongoose.promise = mongoose.connect(getMongoUri());
   }
   globalForMongoose.conn = await globalForMongoose.promise;
+
+  // Drop stale indexes and recreate from schema definitions (runs once per process).
+  // This fixes e.g. an old plain unique index on `number` being replaced by the
+  // correct compound `{ userId, number }` unique index on Invoice.
+  if (!globalForMongoose.indexesSynced) {
+    globalForMongoose.indexesSynced = true;
+    // Import models lazily to avoid circular deps at module load time
+    const { Invoice } = await import('./models/invoice');
+    await Invoice.syncIndexes().catch((e: unknown) =>
+      console.warn('[db] Invoice.syncIndexes failed (non-fatal):', e)
+    );
+  }
+
   return globalForMongoose.conn;
 }
 

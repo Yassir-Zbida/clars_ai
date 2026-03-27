@@ -112,8 +112,12 @@ export function sumLineItemsCents(items: z.infer<typeof lineItemSchema>[]): numb
 }
 
 export async function nextDocumentNumber(userId: string, documentType: (typeof documentTypeValues)[number]) {
-  const oid = new mongoose.Types.ObjectId(userId)
-  const prefix = documentType === "QUOTE" ? "QT" : "INV"
-  const count = await Invoice.countDocuments({ userId: oid, documentType, deletedAt: null })
-  return `${prefix}-${String(count + 1).padStart(5, "0")}`
+  const oid  = new mongoose.Types.ObjectId(userId)
+  const year = new Date().getFullYear()
+  const prefix = documentType === "QUOTE" ? "QUO" : "INV"
+
+  // Count ALL docs (including soft-deleted) so the unique { userId, number }
+  // index is never re-used after an archive/delete.
+  const count = await Invoice.countDocuments({ userId: oid, documentType })
+  return `${prefix}-${year}-${String(count + 1).padStart(3, "0")}`
 }
