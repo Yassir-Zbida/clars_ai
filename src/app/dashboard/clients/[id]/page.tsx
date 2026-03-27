@@ -4,12 +4,22 @@ import { FormEvent, useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
 import { ArrowLeftIcon, Loader2, PencilIcon, Trash2Icon } from "lucide-react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+
+const STATUS_OPTIONS = ["LEAD", "QUALIFIED", "PROPOSAL", "ACTIVE", "INACTIVE"] as const
+const STATUS_STYLE: Record<string, string> = {
+  LEAD:      "bg-blue-500/10 text-blue-600",
+  QUALIFIED: "bg-violet-500/10 text-violet-600",
+  PROPOSAL:  "bg-amber-500/10 text-amber-600",
+  ACTIVE:    "bg-emerald-500/10 text-emerald-600",
+  INACTIVE:  "bg-muted text-muted-foreground",
+}
 
 type ContactDetails = {
   id: string
@@ -23,6 +33,8 @@ type ContactDetails = {
   notes?: string
   website?: string
   company?: string
+  status?: string
+  isFavorite?: boolean
 }
 
 export default function ContactViewPage() {
@@ -42,6 +54,7 @@ export default function ContactViewPage() {
     jobTitle: "",
     website: "",
     notes: "",
+    status: "LEAD",
   })
 
   const { data, isLoading, isError } = useQuery({
@@ -71,6 +84,7 @@ export default function ContactViewPage() {
       jobTitle: contact.jobTitle || "",
       website: contact.website || "",
       notes: contact.notes || "",
+      status: contact.status || "LEAD",
     })
   }, [contact])
 
@@ -90,6 +104,7 @@ export default function ContactViewPage() {
           jobTitle: formValues.jobTitle || undefined,
           website: formValues.website || undefined,
           notes: formValues.notes || undefined,
+          status: formValues.status,
         }),
       })
       if (!response.ok) throw new Error("Failed to update contact")
@@ -99,7 +114,9 @@ export default function ContactViewPage() {
       await queryClient.invalidateQueries({ queryKey: ["clients", "detail", id] })
       await queryClient.invalidateQueries({ queryKey: ["clients", "list"] })
       setEditOpen(false)
+      toast.success("Contact updated successfully")
     },
+    onError: () => toast.error("Failed to update contact. Please try again."),
   })
 
   const deleteMutation = useMutation({
@@ -113,8 +130,31 @@ export default function ContactViewPage() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["clients", "list"] })
+      toast.success("Contact deleted")
       router.push("/dashboard/clients")
     },
+    onError: () => toast.error("Failed to delete contact. Please try again."),
+  })
+
+  const favMutation = useMutation({
+    mutationFn: async (isFavorite: boolean) => {
+      const res = await fetch(`/api/clients/${id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isFavorite }),
+      })
+      if (!res.ok) throw new Error()
+      return res.json()
+    },
+    onSuccess: async (_data, isFavorite) => {
+      await queryClient.invalidateQueries({ queryKey: ["clients", "detail", id] })
+      await queryClient.invalidateQueries({ queryKey: ["clients", "list"] })
+      toast.success(isFavorite ? "Added to favorites" : "Removed from favorites", {
+        icon: <i className={`text-base ${isFavorite ? "ri-star-fill text-amber-400" : "ri-star-line"}`} />,
+      })
+    },
+    onError: () => toast.error("Could not update favorite status."),
   })
 
   const handleEditSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -131,6 +171,19 @@ export default function ContactViewPage() {
           Back to contacts
         </Button>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={!contact || favMutation.isPending}
+            onClick={() => contact && favMutation.mutate(!contact.isFavorite)}
+            title={contact?.isFavorite ? "Remove from favorites" : "Add to favorites"}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg border transition ${
+              contact?.isFavorite
+                ? "border-amber-400/40 bg-amber-400/10 text-amber-500 hover:bg-amber-400/20"
+                : "border-input bg-transparent text-muted-foreground hover:bg-muted hover:text-amber-500"
+            } disabled:pointer-events-none disabled:opacity-50`}
+          >
+            <i className={`text-base ${contact?.isFavorite ? "ri-star-fill" : "ri-star-line"}`} />
+          </button>
           <Button type="button" variant="outline" onClick={() => setEditOpen(true)} disabled={!contact}>
             <PencilIcon className="size-4" />
             Edit
@@ -159,6 +212,21 @@ export default function ContactViewPage() {
               <div>
                 <p className="text-xs text-muted-foreground">Name</p>
                 <p className="font-medium">{contact.fullName || contact.name || "-"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Status</p>
+                <div className="mt-0.5 flex items-center gap-2">
+                  {contact.status ? (
+                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLE[contact.status] ?? "bg-muted text-muted-foreground"}`}>
+                      {contact.status}
+                    </span>
+                  ) : <span className="text-sm">-</span>}
+                  {contact.isFavorite && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/10 px-2 py-0.5 text-xs font-medium text-amber-500">
+                      <i className="ri-star-fill text-xs" /> Favorite
+                    </span>
+                  )}
+                </div>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Company</p>
@@ -214,6 +282,24 @@ export default function ContactViewPage() {
                   value={formValues.fullName}
                   onChange={(e) => setFormValues((prev) => ({ ...prev, fullName: e.target.value }))}
                 />
+              </div>
+              <div className="md:col-span-2">
+                <Label>Status</Label>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {STATUS_OPTIONS.map((s) => (
+                    <button
+                      key={s} type="button"
+                      onClick={() => setFormValues((p) => ({ ...p, status: s }))}
+                      className={`rounded-lg border px-3 py-1 text-xs font-medium transition ${
+                        formValues.status === s
+                          ? "border-primary/40 bg-primary/10 text-primary"
+                          : "border-input bg-muted/40 text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div>
                 <Label htmlFor="company">Company</Label>
