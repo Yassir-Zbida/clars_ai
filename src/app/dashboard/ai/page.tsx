@@ -319,7 +319,7 @@ export default function AiChatPage() {
     setInput("")
     setAttachments([])
     if (textareaRef.current) textareaRef.current.style.height = "auto"
-    toast("New conversation started", { icon: "✦" })
+    toast("New conversation started", { icon: <i className="ri-chat-new-line text-base" /> })
   }
 
   function openConv(c: Conversation) {
@@ -332,7 +332,7 @@ export default function AiChatPage() {
   function deleteConv(id: string) {
     setConvs((prev) => { const next = prev.filter((c) => c.id !== id); persist(next); return next })
     if (id === convId) newChat()
-    toast("Conversation deleted", { icon: "🗑️" })
+    toast("Conversation deleted", { icon: <i className="ri-delete-bin-line text-base" /> })
   }
 
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
@@ -523,7 +523,7 @@ export default function AiChatPage() {
                           onConfirm={() => execAction(msg.id, msg.action!)}
                           onCancel={() => {
                             setMessages((p) => p.map((m) => m.id === msg.id ? { ...m, actionStatus: "cancelled" } : m))
-                            toast("Action cancelled", { icon: "↩︎" })
+                            toast("Action cancelled", { icon: <i className="ri-arrow-go-back-line text-base" /> })
                           }}
                         />
                       )}
