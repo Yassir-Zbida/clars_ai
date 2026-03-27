@@ -41,7 +41,7 @@ async function serializeInvoiceDetail(userId: string, inv: Record<string, unknow
           _id: new mongoose.Types.ObjectId(cid),
           userId: new mongoose.Types.ObjectId(userId),
         })
-          .select("fullName email")
+          .select("fullName email phone company")
           .lean()
       : null,
     Payment.aggregate<{ t: number }>([
@@ -55,8 +55,10 @@ async function serializeInvoiceDetail(userId: string, inv: Record<string, unknow
     id: String(inv._id),
     userId: String(inv.userId),
     clientId: cid,
-    clientName: (client as { fullName?: string } | null)?.fullName ?? null,
-    clientEmail: (client as { email?: string } | null)?.email ?? null,
+    clientName:    (client as { fullName?: string } | null)?.fullName ?? null,
+    clientEmail:   (client as { email?: string } | null)?.email ?? null,
+    clientPhone:   (client as { phone?: string } | null)?.phone ?? null,
+    clientCompany: (client as { company?: string } | null)?.company ?? null,
     projectId: inv.projectId != null ? String(inv.projectId) : null,
     number: inv.number,
     documentType: inv.documentType,

@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { formatCents, parseMajorToCents } from "@/lib/money"
+import { getDicebearUrl } from "@/lib/dicebear"
 
 type LineItem = { description: string; quantity: number; unitAmountCents: number }
 
@@ -57,6 +58,7 @@ export default function InvoiceDetailPage() {
 
   const [payOpen, setPayOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
   const [payAmount, setPayAmount] = useState("")
   const [payMethod, setPayMethod] = useState("")
   const [payRef, setPayRef] = useState("")
@@ -82,6 +84,21 @@ export default function InvoiceDetailPage() {
       return json.data
     },
     enabled: Boolean(id) && inv?.documentType === "INVOICE",
+  })
+
+  const { data: contactDetail } = useQuery({
+    queryKey: ["clients", "detail", inv?.clientId],
+    queryFn: async () => {
+      const res = await fetch(`/api/clients/${inv!.clientId}`, { credentials: "include" })
+      if (!res.ok) throw new Error("contact")
+      return (await res.json()) as {
+        data: {
+          id: string; fullName?: string; name?: string; email?: string
+          phone?: string; company?: string; jobTitle?: string; type?: string
+        }
+      }
+    },
+    enabled: contactOpen && Boolean(inv?.clientId),
   })
 
   const invalidateFinance = () => {
@@ -238,12 +255,13 @@ export default function InvoiceDetailPage() {
           <CardContent className="space-y-2 text-sm">
             <p className="font-medium">{inv.clientName || "—"}</p>
             {inv.clientEmail ? <p className="text-xs text-muted-foreground">{inv.clientEmail}</p> : null}
-            <Link
-              href={`/dashboard/clients/${inv.clientId}`}
+            <button
+              type="button"
+              onClick={() => setContactOpen(true)}
               className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-2 w-full text-xs")}
             >
-              View contact
-            </Link>
+              <i className="ri-user-line mr-1.5 text-xs" /> View contact
+            </button>
             {!isQuote && inv.balanceCents > 0 && inv.status !== "CANCELLED" ? (
               <Button type="button" className="mt-2 w-full text-xs" size="sm" onClick={() => setPayOpen(true)}>
                 Record payment
@@ -417,6 +435,78 @@ export default function InvoiceDetailPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* contact popup */}
+      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+        <DialogContent className="w-[min(95vw,26rem)] rounded-2xl p-0" showCloseButton={false}>
+          <div className="p-6 space-y-4">
+            <DialogHeader>
+              <DialogTitle className="text-base">Contact details</DialogTitle>
+            </DialogHeader>
+
+            {/* avatar + name */}
+            <div className="flex items-center gap-4">
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl overflow-hidden">
+                <img
+                  src={getDicebearUrl(contactDetail?.data?.fullName || contactDetail?.data?.name || inv.clientName || "")}
+                  alt={inv.clientName || ""}
+                  className="size-full object-cover"
+                />
+              </span>
+              <div className="min-w-0">
+                <p className="text-lg font-semibold leading-tight">
+                  {contactDetail?.data?.fullName || contactDetail?.data?.name || inv.clientName || "—"}
+                </p>
+                {(contactDetail?.data?.jobTitle) && (
+                  <p className="text-sm text-muted-foreground">{contactDetail.data.jobTitle}</p>
+                )}
+                {(contactDetail?.data?.company) && (
+                  <p className="text-xs text-muted-foreground">{contactDetail.data.company}</p>
+                )}
+              </div>
+            </div>
+
+            {/* detail rows */}
+            <div className="divide-y divide-input rounded-xl border border-input text-sm">
+              {(contactDetail?.data?.email || inv.clientEmail) && (
+                <div className="flex items-center gap-3 px-4 py-2.5">
+                  <i className="ri-mail-line shrink-0 text-muted-foreground" />
+                  <a href={`mailto:${contactDetail?.data?.email || inv.clientEmail}`}
+                    className="truncate text-primary hover:underline underline-offset-4">
+                    {contactDetail?.data?.email || inv.clientEmail}
+                  </a>
+                </div>
+              )}
+              {contactDetail?.data?.phone && (
+                <div className="flex items-center gap-3 px-4 py-2.5">
+                  <i className="ri-phone-line shrink-0 text-muted-foreground" />
+                  <a href={`tel:${contactDetail.data.phone}`} className="text-primary hover:underline underline-offset-4">
+                    {contactDetail.data.phone}
+                  </a>
+                </div>
+              )}
+              {contactDetail?.data?.type && (
+                <div className="flex items-center gap-3 px-4 py-2.5">
+                  <i className="ri-price-tag-3-line shrink-0 text-muted-foreground" />
+                  <span className="text-muted-foreground capitalize">{contactDetail.data.type.toLowerCase()}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <Button type="button" variant="ghost" className="flex-1" onClick={() => setContactOpen(false)}>
+                Close
+              </Button>
+              <Link
+                href={`/dashboard/clients/${inv.clientId}`}
+                className={cn(buttonVariants({ variant: "outline" }), "flex-1 text-xs gap-1.5")}
+              >
+                Full profile <i className="ri-arrow-right-line text-xs opacity-60" />
+              </Link>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
