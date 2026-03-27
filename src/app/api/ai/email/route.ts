@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { requireUserId, zodErrorResponse } from "@/app/api/clients/_lib"
 import { completeChat, isAiProviderConfigured, type ChatMessage } from "@/lib/ai/chat-completion"
+import { buildRagContext } from "@/lib/ai/rag-context"
+import { auditLog, checkRateLimit, detectInjection, sanitizeOutput, SECURITY_GUARDRAILS } from "@/lib/ai/security"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -33,7 +35,24 @@ export async function POST(request: Request) {
     const authRes = await requireUserId()
     if ("error" in authRes) return authRes.error
 
+    const userId = authRes.userId
+
+    // Rate limit: 10 email generations / user / minute
+    const rl = checkRateLimit(userId, 10, 60_000)
+    if (!rl.allowed) {
+      auditLog(userId, "rate_limit_exceeded")
+      return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 })
+    }
+
     const input = BodySchema.parse(await request.json())
+
+    // Scan all text fields for injection
+    const allText = [input.purpose, input.contactName, input.company, input.extraContext].filter(Boolean).join(" ")
+    const injection = detectInjection(allText)
+    if (injection.flagged) {
+      auditLog(userId, "injection_attempt", `${injection.label}: "${injection.snippet}"`)
+      return NextResponse.json({ error: "Your message contains content that cannot be processed." }, { status: 400 })
+    }
 
     if (!isAiProviderConfigured()) {
       return NextResponse.json({
@@ -46,21 +65,21 @@ export async function POST(request: Request) {
     }
 
     const userPrompt = [
-      "Write a business email (subject line on first line as: Subject: ...).",
-      `Purpose / intent: ${input.purpose}`,
+      `Purpose: ${input.purpose}`,
       `Tone: ${input.tone}`,
-      input.contactName ? `Recipient name: ${input.contactName}` : "",
+      input.contactName ? `Recipient: ${input.contactName}` : "",
       input.company ? `Company: ${input.company}` : "",
-      input.extraContext ? `Extra context: ${input.extraContext}` : "",
+      input.extraContext ? `Context: ${input.extraContext}` : "",
     ]
       .filter(Boolean)
       .join("\n")
 
+    const crmContext = await buildRagContext(userId)
+
     const messages: ChatMessage[] = [
       {
         role: "system",
-        content:
-          "You write clear CRM/business emails. Output subject line first line exactly as 'Subject: ...'. Then blank line, then body. No placeholder brackets unless unavoidable.",
+        content: `Business email writer. Format: first line="Subject: ...", blank line, body. No [placeholder] brackets. Use CRM data to personalize names/amounts/projects.\n${crmContext}\n${SECURITY_GUARDRAILS}`,
       },
       { role: "user", content: userPrompt },
     ]
@@ -69,7 +88,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       data: {
-        content: result.content,
+        content: sanitizeOutput(result.content),
         mock: result.mock,
         model: result.model,
         warning: result.warning,

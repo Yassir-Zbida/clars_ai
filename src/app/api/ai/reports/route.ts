@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { requireUserId, zodErrorResponse } from "@/app/api/clients/_lib"
 import { completeChat, isAiProviderConfigured, type ChatMessage } from "@/lib/ai/chat-completion"
+import { buildRagContext } from "@/lib/ai/rag-context"
+import { auditLog, checkRateLimit, detectInjection, sanitizeOutput, SECURITY_GUARDRAILS } from "@/lib/ai/security"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -47,7 +49,26 @@ export async function POST(request: Request) {
     const authRes = await requireUserId()
     if ("error" in authRes) return authRes.error
 
+    const userId = authRes.userId
+
+    // Rate limit: 5 report generations / user / minute
+    const rl = checkRateLimit(userId, 5, 60_000)
+    if (!rl.allowed) {
+      auditLog(userId, "rate_limit_exceeded")
+      return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 })
+    }
+
     const input = BodySchema.parse(await request.json())
+
+    // Scan focus field for injection
+    if (input.focus) {
+      const injection = detectInjection(input.focus)
+      if (injection.flagged) {
+        auditLog(userId, "injection_attempt", `${injection.label}: "${injection.snippet}"`)
+        return NextResponse.json({ error: "Your message contains content that cannot be processed." }, { status: 400 })
+      }
+    }
+
     const origin = new URL(request.url).origin
     const cookie = request.headers.get("cookie") ?? ""
 
@@ -67,14 +88,24 @@ export async function POST(request: Request) {
       })
     }
 
+    const [crmContext] = await Promise.all([buildRagContext(userId)])
+
+    // Compact analytics snapshot — only include non-zero finance fields to save tokens
+    const snap = snapshot as Record<string, unknown>
+    const fin = (snap.finance ?? {}) as Record<string, number>
+    const compactSnap = {
+      fin: Object.fromEntries(Object.entries(fin).filter(([, v]) => v !== 0)),
+      clients: snap.clientsByStatus,
+      projects: snap.projectsByStatus,
+      forecast: snap.forecast,
+    }
+
     const userBlock = [
       `Audience: ${input.audience}`,
-      input.focus ? `Special focus requested: ${input.focus}` : "",
-      "Use the following JSON snapshot from the user's CRM (cents are integer currency minor units):",
-      JSON.stringify(snapshot, null, 2),
-      "",
-      "Write a concise markdown report: title, executive summary (3-5 bullets), risks/opportunities, suggested next actions.",
-      "Do not fabricate numbers not in the JSON.",
+      input.focus ? `Focus: ${input.focus}` : "",
+      crmContext,
+      `Analytics:${JSON.stringify(compactSnap)}`,
+      "Write: title + 3-5 bullet exec summary + risks/opportunities + next actions. Cite real names/numbers. Cents÷100=€.",
     ]
       .filter(Boolean)
       .join("\n")
@@ -82,8 +113,7 @@ export async function POST(request: Request) {
     const messages: ChatMessage[] = [
       {
         role: "system",
-        content:
-          "You are a CRM analytics copilot. Output polished markdown only. Be specific to the numbers provided. Use € for euro amounts (divide cents by 100).",
+        content: `CRM analytics copilot. Output polished markdown. Be specific — reference real client names, invoice numbers, € amounts from the data provided. Never fabricate figures.\n${SECURITY_GUARDRAILS}`,
       },
       { role: "user", content: userBlock },
     ]
@@ -92,7 +122,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       data: {
-        content: result.content,
+        content: sanitizeOutput(result.content),
         mock: result.mock,
         model: result.model,
         warning: result.warning,
