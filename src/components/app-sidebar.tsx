@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -22,14 +23,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { BellIcon } from "lucide-react"
-
-const data = {
-  user: {
-    name: "Clars.ai",
-    email: "you@clars.ai",
-    avatar: "",
-  },
-}
 
 function SidebarSearchRow() {
   const router = useRouter()
@@ -83,6 +76,13 @@ function SidebarSearchRow() {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession()
+  const user = {
+    name: session?.user?.name ?? "User",
+    email: session?.user?.email ?? "",
+    avatar: session?.user?.image ?? "",
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader className="flex flex-row items-center justify-between gap-2 p-2">
@@ -114,7 +114,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )
