@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { MessageBody } from "./message-body"
+import { toast } from "sonner"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -174,7 +175,12 @@ function CopyBtn({ text }: { text: string }) {
   const [done, setDone] = useState(false)
   return (
     <button type="button"
-      onClick={() => { navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1800) }}
+      onClick={() => {
+        navigator.clipboard.writeText(text)
+        setDone(true)
+        setTimeout(() => setDone(false), 1800)
+        toast.success("Copied to clipboard")
+      }}
       className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-muted-foreground opacity-0 transition hover:bg-muted group-hover/msg:opacity-100"
     >
       {done ? <CheckIcon className="size-3 text-emerald-500" /> : <CopyIcon className="size-3" />}
@@ -313,6 +319,7 @@ export default function AiChatPage() {
     setInput("")
     setAttachments([])
     if (textareaRef.current) textareaRef.current.style.height = "auto"
+    toast("New conversation started", { icon: "✦" })
   }
 
   function openConv(c: Conversation) {
@@ -325,6 +332,7 @@ export default function AiChatPage() {
   function deleteConv(id: string) {
     setConvs((prev) => { const next = prev.filter((c) => c.id !== id); persist(next); return next })
     if (id === convId) newChat()
+    toast("Conversation deleted", { icon: "🗑️" })
   }
 
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
@@ -365,6 +373,7 @@ export default function AiChatPage() {
       setMessages((p) => [...p, { id: uid(), role: "assistant", content: txt, ts: new Date().toISOString(), action: action ?? undefined, actionStatus: action ? "idle" : undefined }])
     } catch {
       setMessages((p) => [...p, { id: uid(), role: "assistant", content: "Something went wrong. Please try again.", ts: new Date().toISOString() }])
+      toast.error("Failed to get a response. Please try again.")
     } finally {
       setPending(false)
       scrollDown()
@@ -377,6 +386,7 @@ export default function AiChatPage() {
       if (action.type === "navigate") {
         router.push(action.data.path)
         setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        toast.success(`Navigating to ${action.data.label}…`)
         return
       }
       if (action.type === "create_client") {
@@ -385,6 +395,7 @@ export default function AiChatPage() {
         const { data } = (await res.json()) as { data?: { id?: string } }
         setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
         setMessages((p) => [...p, { id: uid(), role: "assistant" as Role, content: `✅ **${action.data.fullName}** added.${data?.id ? ` [View →](/dashboard/clients/${data.id})` : ""}`, ts: new Date().toISOString() }])
+        toast.success(`Contact "${action.data.fullName}" created`)
         scrollDown(); return
       }
       if (action.type === "create_project") {
@@ -393,10 +404,12 @@ export default function AiChatPage() {
         const { data } = (await res.json()) as { data?: { id?: string } }
         setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
         setMessages((p) => [...p, { id: uid(), role: "assistant" as Role, content: `✅ Project **${action.data.name}** created.${data?.id ? ` [View →](/dashboard/projects/${data.id})` : ""}`, ts: new Date().toISOString() }])
+        toast.success(`Project "${action.data.name}" created`)
         scrollDown(); return
       }
     } catch {
       setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "error" } : m))
+      toast.error("Action failed — please try manually.")
     }
   }
 
@@ -508,7 +521,10 @@ export default function AiChatPage() {
                           action={msg.action}
                           status={msg.actionStatus}
                           onConfirm={() => execAction(msg.id, msg.action!)}
-                          onCancel={() => setMessages((p) => p.map((m) => m.id === msg.id ? { ...m, actionStatus: "cancelled" } : m))}
+                          onCancel={() => {
+                            setMessages((p) => p.map((m) => m.id === msg.id ? { ...m, actionStatus: "cancelled" } : m))
+                            toast("Action cancelled", { icon: "↩︎" })
+                          }}
                         />
                       )}
                       <div className="mt-1 flex items-center gap-1">
