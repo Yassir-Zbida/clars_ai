@@ -20,10 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group"
 import { formatCents } from "@/lib/money"
 import type { AnalyticsOverviewData } from "@/components/dashboard/types"
 
@@ -67,27 +63,37 @@ export function OverviewFinanceChart({ series }: { series: AnalyticsOverviewData
   const netCents = totalRevenueCents - totalExpensesCents
 
   return (
-    <Card className="@container/card border border-border/80 bg-card shadow-xs">
+    <Card className="@container/card border border-input bg-card shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">Revenue &amp; expenses</CardTitle>
-        <CardDescription>
-          <span className="hidden @[540px]/card:inline">Cash collected from invoices vs expenses by calendar month</span>
-          <span className="@[540px]/card:hidden">By month</span>
-        </CardDescription>
+        <div className="flex items-center gap-2">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/10">
+            <i className="ri-bar-chart-2-line text-sm text-emerald-600 dark:text-emerald-400" />
+          </span>
+          <div>
+            <CardTitle className="text-base">Revenue &amp; expenses</CardTitle>
+            <CardDescription className="text-xs">
+              <span className="hidden @[540px]/card:inline">Cash collected from invoices vs expenses by calendar month</span>
+              <span className="@[540px]/card:hidden">By month</span>
+            </CardDescription>
+          </div>
+        </div>
         <CardAction>
-          <ToggleGroup
-            multiple={false}
-            value={[range]}
-            onValueChange={(value) => {
-              const v = value[0]
-              if (v === "6m" || v === "3m") setRange(v)
-            }}
-            variant="outline"
-            className="hidden *:data-[slot=toggle-group-item]:px-3! @[640px]/card:flex"
-          >
-            <ToggleGroupItem value="6m">6 months</ToggleGroupItem>
-            <ToggleGroupItem value="3m">3 months</ToggleGroupItem>
-          </ToggleGroup>
+          <div className="hidden gap-1.5 @[640px]/card:flex">
+            {(["6m", "3m"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setRange(v)}
+                className={`rounded-lg border px-3 py-1 text-xs font-medium transition ${
+                  range === v
+                    ? "border-primary/40 bg-primary/10 text-primary"
+                    : "border-input bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {v === "6m" ? "6 months" : "3 months"}
+              </button>
+            ))}
+          </div>
           <Select
             value={range}
             onValueChange={(value) => {

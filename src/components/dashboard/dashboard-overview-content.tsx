@@ -8,7 +8,7 @@ import { OverviewSectionCards } from "@/components/dashboard/overview-section-ca
 
 export function DashboardOverviewContent({ data }: { data: AnalyticsOverviewData }) {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5 pb-6">
       <div className="px-4 lg:px-6">
         <OverviewIntro />
       </div>
