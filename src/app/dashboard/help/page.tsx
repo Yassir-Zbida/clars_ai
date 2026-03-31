@@ -15,7 +15,6 @@ const CHANGELOG = [
       "Finance: invoices, quotes, payments, expenses",
       "Analytics overview with revenue & expense charts",
       "AI Assistant (chat, email drafts, reports)",
-      "Automation: reminders, workflows, message templates",
       "Client pipeline, segments, and import",
     ],
   },
@@ -27,7 +26,6 @@ const WHERE_TO_WORK = [
   { label: "Finance", desc: "bill clients, record payments, expenses", href: "/dashboard/finance" },
   { label: "Analytics", desc: "revenue, forecasts, productivity", href: "/dashboard/analytics" },
   { label: "AI Assistant", desc: "chat, email drafts, reports", href: "/dashboard/ai" },
-  { label: "Automation", desc: "reminders, workflows, templates", href: "/dashboard/automation" },
 ]
 
 const SHORTCUTS = [

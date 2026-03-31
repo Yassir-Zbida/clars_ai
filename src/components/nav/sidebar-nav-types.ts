@@ -9,7 +9,6 @@ export type SectionId =
   | "finance"
   | "analytics"
   | "ai"
-  | "automation"
   | "settings"
   | "billing"
   | "help"

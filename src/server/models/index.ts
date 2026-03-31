@@ -9,5 +9,3 @@ export { Project } from './project';
 export { Invoice } from './invoice';
 export { Payment } from './payment';
 export { Expense } from './expense';
-export { AutomationWorkflow } from './automation-workflow';
-export { MessageTemplate } from './message-template';

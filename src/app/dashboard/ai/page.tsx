@@ -140,7 +140,7 @@ const QUICK = [
   { icon: "ri-file-warning-line", label: "Overdue invoices", sub: "See what's unpaid", fill: "Which of my invoices are overdue and what should I do?" },
   { icon: "ri-bar-chart-2-line", label: "Revenue snapshot", sub: "Key financial metrics", fill: "Give me a summary of my revenue and key financial metrics." },
   { icon: "ri-compass-3-line", label: "How to use Clars", sub: "Quick app overview", fill: "Give me a quick overview of how to use Clars CRM." },
-  { icon: "ri-sparkling-2-line", label: "Automation ideas", sub: "Save time on tasks", fill: "What automation workflows would help my freelance business?" },
+  { icon: "ri-sparkling-2-line", label: "Weekly priorities", sub: "Focus your week", fill: "What should I prioritize this week across clients and projects?" },
 ]
 
 // ─── Atoms ────────────────────────────────────────────────────────────────────

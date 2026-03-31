@@ -24,7 +24,7 @@ import {
 
 type Role = "FOUNDER" | "OPS" | "SALES" | "MARKETING" | "OTHER"
 type TeamSize = "JUST_ME" | "2_10" | "11_50" | "51_PLUS"
-type PrimaryUse = "CLIENTS_CRM" | "INVOICING" | "PROJECTS" | "AUTOMATION" | "ANALYTICS" | "OTHER"
+type PrimaryUse = "CLIENTS_CRM" | "INVOICING" | "PROJECTS" | "ANALYTICS" | "OTHER"
 type HowHeard = "SEARCH" | "REFERRAL" | "SOCIAL" | "EVENT" | "OTHER"
 
 export default function OnboardingSurveyPage() {
@@ -161,7 +161,6 @@ export default function OnboardingSurveyPage() {
                   <SelectItem value="CLIENTS_CRM">Clients &amp; CRM</SelectItem>
                   <SelectItem value="INVOICING">Invoicing &amp; payments</SelectItem>
                   <SelectItem value="PROJECTS">Projects</SelectItem>
-                  <SelectItem value="AUTOMATION">Automation</SelectItem>
                   <SelectItem value="ANALYTICS">Analytics</SelectItem>
                   <SelectItem value="OTHER">Other</SelectItem>
                 </SelectContent>

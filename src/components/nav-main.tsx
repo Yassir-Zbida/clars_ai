@@ -63,20 +63,6 @@ const AI_SECTIONS: NavSection[] = [
   },
 ]
 
-const AUTOMATION_SECTIONS: NavSection[] = [
-  {
-    id: "automation",
-    label: "Automation",
-    icon: <Ri name="flashlight-line" />,
-    items: [
-      { label: "Overview", href: "/dashboard/automation" },
-      { label: "Smart Reminders", href: "/dashboard/automation/reminders" },
-      { label: "Workflows", href: "/dashboard/automation/workflows" },
-      { label: "Templates", href: "/dashboard/automation/templates" },
-    ],
-  },
-]
-
 const SYSTEM_SECTIONS: NavSection[] = [
   {
     id: "settings",
@@ -118,10 +104,6 @@ export function NavMain() {
         <SidebarDivider />
 
         <SectionGroup sections={MAIN_SECTIONS} defaultOpen={false} />
-
-        <SidebarDivider />
-
-        <SectionGroup sections={AUTOMATION_SECTIONS} defaultOpen={false} />
 
         <SidebarDivider />
 

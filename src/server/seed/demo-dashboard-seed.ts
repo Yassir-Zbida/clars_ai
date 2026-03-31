@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
-import { AutomationWorkflow } from "@/server/models/automation-workflow";
 import { Client } from "@/server/models/client";
 import { Contact } from "@/server/models/contact";
 import { Expense } from "@/server/models/expense";
 import { Interaction } from "@/server/models/interaction";
 import { Invoice } from "@/server/models/invoice";
-import { MessageTemplate } from "@/server/models/message-template";
 import { Payment } from "@/server/models/payment";
 import { Project } from "@/server/models/project";
 
@@ -44,8 +42,6 @@ export async function resetAndSeedDemoDashboardForUser(userId: string) {
     Invoice.deleteMany({ userId: uid }),
     Project.deleteMany({ userId: uid }),
     Client.deleteMany({ userId: uid }),
-    AutomationWorkflow.deleteMany({ userId: uid }),
-    MessageTemplate.deleteMany({ userId: uid }),
   ]);
 
   const createdClients = (await Client.create([
@@ -164,7 +160,7 @@ export async function resetAndSeedDemoDashboardForUser(userId: string) {
       clientId: c0._id,
       assignedClientIds: [c0._id],
       name: "Atlas Store CRO Revamp",
-      description: "Checkout funnel optimization and retention automations.",
+      description: "Checkout funnel optimization and retention experiments.",
       status: "ACTIVE",
       priority: "HIGH",
       progress: 68,
@@ -401,41 +397,4 @@ export async function resetAndSeedDemoDashboardForUser(userId: string) {
     { userId: uid, clientId: c5._id, type: "EMAIL", title: "Follow-up on quote", date: daysFromNow(-2) },
   ]);
 
-  await AutomationWorkflow.create([
-    {
-      userId: uid,
-      name: "Invoice overdue reminder",
-      description: "When an invoice is overdue, create a reminder interaction.",
-      trigger: "INVOICE_OVERDUE",
-      action: "LOG_INTERACTION",
-      enabled: true,
-      config: { delayHours: 12 },
-    },
-    {
-      userId: uid,
-      name: "New lead ping",
-      description: "Notify in app when a new lead appears.",
-      trigger: "NEW_LEAD",
-      action: "NOTIFY_IN_APP",
-      enabled: true,
-      config: {},
-    },
-  ]);
-
-  await MessageTemplate.create([
-    {
-      userId: uid,
-      name: "Payment reminder",
-      slug: "payment-reminder",
-      channel: "EMAIL",
-      body: "Hello {{clientName}}, this is a gentle reminder that invoice {{invoiceNumber}} is due. Please let me know if you need anything.",
-    },
-    {
-      userId: uid,
-      name: "Proposal follow-up",
-      slug: "proposal-follow-up",
-      channel: "EMAIL",
-      body: "Hi {{clientName}}, just following up on the proposal shared earlier this week. Happy to walk through any section together.",
-    },
-  ]);
 }

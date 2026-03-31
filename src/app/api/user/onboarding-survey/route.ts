@@ -15,7 +15,7 @@ const SurveyBodySchema = z
     role: z.enum(["FOUNDER", "OPS", "SALES", "MARKETING", "OTHER"]).optional(),
     teamSize: z.enum(["JUST_ME", "2_10", "11_50", "51_PLUS"]).optional(),
     primaryUse: z
-      .enum(["CLIENTS_CRM", "INVOICING", "PROJECTS", "AUTOMATION", "ANALYTICS", "OTHER"])
+      .enum(["CLIENTS_CRM", "INVOICING", "PROJECTS", "ANALYTICS", "OTHER"])
       .optional(),
     howHeard: z.enum(["SEARCH", "REFERRAL", "SOCIAL", "EVENT", "OTHER"]).optional(),
     comments: z.string().max(2000).optional(),
