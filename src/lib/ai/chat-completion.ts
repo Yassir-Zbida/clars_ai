@@ -13,11 +13,21 @@ export type CompleteChatResult = {
   /** Model id used when live */
   model?: string
   warning?: string
+  usage?: {
+    promptTokens?: number
+    completionTokens?: number
+    totalTokens?: number
+  }
 }
 
 type OpenAICompatResponse = {
   choices?: Array<{ message?: { content?: string } }>
   error?: { message?: string }
+  usage?: {
+    prompt_tokens?: number
+    completion_tokens?: number
+    total_tokens?: number
+  }
 }
 
 type Provider = "openrouter" | "openai" | "gemini"
@@ -122,7 +132,17 @@ export async function completeChat(
       return { content: demoChatReply(lastUser), mock: true, warning: "Empty response from model." }
     }
 
-    return { content, mock: false, model }
+    const u = json.usage
+    const usage =
+      u && (u.prompt_tokens != null || u.completion_tokens != null || u.total_tokens != null)
+        ? {
+            promptTokens: u.prompt_tokens,
+            completionTokens: u.completion_tokens,
+            totalTokens: u.total_tokens,
+          }
+        : undefined
+
+    return { content, mock: false, model, usage }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error"
     return { content: demoChatReply(lastUser), mock: true, warning: `Network error: ${msg}` }

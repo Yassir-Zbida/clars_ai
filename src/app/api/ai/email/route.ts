@@ -3,6 +3,7 @@ import { z } from "zod"
 import { requireUserId, zodErrorResponse } from "@/app/api/clients/_lib"
 import { completeChat, isAiProviderConfigured, type ChatMessage } from "@/lib/ai/chat-completion"
 import { buildRagContext } from "@/lib/ai/rag-context"
+import { recordAiUsage } from "@/lib/ai/record-usage"
 import { auditLog, checkRateLimit, detectInjection, sanitizeOutput, SECURITY_GUARDRAILS } from "@/lib/ai/security"
 
 export const runtime = "nodejs"
@@ -31,6 +32,7 @@ function offlineEmail(purpose: string, tone: string, contactName?: string, compa
 }
 
 export async function POST(request: Request) {
+  const started = Date.now()
   try {
     const authRes = await requireUserId()
     if ("error" in authRes) return authRes.error
@@ -55,6 +57,14 @@ export async function POST(request: Request) {
     }
 
     if (!isAiProviderConfigured()) {
+      void recordAiUsage({
+        userId,
+        eventType: "api",
+        surface: "email",
+        mock: true,
+        durationMs: Date.now() - started,
+        meta: { purposeLen: input.purpose.length, offline: true },
+      })
       return NextResponse.json({
         data: {
           content: offlineEmail(input.purpose, input.tone, input.contactName, input.company),
@@ -86,12 +96,26 @@ export async function POST(request: Request) {
 
     const result = await completeChat(messages, { maxTokens: 900, temperature: 0.55 })
 
+    void recordAiUsage({
+      userId,
+      eventType: "api",
+      surface: "email",
+      model: result.model,
+      mock: result.mock,
+      promptTokens: result.usage?.promptTokens,
+      completionTokens: result.usage?.completionTokens,
+      totalTokens: result.usage?.totalTokens,
+      durationMs: Date.now() - started,
+      meta: { purposeLen: input.purpose.length },
+    })
+
     return NextResponse.json({
       data: {
         content: sanitizeOutput(result.content),
         mock: result.mock,
         model: result.model,
         warning: result.warning,
+        usage: result.usage,
       },
     })
   } catch (error) {

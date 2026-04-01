@@ -3,6 +3,7 @@ import { z } from "zod"
 import { requireUserId, zodErrorResponse } from "@/app/api/clients/_lib"
 import { completeChat, isAiProviderConfigured, type ChatMessage } from "@/lib/ai/chat-completion"
 import { buildRagContext } from "@/lib/ai/rag-context"
+import { recordAiUsage } from "@/lib/ai/record-usage"
 import { auditLog, checkRateLimit, detectInjection, sanitizeOutput, SECURITY_GUARDRAILS } from "@/lib/ai/security"
 
 export const runtime = "nodejs"
@@ -45,6 +46,7 @@ function offlineReport(snapshot: unknown): string {
 }
 
 export async function POST(request: Request) {
+  const started = Date.now()
   try {
     const authRes = await requireUserId()
     if ("error" in authRes) return authRes.error
@@ -79,6 +81,14 @@ export async function POST(request: Request) {
     const snapshot = snapRes.ok ? ((await snapRes.json()) as { data?: unknown }).data ?? {} : {}
 
     if (!isAiProviderConfigured()) {
+      void recordAiUsage({
+        userId,
+        eventType: "api",
+        surface: "reports",
+        mock: true,
+        durationMs: Date.now() - started,
+        meta: { audience: input.audience, focusLen: input.focus?.length ?? 0, offline: true },
+      })
       return NextResponse.json({
         data: {
           content: offlineReport(snapshot),
@@ -120,12 +130,26 @@ export async function POST(request: Request) {
 
     const result = await completeChat(messages, { maxTokens: 2000, temperature: 0.45 })
 
+    void recordAiUsage({
+      userId,
+      eventType: "api",
+      surface: "reports",
+      model: result.model,
+      mock: result.mock,
+      promptTokens: result.usage?.promptTokens,
+      completionTokens: result.usage?.completionTokens,
+      totalTokens: result.usage?.totalTokens,
+      durationMs: Date.now() - started,
+      meta: { audience: input.audience, focusLen: input.focus?.length ?? 0 },
+    })
+
     return NextResponse.json({
       data: {
         content: sanitizeOutput(result.content),
         mock: result.mock,
         model: result.model,
         warning: result.warning,
+        usage: result.usage,
       },
     })
   } catch (error) {

@@ -3,6 +3,7 @@ import { z } from "zod"
 import { requireUserId, zodErrorResponse } from "@/app/api/clients/_lib"
 import { completeChat, type ChatMessage } from "@/lib/ai/chat-completion"
 import { buildRagContext } from "@/lib/ai/rag-context"
+import { recordAiUsage } from "@/lib/ai/record-usage"
 import {
   auditLog,
   checkRateLimit,
@@ -47,7 +48,25 @@ ACTIONS: append ONE raw block at the very end of your reply ONLY when the user e
 <action>{"type":"navigate","data":{"path":"/dashboard/X","label":"Label"}}</action>
 Rules: ≤1 action per reply · always write ≥1 sentence of text before the action · ask for missing required fields first · for create_task use the exact project name from CRM data · decline out-of-scope requests politely.`
 
+function chatRequestMeta(messages: z.infer<typeof BodySchema>["messages"]) {
+  let hasImages = false
+  let userChars = 0
+  for (const m of messages) {
+    const c = m.content
+    if (typeof c === "string") {
+      if (m.role === "user") userChars += c.length
+    } else {
+      for (const p of c) {
+        if (p.type === "image_url") hasImages = true
+        if (p.type === "text" && m.role === "user") userChars += p.text.length
+      }
+    }
+  }
+  return { messageCount: messages.length, hasImages, userChars }
+}
+
 export async function POST(request: Request) {
+  const started = Date.now()
   try {
     const authRes = await requireUserId()
     if ("error" in authRes) return authRes.error
@@ -87,12 +106,26 @@ export async function POST(request: Request) {
     // ── Sanitise output — strip any leaked system markers ──
     const safeContent = sanitizeOutput(result.content)
 
+    void recordAiUsage({
+      userId,
+      eventType: "api",
+      surface: "chat",
+      model: result.model,
+      mock: result.mock,
+      promptTokens: result.usage?.promptTokens,
+      completionTokens: result.usage?.completionTokens,
+      totalTokens: result.usage?.totalTokens,
+      durationMs: Date.now() - started,
+      meta: chatRequestMeta(body.messages),
+    })
+
     return NextResponse.json({
       data: {
         content: safeContent,
         mock: result.mock,
         model: result.model,
         warning: result.warning,
+        usage: result.usage,
       },
     })
   } catch (error) {
