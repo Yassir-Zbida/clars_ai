@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+  trustHost: true,
   adapter: MongooseAdapter(),
   session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
   pages: {

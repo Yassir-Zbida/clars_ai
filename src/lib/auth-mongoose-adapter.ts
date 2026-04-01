@@ -3,7 +3,6 @@ import type {
   AdapterAccount,
   AdapterSession,
   AdapterUser,
-  VerificationToken,
 } from 'next-auth/adapters';
 import mongoose from 'mongoose';
 import { getDb } from '@/server/db';
