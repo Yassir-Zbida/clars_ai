@@ -1,0 +1,45 @@
+# Local / demo stack: Next.js + MongoDB.
+# 1. Copy .env.example → .env and set AUTH_SECRET (or export it before `docker compose up`).
+# 2. npm run docker:up   (streams app logs only; Mongo stays quiet in the background)
+#    Full logs (Mongo + app): npm run docker:up:all
+# App: http://localhost:3000  ·  MongoDB: localhost:27017
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    # Cuts INFO spam (healthchecks + short-lived mongosh clients look scary but are normal).
+    command: ["mongod", "--quiet", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "localhost/test", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/clars_ai
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      # NextAuth v5 reads AUTH_SECRET; some setups still expect NEXTAUTH_SECRET — keep both in sync.
+      AUTH_SECRET: ${AUTH_SECRET}
+      NEXTAUTH_SECRET: ${AUTH_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo_data:

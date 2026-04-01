@@ -1,0 +1,39 @@
+# Dependencies & build
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+.next
+out
+
+# Git / IDE
+.git
+.gitignore
+.cursor
+.idea
+.vscode
+*.swp
+*.swo
+
+# Env & secrets (pass via compose / -e / runtime secrets)
+.env
+.env.*
+!.env.example
+
+# Tests & tooling (not needed for production image)
+coverage
+e2e
+playwright-report
+test-results
+jest.config.js
+playwright.config.ts
+scripts/run-jest.mjs
+**/__tests__
+**/*.test.ts
+
+# Misc
+.DS_Store
+Thumbs.db
+tsconfig.tsbuildinfo
