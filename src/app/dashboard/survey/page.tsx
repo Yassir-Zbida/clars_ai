@@ -4,38 +4,116 @@ import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { cn } from "@/lib/utils"
+import { Loader2 } from "lucide-react"
 
-type Role = "FOUNDER" | "OPS" | "SALES" | "MARKETING" | "OTHER"
-type TeamSize = "JUST_ME" | "2_10" | "11_50" | "51_PLUS"
+type Role       = "FOUNDER" | "OPS" | "SALES" | "MARKETING" | "OTHER"
+type TeamSize   = "JUST_ME" | "2_10" | "11_50" | "51_PLUS"
 type PrimaryUse = "CLIENTS_CRM" | "INVOICING" | "PROJECTS" | "ANALYTICS" | "OTHER"
-type HowHeard = "SEARCH" | "REFERRAL" | "SOCIAL" | "EVENT" | "OTHER"
+type HowHeard   = "SEARCH" | "REFERRAL" | "SOCIAL" | "EVENT" | "OTHER"
+
+/* ── Step definitions ────────────────────────────────────────────────────── */
+
+const STEPS = [
+  {
+    key: "role",
+    q: "What's your role?",
+    sub: "Helps us personalise your experience.",
+    cols: 3,
+    options: [
+      { value: "FOUNDER",    label: "Founder",     icon: "ri-rocket-line"         },
+      { value: "OPS",        label: "Operations",  icon: "ri-settings-2-line"     },
+      { value: "SALES",      label: "Sales",       icon: "ri-presentation-line"   },
+      { value: "MARKETING",  label: "Marketing",   icon: "ri-megaphone-line"      },
+      { value: "FREELANCER", label: "Freelancer",  icon: "ri-user-settings-line"  },
+      { value: "OTHER",      label: "Other",       icon: "ri-more-line"           },
+    ],
+  },
+  {
+    key: "teamSize",
+    q: "How big is your team?",
+    sub: "We'll suggest the right workflows.",
+    cols: 2,
+    options: [
+      { value: "JUST_ME", label: "Just me",  icon: "ri-user-line"        },
+      { value: "2_10",    label: "2 – 10",   icon: "ri-group-line"       },
+      { value: "11_50",   label: "11 – 50",  icon: "ri-team-line"        },
+      { value: "51_PLUS", label: "51+",      icon: "ri-building-2-line"  },
+    ],
+  },
+  {
+    key: "primaryUse",
+    q: "What will you use Clars for first?",
+    sub: "We'll highlight the right features.",
+    cols: 3,
+    options: [
+      { value: "CLIENTS_CRM", label: "CRM",        icon: "ri-contacts-line"          },
+      { value: "INVOICING",   label: "Invoicing",  icon: "ri-file-list-3-line"       },
+      { value: "PROJECTS",    label: "Projects",   icon: "ri-folder-line"            },
+      { value: "ANALYTICS",   label: "Analytics",  icon: "ri-bar-chart-2-line"       },
+      { value: "FINANCE",     label: "Finance",    icon: "ri-money-dollar-circle-line"},
+      { value: "OTHER",       label: "Other",      icon: "ri-more-line"              },
+    ],
+  },
+  {
+    key: "howHeard",
+    q: "How did you find us?",
+    sub: "Takes 1 second — helps a lot.",
+    cols: 3,
+    options: [
+      { value: "SEARCH",    label: "Search",       icon: "ri-search-line"        },
+      { value: "REFERRAL",  label: "Referral",     icon: "ri-share-line"         },
+      { value: "SOCIAL",    label: "Social media", icon: "ri-instagram-line"     },
+      { value: "EVENT",     label: "Event",        icon: "ri-calendar-event-line"},
+      { value: "AI",        label: "AI assistant", icon: "ri-sparkling-line"     },
+      { value: "OTHER",     label: "Other",        icon: "ri-more-line"          },
+    ],
+  },
+] as const
+
+const TOTAL = STEPS.length
+
+/* ── Tile ────────────────────────────────────────────────────────────────── */
+
+function Tile({
+  icon, label, selected, onClick,
+}: { icon: string; label: string; selected: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center justify-center gap-2 rounded-xl border p-4 text-center text-xs font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+        selected
+          ? "border-primary bg-primary/10 text-primary shadow-sm"
+          : "border-input bg-card text-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+      )}
+    >
+      <span className={cn(
+        "flex size-9 items-center justify-center rounded-lg text-xl transition-colors",
+        selected ? "bg-primary/15" : "bg-muted"
+      )}>
+        <i className={icon} />
+      </span>
+      {label}
+    </button>
+  )
+}
+
+/* ── Page ────────────────────────────────────────────────────────────────── */
 
 export default function OnboardingSurveyPage() {
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]     = useState(true)
   const [submitting, setSubmitting] = useState(false)
-  const [role, setRole] = useState<Role | "">("")
-  const [teamSize, setTeamSize] = useState<TeamSize | "">("")
+  const [step, setStep]           = useState(0)
+  const [animDir, setAnimDir]     = useState<"in" | "out">("in")
+
+  const [role, setRole]           = useState<Role | "">("")
+  const [teamSize, setTeamSize]   = useState<TeamSize | "">("")
   const [primaryUse, setPrimaryUse] = useState<PrimaryUse | "">("")
-  const [howHeard, setHowHeard] = useState<HowHeard | "">("")
-  const [comments, setComments] = useState("")
+  const [howHeard, setHowHeard]   = useState<HowHeard | "">("")
+  const [comments, setComments]   = useState("")
 
   const goDashboard = useCallback(() => {
     router.replace("/dashboard")
@@ -47,24 +125,32 @@ export default function OnboardingSurveyPage() {
     ;(async () => {
       try {
         const res = await fetch("/api/user/me", { cache: "no-store" })
-        if (!res.ok) {
-          if (!cancelled) setLoading(false)
-          return
-        }
+        if (!res.ok) { if (!cancelled) setLoading(false); return }
         const json = (await res.json()) as { data?: { needsOnboardingSurvey?: boolean } }
-        if (!json?.data?.needsOnboardingSurvey) {
-          goDashboard()
-          return
-        }
-      } catch {
-        // stay on page
-      }
+        if (!json?.data?.needsOnboardingSurvey) { goDashboard(); return }
+      } catch { /* stay */ }
       if (!cancelled) setLoading(false)
     })()
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [goDashboard])
+
+  const values: Record<string, string> = { role, teamSize, primaryUse, howHeard }
+  const setters: Record<string, (v: string) => void> = {
+    role:       (v) => setRole(v as Role),
+    teamSize:   (v) => setTeamSize(v as TeamSize),
+    primaryUse: (v) => setPrimaryUse(v as PrimaryUse),
+    howHeard:   (v) => setHowHeard(v as HowHeard),
+  }
+
+  function advance() {
+    setAnimDir("out")
+    setTimeout(() => { setStep((s) => s + 1); setAnimDir("in") }, 160)
+  }
+
+  function handleTile(key: string, value: string) {
+    setters[key]?.(value)
+    setTimeout(advance, 200)
+  }
 
   const postSurvey = async (body: Record<string, unknown>) => {
     setSubmitting(true)
@@ -76,133 +162,158 @@ export default function OnboardingSurveyPage() {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        toast.error("Could not save", {
-          description: typeof data?.error === "string" ? data.error : "Please try again.",
-        })
+        toast.error("Could not save", { description: typeof data?.error === "string" ? data.error : "Please try again." })
         return
       }
-      toast.success("Thanks — you're all set.")
+      toast.success("You're all set! Welcome to Clars.")
       goDashboard()
     } finally {
       setSubmitting(false)
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    void postSurvey({
-      role: role || undefined,
-      teamSize: teamSize || undefined,
-      primaryUse: primaryUse || undefined,
-      howHeard: howHeard || undefined,
-      comments: comments.trim() || undefined,
-    })
+  const handleFinish = () => {
+    void postSurvey({ role: role || undefined, teamSize: teamSize || undefined, primaryUse: primaryUse || undefined, howHeard: howHeard || undefined, comments: comments.trim() || undefined })
   }
-
-  const handleSkip = () => {
-    void postSurvey({ skipped: true })
-  }
+  const handleSkip = () => void postSurvey({ skipped: true })
 
   if (loading) {
     return (
-      <div className="flex flex-1 items-center justify-center px-4 py-12">
-        <p className="text-muted-foreground text-sm">Loading…</p>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
       </div>
     )
   }
 
+  const currentStep = STEPS[step] as (typeof STEPS)[number] | undefined
+  const isLastStep  = step === TOTAL
+
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center px-4 py-8">
-      <Card className="border border-input shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl">Quick survey</CardTitle>
-          <CardDescription>
-            Help us tailor Clars to you. Takes under a minute — then you&apos;ll land on your dashboard.
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="flex flex-col gap-5">
-            <div className="space-y-2">
-              <Label htmlFor="survey-role">Your role</Label>
-              <Select value={role || undefined} onValueChange={(v) => setRole(v as Role)}>
-                <SelectTrigger id="survey-role" className="w-full">
-                  <SelectValue placeholder="Select one (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="FOUNDER">Founder / executive</SelectItem>
-                  <SelectItem value="OPS">Operations / RevOps</SelectItem>
-                  <SelectItem value="SALES">Sales</SelectItem>
-                  <SelectItem value="MARKETING">Marketing</SelectItem>
-                  <SelectItem value="OTHER">Other</SelectItem>
-                </SelectContent>
-              </Select>
+    /* ── Blurred overlay ── */
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+
+      {/* ── Modal card ── */}
+      <div className="w-full max-w-md rounded-2xl border border-input bg-card shadow-2xl overflow-hidden">
+
+        <div className="px-6 pb-6 pt-5">
+
+          {/* Logo + progress */}
+          <div className="mb-5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <img src="/logo.svg" alt="Clars.ai" className="h-6 w-auto" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="survey-team">Team size</Label>
-              <Select value={teamSize || undefined} onValueChange={(v) => setTeamSize(v as TeamSize)}>
-                <SelectTrigger id="survey-team" className="w-full">
-                  <SelectValue placeholder="Select one (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="JUST_ME">Just me</SelectItem>
-                  <SelectItem value="2_10">2–10</SelectItem>
-                  <SelectItem value="11_50">11–50</SelectItem>
-                  <SelectItem value="51_PLUS">51+</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="survey-use">What will you use Clars for first?</Label>
-              <Select value={primaryUse || undefined} onValueChange={(v) => setPrimaryUse(v as PrimaryUse)}>
-                <SelectTrigger id="survey-use" className="w-full">
-                  <SelectValue placeholder="Select one (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CLIENTS_CRM">Clients &amp; CRM</SelectItem>
-                  <SelectItem value="INVOICING">Invoicing &amp; payments</SelectItem>
-                  <SelectItem value="PROJECTS">Projects</SelectItem>
-                  <SelectItem value="ANALYTICS">Analytics</SelectItem>
-                  <SelectItem value="OTHER">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="survey-heard">How did you hear about us?</Label>
-              <Select value={howHeard || undefined} onValueChange={(v) => setHowHeard(v as HowHeard)}>
-                <SelectTrigger id="survey-heard" className="w-full">
-                  <SelectValue placeholder="Select one (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SEARCH">Search</SelectItem>
-                  <SelectItem value="REFERRAL">Friend / colleague</SelectItem>
-                  <SelectItem value="SOCIAL">Social media</SelectItem>
-                  <SelectItem value="EVENT">Event / conference</SelectItem>
-                  <SelectItem value="OTHER">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="survey-comments">Anything else? (optional)</Label>
-              <Input
-                id="survey-comments"
-                placeholder="Short note"
-                value={comments}
-                onChange={(e) => setComments(e.target.value)}
-                disabled={submitting}
-                maxLength={2000}
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-            <Button type="button" variant="ghost" disabled={submitting} onClick={handleSkip} className="w-full sm:w-auto">
-              Skip for now
-            </Button>
-            <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
-              {submitting ? "Saving…" : "Continue to dashboard"}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+            {!isLastStep && (
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: TOTAL }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={cn(
+                      "h-1.5 rounded-full transition-all duration-300",
+                      i < step ? "w-4 bg-primary" : i === step ? "w-6 bg-primary" : "w-1.5 bg-muted-foreground/25"
+                    )}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Step content ── */}
+          <div
+            className={cn(
+              "transition-all duration-150",
+              animDir === "in" ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+            )}
+          >
+            {!isLastStep && currentStep ? (
+              /* Option tiles */
+              <>
+                <div className="mb-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    Step {step + 1} of {TOTAL}
+                  </p>
+                  <h2 className="mt-1 text-xl font-bold leading-snug tracking-tight">{currentStep.q}</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">{currentStep.sub}</p>
+                </div>
+
+                <div className={cn("grid gap-2", currentStep.cols === 2 ? "grid-cols-2" : "grid-cols-3")}>
+                  {currentStep.options.map((opt) => (
+                    <Tile
+                      key={opt.value}
+                      icon={opt.icon}
+                      label={opt.label}
+                      selected={values[currentStep.key] === opt.value}
+                      onClick={() => handleTile(currentStep.key, opt.value)}
+                    />
+                  ))}
+                </div>
+
+                <div className="mt-5 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={handleSkip}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Skip all
+                  </button>
+                  <button
+                    type="button"
+                    onClick={advance}
+                    className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Skip this →
+                  </button>
+                </div>
+              </>
+            ) : (
+              /* Final step — comment + submit */
+              <>
+                <div className="mb-5 text-center">
+                  <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
+                    <i className="ri-check-line text-primary" />
+                  </span>
+                  <h2 className="mt-3 text-xl font-bold tracking-tight">Almost there!</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Anything you&apos;d like us to know? (optional)
+                  </p>
+                </div>
+
+                <textarea
+                  value={comments}
+                  onChange={(e) => setComments(e.target.value)}
+                  placeholder="E.g. I'm migrating from HubSpot…"
+                  maxLength={2000}
+                  rows={3}
+                  disabled={submitting}
+                  className="w-full resize-none rounded-xl border border-input bg-muted/20 px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-primary/30"
+                />
+
+                <div className="mt-4 flex flex-col gap-2">
+                  <Button
+                    type="button"
+                    onClick={handleFinish}
+                    disabled={submitting}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {submitting
+                      ? <><Loader2 className="mr-2 size-4 animate-spin" />Saving…</>
+                      : <><i className="ri-arrow-right-line mr-2" />Go to my dashboard</>
+                    }
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={handleSkip}
+                    disabled={submitting}
+                    className="text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
+                  >
+                    Skip and go straight to dashboard
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

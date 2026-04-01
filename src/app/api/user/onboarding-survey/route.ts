@@ -12,12 +12,12 @@ export const dynamic = "force-dynamic"
 const SurveyBodySchema = z
   .object({
     skipped: z.boolean().optional(),
-    role: z.enum(["FOUNDER", "OPS", "SALES", "MARKETING", "OTHER"]).optional(),
+    role: z.enum(["FOUNDER", "OPS", "SALES", "MARKETING", "FREELANCER", "OTHER"]).optional(),
     teamSize: z.enum(["JUST_ME", "2_10", "11_50", "51_PLUS"]).optional(),
     primaryUse: z
-      .enum(["CLIENTS_CRM", "INVOICING", "PROJECTS", "ANALYTICS", "OTHER"])
+      .enum(["CLIENTS_CRM", "INVOICING", "PROJECTS", "ANALYTICS", "FINANCE", "OTHER"])
       .optional(),
-    howHeard: z.enum(["SEARCH", "REFERRAL", "SOCIAL", "EVENT", "OTHER"]).optional(),
+    howHeard: z.enum(["SEARCH", "REFERRAL", "SOCIAL", "EVENT", "AI", "OTHER"]).optional(),
     comments: z.string().max(2000).optional(),
   })
   .refine(
