@@ -1,5 +1,5 @@
 # Continuous integration: lint, unit tests, production build, smoke E2E.
-# Single job: one npm ci + one build; E2E uses `next start` (reliable on GitHub runners).
+# Single job: one npm ci + one build; E2E serves `output: 'standalone'` via Playwright (node server.js).
 name: CI
 
 on:
@@ -28,10 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: playwright-report/
