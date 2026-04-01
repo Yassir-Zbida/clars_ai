@@ -35,6 +35,7 @@ type ContentPart =
 type ActionPayload =
   | { type: "create_client"; data: { fullName: string; company?: string; email?: string } }
   | { type: "create_project"; data: { name: string; description?: string; priority?: string } }
+  | { type: "create_task"; data: { projectName: string; title: string; priority?: string } }
   | { type: "navigate"; data: { path: string; label: string } }
 
 type Msg = {
@@ -76,7 +77,11 @@ const uid = () => Math.random().toString(36).slice(2)
 function parseAction(raw: string): { text: string; action: ActionPayload | null } {
   const match = raw.match(/<action>([\s\S]*?)<\/action>/i)
   if (!match) return { text: raw, action: null }
-  try { return { text: raw.replace(/<action>[\s\S]*?<\/action>/gi, "").trim(), action: JSON.parse(match[1]) as ActionPayload } }
+  try {
+    const text = raw.replace(/<action>[\s\S]*?<\/action>/gi, "").trim()
+    // Guard: never store empty content — Zod schema requires min(1)
+    return { text: text || "✓", action: JSON.parse(match[1]) as ActionPayload }
+  }
   catch { return { text: raw, action: null } }
 }
 
@@ -205,10 +210,15 @@ function ActionCard({ action, status, onConfirm, onCancel }: {
   if (status === "cancelled") return <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground"><XIcon className="size-3" /> Cancelled</p>
 
   const loading = status === "loading"
-  const Icon = action.type === "create_client" ? UserPlusIcon : action.type === "create_project" ? FolderPlusIcon : NavigationIcon
+  const Icon =
+    action.type === "create_client" ? UserPlusIcon
+    : action.type === "create_project" ? FolderPlusIcon
+    : action.type === "create_task" ? CheckIcon
+    : NavigationIcon
   const label =
     action.type === "create_client" ? `Create client — ${action.data.fullName}`
     : action.type === "create_project" ? `Create project — ${action.data.name}`
+    : action.type === "create_task" ? `Add task "${action.data.title}" to ${action.data.projectName}`
     : `Go to ${(action as { type: "navigate"; data: { label: string } }).data.label}`
 
   return (
@@ -370,7 +380,8 @@ export default function AiChatPage() {
           m.images.forEach((img) => parts.push({ type: "image_url", image_url: { url: img.dataUrl } }))
           return { role: m.role, content: parts }
         }
-        return { role: m.role, content: m.content }
+        // Ensure content is never empty — Zod schema on the API requires min(1)
+        return { role: m.role, content: m.content || "✓" }
       })
       const res = await fetch("/api/ai/chat", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: apiMessages }) })
       if (!res.ok) throw new Error()
@@ -411,6 +422,26 @@ export default function AiChatPage() {
         setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
         setMessages((p) => [...p, { id: uid(), role: "assistant" as Role, content: `✅ Project **${action.data.name}** created.${data?.id ? ` [View →](/dashboard/projects/${data.id})` : ""}`, ts: new Date().toISOString() }])
         toast.success(`Project "${action.data.name}" created`)
+        scrollDown(); return
+      }
+      if (action.type === "create_task") {
+        // Find the project by name then create the task under it
+        const listRes = await fetch("/api/projects?limit=100", { credentials: "include" })
+        if (!listRes.ok) throw new Error("Could not load projects")
+        const { data: projects } = (await listRes.json()) as { data?: Array<{ id: string; name: string }> }
+        const match = (projects ?? []).find(
+          (p) => p.name.toLowerCase().trim() === action.data.projectName.toLowerCase().trim()
+        ) ?? (projects ?? [])[0]
+        if (!match) throw new Error("Project not found")
+        const taskRes = await fetch(`/api/projects/${match.id}/tasks`, {
+          method: "POST", credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: action.data.title, priority: action.data.priority ?? "MEDIUM" }),
+        })
+        if (!taskRes.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        setMessages((p) => [...p, { id: uid(), role: "assistant" as Role, content: `✅ Task **${action.data.title}** added to project **${match.name}**. [View →](/dashboard/projects/${match.id})`, ts: new Date().toISOString() }])
+        toast.success(`Task "${action.data.title}" added to "${match.name}"`)
         scrollDown(); return
       }
     } catch {
