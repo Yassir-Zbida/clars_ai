@@ -1,6 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com',
+        pathname: '/9.x/**',
+      },
+    ],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
