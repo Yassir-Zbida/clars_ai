@@ -1,4 +1,98 @@
-const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120" height="30" viewBox="0 0 150 37.5" preserveAspectRatio="xMidYMid meet"><defs><g/><clipPath id="c6ebf4f290"><path d="M 0.988281 0 L 149 0 L 149 37.007812 L 0.988281 37.007812 Z M 0.988281 0 " clip-rule="nonzero"/></clipPath><clipPath id="6a9a31d2b0"><rect x="0" width="149" y="0" height="38"/></clipPath></defs><g clip-path="url(#c6ebf4f290)"><g transform="matrix(1,0,0,1,0,0)"><g clip-path="url(#6a9a31d2b0)"><g fill="#a3e635" fill-opacity="1"><g transform="translate(0.659121,33.238996)"><g><path d="M 17.84375 0.84375 C 15.4375 0.84375 13.222656 0.445312 11.203125 -0.34375 C 9.191406 -1.144531 7.460938 -2.238281 6.015625 -3.625 C 4.578125 -5.007812 3.457031 -6.644531 2.65625 -8.53125 C 1.863281 -10.425781 1.46875 -12.476562 1.46875 -14.6875 C 1.46875 -16.894531 1.863281 -18.941406 2.65625 -20.828125 C 3.457031 -22.722656 4.578125 -24.363281 6.015625 -25.75 C 7.460938 -27.132812 9.191406 -28.222656 11.203125 -29.015625 C 13.222656 -29.816406 15.4375 -30.21875 17.84375 -30.21875 C 19.4375 -30.21875 20.875 -30.046875 22.15625 -29.703125 C 23.445312 -29.367188 24.601562 -28.929688 25.625 -28.390625 C 26.644531 -27.847656 27.539062 -27.234375 28.3125 -26.546875 C 29.082031 -25.859375 29.742188 -25.148438 30.296875 -24.421875 C 31.617188 -22.710938 32.570312 -20.796875 33.15625 -18.671875 L 25.1875 -18.671875 C 24.820312 -19.484375 24.300781 -20.210938 23.625 -20.859375 C 23.070312 -21.421875 22.328125 -21.929688 21.390625 -22.390625 C 20.453125 -22.847656 19.269531 -23.078125 17.84375 -23.078125 C 16.632812 -23.078125 15.523438 -22.875 14.515625 -22.46875 C 13.515625 -22.0625 12.65625 -21.492188 11.9375 -20.765625 C 11.226562 -20.046875 10.671875 -19.164062 10.265625 -18.125 C 9.859375 -17.09375 9.65625 -15.945312 9.65625 -14.6875 C 9.65625 -13.425781 9.859375 -12.273438 10.265625 -11.234375 C 10.671875 -10.203125 11.226562 -9.320312 11.9375 -8.59375 C 12.65625 -7.875 13.515625 -7.3125 14.515625 -6.90625 C 15.523438 -6.5 16.632812 -6.296875 17.84375 -6.296875 C 19.4375 -6.296875 20.710938 -6.550781 21.671875 -7.0625 C 22.640625 -7.582031 23.40625 -8.164062 23.96875 -8.8125 C 24.601562 -9.539062 25.078125 -10.378906 25.390625 -11.328125 L 33.359375 -11.328125 C 32.722656 -9.035156 31.734375 -7.007812 30.390625 -5.25 C 29.828125 -4.488281 29.15625 -3.738281 28.375 -3 C 27.59375 -2.257812 26.679688 -1.609375 25.640625 -1.046875 C 24.609375 -0.484375 23.445312 -0.03125 22.15625 0.3125 C 20.875 0.664062 19.4375 0.84375 17.84375 0.84375 Z"/></g></g></g><g fill="#a3e635" fill-opacity="1"><g transform="translate(32.763898,33.238996)"><g><path d="M 2.09375 -29.375 L 9.234375 -29.375 L 9.234375 -5.671875 L 14.0625 -5.671875 L 14.0625 0 L 2.09375 0 Z"/></g></g></g><g fill="#a3e635" fill-opacity="1"><g transform="translate(44.724477,33.238996)"><g><path d="M 10.90625 0.625 C 9.59375 0.625 8.351562 0.359375 7.1875 -0.171875 C 6.03125 -0.703125 5.007812 -1.460938 4.125 -2.453125 C 3.25 -3.441406 2.550781 -4.648438 2.03125 -6.078125 C 1.519531 -7.503906 1.265625 -9.113281 1.265625 -10.90625 C 1.265625 -12.695312 1.519531 -14.304688 2.03125 -15.734375 C 2.550781 -17.160156 3.25 -18.367188 4.125 -19.359375 C 5.007812 -20.359375 6.03125 -21.125 7.1875 -21.65625 C 8.351562 -22.1875 9.59375 -22.453125 10.90625 -22.453125 C 12 -22.453125 12.953125 -22.257812 13.765625 -21.875 C 14.578125 -21.5 15.265625 -21.09375 15.828125 -20.65625 C 16.460938 -20.144531 16.992188 -19.554688 17.421875 -18.890625 L 17.84375 -18.890625 L 17.84375 -21.828125 L 24.96875 -21.828125 L 24.96875 0 L 17.84375 0 L 17.84375 -2.9375 L 17.421875 -2.9375 C 16.992188 -2.238281 16.460938 -1.640625 15.828125 -1.140625 C 15.265625 -0.691406 14.578125 -0.285156 13.765625 0.078125 C 12.953125 0.441406 12 0.625 10.90625 0.625 Z M 13.21875 -5.453125 C 14.59375 -5.453125 15.707031 -5.910156 16.5625 -6.828125 C 17.414062 -7.753906 17.84375 -9.113281 17.84375 -10.90625 C 17.84375 -12.695312 17.414062 -14.054688 16.5625 -14.984375 C 15.707031 -15.910156 14.59375 -16.375 13.21875 -16.375 C 11.84375 -16.375 10.726562 -15.910156 9.875 -14.984375 C 9.03125 -14.054688 8.609375 -12.695312 8.609375 -10.90625 C 8.609375 -9.113281 9.03125 -7.753906 9.875 -6.828125 C 10.726562 -5.910156 11.84375 -5.453125 13.21875 -5.453125 Z"/></g></g></g><g fill="#a3e635" fill-opacity="1"><g transform="translate(69.275175,33.238996)"><g><path d="M 2.09375 -21.828125 L 9.015625 -21.828125 L 9.015625 -18.671875 L 9.4375 -18.671875 C 9.695312 -19.347656 10.078125 -19.9375 10.578125 -20.4375 C 10.992188 -20.882812 11.535156 -21.296875 12.203125 -21.671875 C 12.878906 -22.054688 13.734375 -22.25 14.765625 -22.25 L 17 -22.25 L 17 -15.3125 L 13.4375 -15.3125 C 12.175781 -15.3125 11.160156 -14.925781 10.390625 -14.15625 C 9.617188 -13.394531 9.234375 -12.382812 9.234375 -11.125 L 9.234375 0 L 2.09375 0 Z"/></g></g></g><g fill="#a3e635" fill-opacity="1"><g transform="translate(84.383296,33.238996)"><g><path d="M 11.96875 0.625 C 10.726562 0.625 9.617188 0.507812 8.640625 0.28125 C 7.660156 0.0625 6.789062 -0.226562 6.03125 -0.59375 C 5.28125 -0.957031 4.632812 -1.367188 4.09375 -1.828125 C 3.550781 -2.285156 3.082031 -2.753906 2.6875 -3.234375 C 1.757812 -4.347656 1.144531 -5.648438 0.84375 -7.140625 L 7.96875 -7.140625 C 8.113281 -6.691406 8.351562 -6.296875 8.6875 -5.953125 C 9 -5.648438 9.410156 -5.382812 9.921875 -5.15625 C 10.441406 -4.9375 11.125 -4.828125 11.96875 -4.828125 C 13.03125 -4.828125 13.785156 -4.96875 14.234375 -5.25 C 14.679688 -5.53125 14.90625 -5.878906 14.90625 -6.296875 C 14.90625 -6.773438 14.582031 -7.148438 13.9375 -7.421875 C 13.289062 -7.703125 12.484375 -7.953125 11.515625 -8.171875 C 10.554688 -8.398438 9.515625 -8.660156 8.390625 -8.953125 C 7.273438 -9.253906 6.234375 -9.675781 5.265625 -10.21875 C 4.296875 -10.757812 3.488281 -11.460938 2.84375 -12.328125 C 2.207031 -13.203125 1.890625 -14.335938 1.890625 -15.734375 C 1.890625 -16.609375 2.082031 -17.441406 2.46875 -18.234375 C 2.863281 -19.035156 3.453125 -19.75 4.234375 -20.375 C 5.015625 -21 5.992188 -21.5 7.171875 -21.875 C 8.347656 -22.257812 9.734375 -22.453125 11.328125 -22.453125 C 12.503906 -22.453125 13.5625 -22.347656 14.5 -22.140625 C 15.4375 -21.929688 16.269531 -21.648438 17 -21.296875 C 17.726562 -20.953125 18.347656 -20.554688 18.859375 -20.109375 C 19.378906 -19.660156 19.835938 -19.210938 20.234375 -18.765625 C 21.097656 -17.671875 21.695312 -16.453125 22.03125 -15.109375 L 15.109375 -15.109375 C 14.992188 -15.503906 14.796875 -15.851562 14.515625 -16.15625 C 14.296875 -16.40625 13.960938 -16.640625 13.515625 -16.859375 C 13.066406 -17.085938 12.476562 -17.203125 11.75 -17.203125 C 10.914062 -17.203125 10.285156 -17.0625 9.859375 -16.78125 C 9.441406 -16.507812 9.234375 -16.160156 9.234375 -15.734375 C 9.234375 -15.234375 9.550781 -14.859375 10.1875 -14.609375 C 10.832031 -14.359375 11.640625 -14.125 12.609375 -13.90625 C 13.578125 -13.695312 14.617188 -13.453125 15.734375 -13.171875 C 16.859375 -12.898438 17.898438 -12.503906 18.859375 -11.984375 C 19.828125 -11.460938 20.632812 -10.769531 21.28125 -9.90625 C 21.925781 -9.039062 22.25 -7.90625 22.25 -6.5 C 22.25 -5.550781 22.035156 -4.648438 21.609375 -3.796875 C 21.191406 -2.941406 20.554688 -2.1875 19.703125 -1.53125 C 18.847656 -0.875 17.773438 -0.351562 16.484375 0.03125 C 15.203125 0.425781 13.695312 0.625 11.96875 0.625 Z"/></g></g></g><g fill="#a3e635" fill-opacity="1"><g transform="translate(105.156967,33.238996)"><g><path d="M 5.03125 0.625 C 3.96875 0.625 3.070312 0.265625 2.34375 -0.453125 C 1.625 -1.179688 1.265625 -2.078125 1.265625 -3.140625 C 1.265625 -4.210938 1.625 -5.109375 2.34375 -5.828125 C 3.070312 -6.554688 3.96875 -6.921875 5.03125 -6.921875 C 6.09375 -6.921875 6.988281 -6.554688 7.71875 -5.828125 C 8.445312 -5.109375 8.8125 -4.210938 8.8125 -3.140625 C 8.8125 -2.078125 8.445312 -1.179688 7.71875 -0.453125 C 6.988281 0.265625 6.09375 0.625 5.03125 0.625 Z"/></g></g></g><g fill="#a3e635" fill-opacity="1"><g transform="translate(112.711012,33.238996)"><g><path d="M 10.90625 0.625 C 9.59375 0.625 8.351562 0.359375 7.1875 -0.171875 C 6.03125 -0.703125 5.007812 -1.460938 4.125 -2.453125 C 3.25 -3.441406 2.550781 -4.648438 2.03125 -6.078125 C 1.519531 -7.503906 1.265625 -9.113281 1.265625 -10.90625 C 1.265625 -12.695312 1.519531 -14.304688 2.03125 -15.734375 C 2.550781 -17.160156 3.25 -18.367188 4.125 -19.359375 C 5.007812 -20.359375 6.03125 -21.125 7.1875 -21.65625 C 8.351562 -22.1875 9.59375 -22.453125 10.90625 -22.453125 C 12 -22.453125 12.953125 -22.257812 13.765625 -21.875 C 14.578125 -21.5 15.265625 -21.09375 15.828125 -20.65625 C 16.460938 -20.144531 16.992188 -19.554688 17.421875 -18.890625 L 17.84375 -18.890625 L 17.84375 -21.828125 L 24.96875 -21.828125 L 24.96875 0 L 17.84375 0 L 17.84375 -2.9375 L 17.421875 -2.9375 C 16.992188 -2.238281 16.460938 -1.640625 15.828125 -1.140625 C 15.265625 -0.691406 14.578125 -0.285156 13.765625 0.078125 C 12.953125 0.441406 12 0.625 10.90625 0.625 Z M 13.21875 -5.453125 C 14.59375 -5.453125 15.707031 -5.910156 16.5625 -6.828125 C 17.414062 -7.753906 17.84375 -9.113281 17.84375 -10.90625 C 17.84375 -12.695312 17.414062 -14.054688 16.5625 -14.984375 C 15.707031 -15.910156 14.59375 -16.375 13.21875 -16.375 C 11.84375 -16.375 10.726562 -15.910156 9.875 -14.984375 C 9.03125 -14.054688 8.609375 -12.695312 8.609375 -10.90625 C 8.609375 -9.113281 9.03125 -7.753906 9.875 -6.828125 C 10.726562 -5.910156 11.84375 -5.453125 13.21875 -5.453125 Z"/></g></g></g><g fill="#a3e635" fill-opacity="1"><g transform="translate(137.261702,33.238996)"><g><path d="M 2.3125 -21.828125 L 9.4375 -21.828125 L 9.4375 0 L 2.3125 0 Z M 5.875 -24.125 C 4.695312 -24.125 3.738281 -24.476562 3 -25.1875 C 2.257812 -25.90625 1.890625 -26.742188 1.890625 -27.703125 C 1.890625 -28.679688 2.257812 -29.519531 3 -30.21875 C 3.738281 -30.914062 4.695312 -31.265625 5.875 -31.265625 C 7.050781 -31.265625 8.007812 -30.914062 8.75 -30.21875 C 9.488281 -29.519531 9.859375 -28.679688 9.859375 -27.703125 C 9.859375 -26.742188 9.488281 -25.90625 8.75 -25.1875 C 8.007812 -24.476562 7.050781 -24.125 5.875 -24.125 Z"/></g></g></g></g></g></g></svg>`
+/* ─── Shared design tokens ──────────────────────────────────────────────────
+ * These match the app's light-mode palette:
+ *   bg: #f5f6fa  card: #ffffff  border: #dde1ed
+ *   text: #0f0f18  muted: #5a5a70  primary: #497dcb
+ */
+const EMAIL_BG         = "#f0f2f8"
+const CARD_BG          = "#ffffff"
+const CARD_BORDER      = "#dde1ed"
+const FOOTER_BG        = "#eef0f7"
+const TEXT_HEADING     = "#0f0f18"
+const TEXT_BODY        = "#3d3d52"
+const TEXT_MUTED       = "#7a7a90"
+const TEXT_LINK        = "#497dcb"
+const PRIMARY_BTN      = "#497dcb"
+const PRIMARY_BTN_TEXT = "#ffffff"
+const ACCENT_LABEL     = "#497dcb"
+const DIVIDER          = "#e8eaf2"
+const CODE_BG          = "#f5f7ff"
+const CODE_BORDER      = "#c8d3f0"
+const CODE_TEXT        = "#0f0f18"
+
+const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="108" height="27" viewBox="0 0 150 37.5" preserveAspectRatio="xMidYMid meet"><defs><g/><clipPath id="c6ebf4f290"><path d="M 0.988281 0 L 149 0 L 149 37.007812 L 0.988281 37.007812 Z M 0.988281 0 " clip-rule="nonzero"/></clipPath><clipPath id="6a9a31d2b0"><rect x="0" width="149" y="0" height="38"/></clipPath></defs><g clip-path="url(#c6ebf4f290)"><g transform="matrix(1,0,0,1,0,0)"><g clip-path="url(#6a9a31d2b0)"><g fill="#497dcb" fill-opacity="1"><g transform="translate(0.659121,33.238996)"><g><path d="M 17.84375 0.84375 C 15.4375 0.84375 13.222656 0.445312 11.203125 -0.34375 C 9.191406 -1.144531 7.460938 -2.238281 6.015625 -3.625 C 4.578125 -5.007812 3.457031 -6.644531 2.65625 -8.53125 C 1.863281 -10.425781 1.46875 -12.476562 1.46875 -14.6875 C 1.46875 -16.894531 1.863281 -18.941406 2.65625 -20.828125 C 3.457031 -22.722656 4.578125 -24.363281 6.015625 -25.75 C 7.460938 -27.132812 9.191406 -28.222656 11.203125 -29.015625 C 13.222656 -29.816406 15.4375 -30.21875 17.84375 -30.21875 C 19.4375 -30.21875 20.875 -30.046875 22.15625 -29.703125 C 23.445312 -29.367188 24.601562 -28.929688 25.625 -28.390625 C 26.644531 -27.847656 27.539062 -27.234375 28.3125 -26.546875 C 29.082031 -25.859375 29.742188 -25.148438 30.296875 -24.421875 C 31.617188 -22.710938 32.570312 -20.796875 33.15625 -18.671875 L 25.1875 -18.671875 C 24.820312 -19.484375 24.300781 -20.210938 23.625 -20.859375 C 23.070312 -21.421875 22.328125 -21.929688 21.390625 -22.390625 C 20.453125 -22.847656 19.269531 -23.078125 17.84375 -23.078125 C 16.632812 -23.078125 15.523438 -22.875 14.515625 -22.46875 C 13.515625 -22.0625 12.65625 -21.492188 11.9375 -20.765625 C 11.226562 -20.046875 10.671875 -19.164062 10.265625 -18.125 C 9.859375 -17.09375 9.65625 -15.945312 9.65625 -14.6875 C 9.65625 -13.425781 9.859375 -12.273438 10.265625 -11.234375 C 10.671875 -10.203125 11.226562 -9.320312 11.9375 -8.59375 C 12.65625 -7.875 13.515625 -7.3125 14.515625 -6.90625 C 15.523438 -6.5 16.632812 -6.296875 17.84375 -6.296875 C 19.4375 -6.296875 20.710938 -6.550781 21.671875 -7.0625 C 22.640625 -7.582031 23.40625 -8.164062 23.96875 -8.8125 C 24.601562 -9.539062 25.078125 -10.378906 25.390625 -11.328125 L 33.359375 -11.328125 C 32.722656 -9.035156 31.734375 -7.007812 30.390625 -5.25 C 29.828125 -4.488281 29.15625 -3.738281 28.375 -3 C 27.59375 -2.257812 26.679688 -1.609375 25.640625 -1.046875 C 24.609375 -0.484375 23.445312 -0.03125 22.15625 0.3125 C 20.875 0.664062 19.4375 0.84375 17.84375 0.84375 Z"/></g></g></g><g fill="#497dcb" fill-opacity="1"><g transform="translate(32.763898,33.238996)"><g><path d="M 2.09375 -29.375 L 9.234375 -29.375 L 9.234375 -5.671875 L 14.0625 -5.671875 L 14.0625 0 L 2.09375 0 Z"/></g></g></g><g fill="#497dcb" fill-opacity="1"><g transform="translate(44.724477,33.238996)"><g><path d="M 10.90625 0.625 C 9.59375 0.625 8.351562 0.359375 7.1875 -0.171875 C 6.03125 -0.703125 5.007812 -1.460938 4.125 -2.453125 C 3.25 -3.441406 2.550781 -4.648438 2.03125 -6.078125 C 1.519531 -7.503906 1.265625 -9.113281 1.265625 -10.90625 C 1.265625 -12.695312 1.519531 -14.304688 2.03125 -15.734375 C 2.550781 -17.160156 3.25 -18.367188 4.125 -19.359375 C 5.007812 -20.359375 6.03125 -21.125 7.1875 -21.65625 C 8.351562 -22.1875 9.59375 -22.453125 10.90625 -22.453125 C 12 -22.453125 12.953125 -22.257812 13.765625 -21.875 C 14.578125 -21.5 15.265625 -21.09375 15.828125 -20.65625 C 16.460938 -20.144531 16.992188 -19.554688 17.421875 -18.890625 L 17.84375 -18.890625 L 17.84375 -21.828125 L 24.96875 -21.828125 L 24.96875 0 L 17.84375 0 L 17.84375 -2.9375 L 17.421875 -2.9375 C 16.992188 -2.238281 16.460938 -1.640625 15.828125 -1.140625 C 15.265625 -0.691406 14.578125 -0.285156 13.765625 0.078125 C 12.953125 0.441406 12 0.625 10.90625 0.625 Z M 13.21875 -5.453125 C 14.59375 -5.453125 15.707031 -5.910156 16.5625 -6.828125 C 17.414062 -7.753906 17.84375 -9.113281 17.84375 -10.90625 C 17.84375 -12.695312 17.414062 -14.054688 16.5625 -14.984375 C 15.707031 -15.910156 14.59375 -16.375 13.21875 -16.375 C 11.84375 -16.375 10.726562 -15.910156 9.875 -14.984375 C 9.03125 -14.054688 8.609375 -12.695312 8.609375 -10.90625 C 8.609375 -9.113281 9.03125 -7.753906 9.875 -6.828125 C 10.726562 -5.910156 11.84375 -5.453125 13.21875 -5.453125 Z"/></g></g></g><g fill="#497dcb" fill-opacity="1"><g transform="translate(69.275175,33.238996)"><g><path d="M 2.09375 -21.828125 L 9.015625 -21.828125 L 9.015625 -18.671875 L 9.4375 -18.671875 C 9.695312 -19.347656 10.078125 -19.9375 10.578125 -20.4375 C 10.992188 -20.882812 11.535156 -21.296875 12.203125 -21.671875 C 12.878906 -22.054688 13.734375 -22.25 14.765625 -22.25 L 17 -22.25 L 17 -15.3125 L 13.4375 -15.3125 C 12.175781 -15.3125 11.160156 -14.925781 10.390625 -14.15625 C 9.617188 -13.394531 9.234375 -12.382812 9.234375 -11.125 L 9.234375 0 L 2.09375 0 Z"/></g></g></g><g fill="#497dcb" fill-opacity="1"><g transform="translate(84.383296,33.238996)"><g><path d="M 11.96875 0.625 C 10.726562 0.625 9.617188 0.507812 8.640625 0.28125 C 7.660156 0.0625 6.789062 -0.226562 6.03125 -0.59375 C 5.28125 -0.957031 4.632812 -1.367188 4.09375 -1.828125 C 3.550781 -2.285156 3.082031 -2.753906 2.6875 -3.234375 C 1.757812 -4.347656 1.144531 -5.648438 0.84375 -7.140625 L 7.96875 -7.140625 C 8.113281 -6.691406 8.351562 -6.296875 8.6875 -5.953125 C 9 -5.648438 9.410156 -5.382812 9.921875 -5.15625 C 10.441406 -4.9375 11.125 -4.828125 11.96875 -4.828125 C 13.03125 -4.828125 13.785156 -4.96875 14.234375 -5.25 C 14.679688 -5.53125 14.90625 -5.878906 14.90625 -6.296875 C 14.90625 -6.773438 14.582031 -7.148438 13.9375 -7.421875 C 13.289062 -7.703125 12.484375 -7.953125 11.515625 -8.171875 C 10.554688 -8.398438 9.515625 -8.660156 8.390625 -8.953125 C 7.273438 -9.253906 6.234375 -9.675781 5.265625 -10.21875 C 4.296875 -10.757812 3.488281 -11.460938 2.84375 -12.328125 C 2.207031 -13.203125 1.890625 -14.335938 1.890625 -15.734375 C 1.890625 -16.609375 2.082031 -17.441406 2.46875 -18.234375 C 2.863281 -19.035156 3.453125 -19.75 4.234375 -20.375 C 5.015625 -21 5.992188 -21.5 7.171875 -21.875 C 8.347656 -22.257812 9.734375 -22.453125 11.328125 -22.453125 C 12.503906 -22.453125 13.5625 -22.347656 14.5 -22.140625 C 15.4375 -21.929688 16.269531 -21.648438 17 -21.296875 C 17.726562 -20.953125 18.347656 -20.554688 18.859375 -20.109375 C 19.378906 -19.660156 19.835938 -19.210938 20.234375 -18.765625 C 21.097656 -17.671875 21.695312 -16.453125 22.03125 -15.109375 L 15.109375 -15.109375 C 14.992188 -15.503906 14.796875 -15.851562 14.515625 -16.15625 C 14.296875 -16.40625 13.960938 -16.640625 13.515625 -16.859375 C 13.066406 -17.085938 12.476562 -17.203125 11.75 -17.203125 C 10.914062 -17.203125 10.285156 -17.0625 9.859375 -16.78125 C 9.441406 -16.507812 9.234375 -16.160156 9.234375 -15.734375 C 9.234375 -15.234375 9.550781 -14.859375 10.1875 -14.609375 C 10.832031 -14.359375 11.640625 -14.125 12.609375 -13.90625 C 13.578125 -13.695312 14.617188 -13.453125 15.734375 -13.171875 C 16.859375 -12.898438 17.898438 -12.503906 18.859375 -11.984375 C 19.828125 -11.460938 20.632812 -10.769531 21.28125 -9.90625 C 21.925781 -9.039062 22.25 -7.90625 22.25 -6.5 C 22.25 -5.550781 22.035156 -4.648438 21.609375 -3.796875 C 21.191406 -2.941406 20.554688 -2.1875 19.703125 -1.53125 C 18.847656 -0.875 17.773438 -0.351562 16.484375 0.03125 C 15.203125 0.425781 13.695312 0.625 11.96875 0.625 Z"/></g></g></g><g fill="#497dcb" fill-opacity="1"><g transform="translate(105.156967,33.238996)"><g><path d="M 5.03125 0.625 C 3.96875 0.625 3.070312 0.265625 2.34375 -0.453125 C 1.625 -1.179688 1.265625 -2.078125 1.265625 -3.140625 C 1.265625 -4.210938 1.625 -5.109375 2.34375 -5.828125 C 3.070312 -6.554688 3.96875 -6.921875 5.03125 -6.921875 C 6.09375 -6.921875 6.988281 -6.554688 7.71875 -5.828125 C 8.445312 -5.109375 8.8125 -4.210938 8.8125 -3.140625 C 8.8125 -2.078125 8.445312 -1.179688 7.71875 -0.453125 C 6.988281 0.265625 6.09375 0.625 5.03125 0.625 Z"/></g></g></g><g fill="#497dcb" fill-opacity="1"><g transform="translate(112.711012,33.238996)"><g><path d="M 10.90625 0.625 C 9.59375 0.625 8.351562 0.359375 7.1875 -0.171875 C 6.03125 -0.703125 5.007812 -1.460938 4.125 -2.453125 C 3.25 -3.441406 2.550781 -4.648438 2.03125 -6.078125 C 1.519531 -7.503906 1.265625 -9.113281 1.265625 -10.90625 C 1.265625 -12.695312 1.519531 -14.304688 2.03125 -15.734375 C 2.550781 -17.160156 3.25 -18.367188 4.125 -19.359375 C 5.007812 -20.359375 6.03125 -21.125 7.1875 -21.65625 C 8.351562 -22.1875 9.59375 -22.453125 10.90625 -22.453125 C 12 -22.453125 12.953125 -22.257812 13.765625 -21.875 C 14.578125 -21.5 15.265625 -21.09375 15.828125 -20.65625 C 16.460938 -20.144531 16.992188 -19.554688 17.421875 -18.890625 L 17.84375 -18.890625 L 17.84375 -21.828125 L 24.96875 -21.828125 L 24.96875 0 L 17.84375 0 L 17.84375 -2.9375 L 17.421875 -2.9375 C 16.992188 -2.238281 16.460938 -1.640625 15.828125 -1.140625 C 15.265625 -0.691406 14.578125 -0.285156 13.765625 0.078125 C 12.953125 0.441406 12 0.625 10.90625 0.625 Z M 13.21875 -5.453125 C 14.59375 -5.453125 15.707031 -5.910156 16.5625 -6.828125 C 17.414062 -7.753906 17.84375 -9.113281 17.84375 -10.90625 C 17.84375 -12.695312 17.414062 -14.054688 16.5625 -14.984375 C 15.707031 -15.910156 14.59375 -16.375 13.21875 -16.375 C 11.84375 -16.375 10.726562 -15.910156 9.875 -14.984375 C 9.03125 -14.054688 8.609375 -12.695312 8.609375 -10.90625 C 8.609375 -9.113281 9.03125 -7.753906 9.875 -6.828125 C 10.726562 -5.910156 11.84375 -5.453125 13.21875 -5.453125 Z"/></g></g></g><g fill="#497dcb" fill-opacity="1"><g transform="translate(137.261702,33.238996)"><g><path d="M 2.3125 -21.828125 L 9.4375 -21.828125 L 9.4375 0 L 2.3125 0 Z M 5.875 -24.125 C 4.695312 -24.125 3.738281 -24.476562 3 -25.1875 C 2.257812 -25.90625 1.890625 -26.742188 1.890625 -27.703125 C 1.890625 -28.679688 2.257812 -29.519531 3 -30.21875 C 3.738281 -30.914062 4.695312 -31.265625 5.875 -31.265625 C 7.050781 -31.265625 8.007812 -30.914062 8.75 -30.21875 C 9.488281 -29.519531 9.859375 -28.679688 9.859375 -27.703125 C 9.859375 -26.742188 9.488281 -25.90625 8.75 -25.1875 C 8.007812 -24.476562 7.050781 -24.125 5.875 -24.125 Z"/></g></g></g></g></g></g></svg>`
+
+export function otpEmail({ code, appUrl, name }: { code: string; appUrl: string; name?: string }): string {
+  const greeting = name ? `Hi ${name},` : "Hi there,"
+  const digits   = code.split("").map(d => `
+    <td style="padding: 0 5px;">
+      <div style="width: 44px; height: 56px; background-color: ${CODE_BG}; border: 1.5px solid ${CODE_BORDER}; border-radius: 10px; text-align: center; line-height: 56px; font-size: 26px; font-weight: 700; color: ${CODE_TEXT}; font-family: 'Courier New', monospace;">${d}</div>
+    </td>`).join("")
+
+  return `<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Clars sign-in code</title>
+  <style>body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}table,td{mso-table-lspace:0pt;mso-table-rspace:0pt;}*{box-sizing:border-box;}</style>
+</head>
+<body style="margin:0;padding:0;background-color:${EMAIL_BG};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:${EMAIL_BG};">
+    <tr><td align="center" style="padding:48px 16px 44px 16px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="560" style="max-width:560px;width:100%;">
+
+        <!-- Logo -->
+        <tr><td align="center" style="padding-bottom:32px;">${LOGO_SVG}</td></tr>
+
+        <!-- Card -->
+        <tr><td style="background-color:${CARD_BG};border-radius:14px;border:1px solid ${CARD_BORDER};box-shadow:0 1px 6px rgba(73,125,203,0.06);">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+            <tr><td style="padding:44px 48px 40px 48px;">
+
+              <!-- Label pill -->
+              <div style="display:inline-block;padding:4px 12px;border-radius:999px;background-color:#e8eef9;margin-bottom:20px;">
+                <span style="font-size:11px;font-weight:600;color:${ACCENT_LABEL};letter-spacing:0.07em;text-transform:uppercase;">Sign-in Code</span>
+              </div>
+
+              <h1 style="margin:0 0 12px 0;font-size:26px;font-weight:700;color:${TEXT_HEADING};letter-spacing:-0.4px;line-height:1.2;">Your verification code</h1>
+              <p style="margin:0 0 28px 0;font-size:15px;color:${TEXT_BODY};line-height:1.7;">${greeting} Enter this code to complete your sign-in to Clars.ai. It expires in <strong style="color:${TEXT_HEADING};">10 minutes</strong>.</p>
+
+              <!-- Code digits -->
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+                <tr>${digits}</tr>
+              </table>
+
+              <!-- Divider -->
+              <div style="height:1px;background-color:${DIVIDER};margin:28px 0;"></div>
+
+              <p style="margin:0;font-size:13px;color:${TEXT_MUTED};line-height:1.6;">
+                If you didn&apos;t try to sign in, you can safely ignore this email. Someone may have typed your address by mistake.
+              </p>
+            </td></tr>
+
+            <!-- Footer strip -->
+            <tr><td style="background-color:${CARD_BG};border-top:1px solid ${CARD_BORDER};border-radius:0 0 14px 14px;padding:18px 48px;">
+              <p style="margin:0;font-size:12px;color:${TEXT_MUTED};line-height:1.6;">
+                This code is single-use and expires in <strong>10 minutes</strong>. Never share it with anyone.
+              </p>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Footer links -->
+        <tr><td align="center" style="padding:32px 0 0 0;">
+          <p style="margin:0 0 10px 0;font-size:13px;color:${TEXT_MUTED};">Sent by <a href="${appUrl}" style="color:${TEXT_LINK};text-decoration:none;font-weight:500;">Clars.ai</a></p>
+          <p style="margin:0;font-size:12px;color:#9999b0;">
+            <a href="${appUrl}/privacy" style="color:#9999b0;text-decoration:underline;">Privacy Policy</a>&nbsp;&nbsp;·&nbsp;&nbsp;
+            <a href="${appUrl}/terms"   style="color:#9999b0;text-decoration:underline;">Terms of Service</a>
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+}
 
 export function resetPasswordEmail({
   resetUrl,
@@ -13,7 +107,7 @@ export function resetPasswordEmail({
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Reset your password – clars.ai</title>
+  <title>Reset your password – Clars.ai</title>
   <style>
     body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
     table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
@@ -21,46 +115,47 @@ export function resetPasswordEmail({
     * { box-sizing: border-box; }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<body style="margin:0;padding:0;background-color:${EMAIL_BG};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
 
-  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color: #000000;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:${EMAIL_BG};">
     <tr>
-      <td align="center" style="padding: 52px 16px 48px 16px;">
-
-        <table role="presentation" cellpadding="0" cellspacing="0" width="560" style="max-width: 560px; width: 100%;">
+      <td align="center" style="padding:48px 16px 44px 16px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="560" style="max-width:560px;width:100%;">
 
           <!-- Logo -->
           <tr>
-            <td align="center" style="padding-bottom: 44px;">
+            <td align="center" style="padding-bottom:32px;">
               ${LOGO_SVG}
             </td>
           </tr>
 
           <!-- Card -->
           <tr>
-            <td style="background-color: #111111; border-radius: 12px; border: 1px solid #222222;">
+            <td style="background-color:${CARD_BG};border-radius:14px;border:1px solid ${CARD_BORDER};box-shadow:0 1px 6px rgba(73,125,203,0.06);">
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
-                  <td style="padding: 48px 48px 44px 48px;">
+                  <td style="padding:44px 48px 40px 48px;">
 
-                    <!-- Label -->
-                    <p style="margin: 0 0 20px 0; font-size: 12px; font-weight: 600; color: #a3e635; letter-spacing: 0.08em; text-transform: uppercase;">Password Reset</p>
+                    <!-- Label pill -->
+                    <div style="display:inline-block;padding:4px 12px;border-radius:999px;background-color:#e8eef9;margin-bottom:20px;">
+                      <span style="font-size:11px;font-weight:600;color:${ACCENT_LABEL};letter-spacing:0.07em;text-transform:uppercase;">Password Reset</span>
+                    </div>
 
                     <!-- Heading -->
-                    <h1 style="margin: 0 0 16px 0; font-size: 28px; font-weight: 700; color: #f5f5f5; letter-spacing: -0.6px; line-height: 1.15;">Reset your password</h1>
+                    <h1 style="margin:0 0 14px 0;font-size:26px;font-weight:700;color:${TEXT_HEADING};letter-spacing:-0.4px;line-height:1.2;">Reset your password</h1>
 
                     <!-- Body -->
-                    <p style="margin: 0 0 36px 0; font-size: 15px; color: #888888; line-height: 1.75;">
-                      We received a request to reset the password associated with your <span style="color: #f5f5f5; font-weight: 500;">clars&#46;ai</span> account. Click the button below to set a new password. This link expires in <span style="color: #f0f0f0; font-weight: 500;">1 hour</span>.
+                    <p style="margin:0 0 32px 0;font-size:15px;color:${TEXT_BODY};line-height:1.7;">
+                      We received a request to reset the password for your <strong style="color:${TEXT_HEADING};">Clars.ai</strong> account. Click the button below to set a new password. This link expires in <strong style="color:${TEXT_HEADING};">1 hour</strong>.
                     </p>
 
                     <!-- CTA Button -->
                     <table role="presentation" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="border-radius: 8px; background-color: #a3e635;">
+                        <td style="border-radius:9px;background-color:${PRIMARY_BTN};">
                           <a href="${resetUrl}"
                              target="_blank"
-                             style="display: inline-block; padding: 13px 28px; font-size: 14px; font-weight: 600; color: #000000; text-decoration: none; border-radius: 8px; letter-spacing: -0.1px; white-space: nowrap;">
+                             style="display:inline-block;padding:13px 32px;font-size:14px;font-weight:600;color:${PRIMARY_BTN_TEXT};text-decoration:none;border-radius:9px;letter-spacing:-0.1px;white-space:nowrap;">
                             Set new password
                           </a>
                         </td>
@@ -68,30 +163,24 @@ export function resetPasswordEmail({
                     </table>
 
                     <!-- Divider -->
-                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-                      <tr>
-                        <td style="padding: 36px 0 32px 0; border-bottom: 0;">
-                          <div style="height: 1px; background-color: #1e1e1e;"></div>
-                        </td>
-                      </tr>
-                    </table>
+                    <div style="height:1px;background-color:${DIVIDER};margin:32px 0 28px 0;"></div>
 
-                    <!-- Fallback URL section -->
-                    <p style="margin: 0 0 10px 0; font-size: 13px; color: #555555; line-height: 1.5;">
-                      If the button above doesn't work, copy and paste this link into your browser:
+                    <!-- Fallback URL -->
+                    <p style="margin:0 0 8px 0;font-size:13px;color:${TEXT_MUTED};line-height:1.5;">
+                      If the button doesn&apos;t work, paste this link into your browser:
                     </p>
-                    <p style="margin: 0; font-size: 12px; color: #444444; word-break: break-all; line-height: 1.7;">
-                      <a href="${resetUrl}" style="color: #666666; text-decoration: underline;">${resetUrl}</a>
+                    <p style="margin:0;font-size:12px;word-break:break-all;line-height:1.7;">
+                      <a href="${resetUrl}" style="color:${TEXT_LINK};text-decoration:underline;">${resetUrl}</a>
                     </p>
 
                   </td>
                 </tr>
 
-                <!-- Security note -->
+                <!-- Footer strip -->
                 <tr>
-                  <td style="background-color: #0d0d0d; border-top: 1px solid #1a1a1a; border-radius: 0 0 12px 12px; padding: 20px 48px;">
-                    <p style="margin: 0; font-size: 13px; color: #555555; line-height: 1.65;">
-                      If you didn't request this, you can safely ignore this email — your password will remain unchanged.
+                  <td style="background-color:${CARD_BG};border-top:1px solid ${CARD_BORDER};border-radius:0 0 14px 14px;padding:18px 48px;">
+                    <p style="margin:0;font-size:12px;color:${TEXT_MUTED};line-height:1.6;">
+                      If you didn&apos;t request this, you can safely ignore this email — your password will remain unchanged.
                     </p>
                   </td>
                 </tr>
@@ -100,16 +189,16 @@ export function resetPasswordEmail({
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- Footer links -->
           <tr>
-            <td align="center" style="padding: 40px 0 0 0;">
-              <p style="margin: 0 0 12px 0; font-size: 13px; color: #333333; line-height: 1.5;">
-                Sent by <a href="${appUrl}" style="color: #3a3a3a; text-decoration: none;">clars&#46;ai</a>
+            <td align="center" style="padding:32px 0 0 0;">
+              <p style="margin:0 0 10px 0;font-size:13px;color:${TEXT_MUTED};">
+                Sent by <a href="${appUrl}" style="color:${TEXT_LINK};text-decoration:none;font-weight:500;">Clars.ai</a>
               </p>
-              <p style="margin: 0; font-size: 12px; color: #2a2a2a; line-height: 1.5;">
-                <a href="${appUrl}/privacy" style="color: #3a3a3a; text-decoration: none;">Privacy Policy</a>
+              <p style="margin:0;font-size:12px;color:#9999b0;">
+                <a href="${appUrl}/privacy" style="color:#9999b0;text-decoration:underline;">Privacy Policy</a>
                 &nbsp;&nbsp;·&nbsp;&nbsp;
-                <a href="${appUrl}/terms" style="color: #3a3a3a; text-decoration: none;">Terms of Service</a>
+                <a href="${appUrl}/terms" style="color:#9999b0;text-decoration:underline;">Terms of Service</a>
               </p>
             </td>
           </tr>
