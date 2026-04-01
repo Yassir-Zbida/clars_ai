@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getDb } from "@/server/db"
 import { User } from "@/server/models/user"
 import bcrypt from "bcryptjs"
+import { clientIpFromRequest, consumeSignupAttempt } from "@/lib/rate-limit-memory"
 
 const MIN_PASSWORD_LENGTH = 8
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -43,6 +44,15 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "An account with this email already exists." },
         { status: 409 }
+      )
+    }
+
+    const ip = clientIpFromRequest(request)
+    const rl = consumeSignupAttempt(`ip:${ip}`, `email:${email}`)
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many signup attempts. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } }
       )
     }
 

@@ -182,6 +182,7 @@ export default function SettingsPage() {
   const [savingBiz, setSavingBiz] = useState(false)
   const [savingCurrency, setSavingCurrency] = useState(false)
   const [seedingDemo, setSeedingDemo] = useState(false)
+  const [canSeedDemo, setCanSeedDemo] = useState(false)
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile")
   const [otpEnabled, setOtpEnabled] = useState(false)
   const [savingOtp, setSavingOtp] = useState(false)
@@ -204,6 +205,22 @@ export default function SettingsPage() {
   }
 
   useEffect(() => { void loadOtp() }, [loadOtp])
+
+  useEffect(() => {
+    if (status !== "authenticated") return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch("/api/dev/seed-demo", { credentials: "include" })
+        if (!res.ok) return
+        const j = (await res.json()) as { canSeed?: boolean }
+        if (!cancelled) setCanSeedDemo(!!j.canSeed)
+      } catch {
+        if (!cancelled) setCanSeedDemo(false)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [status])
 
   useEffect(() => {
     let cancelled = false
@@ -297,7 +314,6 @@ export default function SettingsPage() {
   }
 
   const email = session?.user?.email ?? ""
-  const isDemoUser = email.trim().toLowerCase() === "zbidayassir10@gmail.com"
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pb-8 pt-0 lg:px-6">
@@ -476,7 +492,7 @@ export default function SettingsPage() {
           </SectionCard>
 
           {/* Demo data — demo user only */}
-          {isDemoUser && (
+          {canSeedDemo && (
             <SectionCard className="border-amber-500/30 bg-amber-500/5">
               <SectionHeader icon="ri-database-2-line" iconBg="bg-amber-500/10" iconColor="text-amber-600" title="Demo data" description="Reset and seed dashboard data for product demonstrations" />
               <div className="space-y-3 px-5 py-4">
