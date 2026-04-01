@@ -22,6 +22,7 @@ export default defineConfig({
         command: "npm run dev",
         url: "http://127.0.0.1:3000",
         reuseExistingServer: !process.env.CI,
-        timeout: 120_000,
+        // GitHub runners often need longer on first `next dev` compile.
+        timeout: process.env.CI ? 180_000 : 120_000,
       },
 })
