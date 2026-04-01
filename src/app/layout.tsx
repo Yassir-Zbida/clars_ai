@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { DM_Sans } from "next/font/google"
 import { cn } from "@/lib/utils"
+import { Providers } from "@/app/providers"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 
@@ -28,7 +29,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen antialiased">
         <TooltipProvider>
-          {children}
+          <Providers>
+            {children}
+          </Providers>
           <Toaster />
         </TooltipProvider>
       </body>
