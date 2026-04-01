@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -221,7 +222,7 @@ function SidebarSearchRow({ isAdminMode }: { isAdminMode: boolean }) {
           {grouped.map(([cat, items]) => (
             <div key={cat}>
               <p className="px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{cat}</p>
-              {items.map((r, i) => {
+              {items.map((r) => {
                 const globalIdx = allResults.indexOf(r)
                 return (
                   <button
@@ -499,7 +500,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               render={<a href={homeHref} />}
               tooltip="Workspace home"
             >
-              <img src="/logo.svg" alt="Clars.ai" className="h-7 w-auto" />
+              <Image src="/logo.svg" alt="Clars.ai" width={120} height={28} className="h-7 w-auto" priority />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

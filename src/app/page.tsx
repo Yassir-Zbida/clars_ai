@@ -1,6 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
+
+import { getSocialLinks } from "@/lib/public-site"
 
 const css = `
 /* ─── DESIGN TOKENS ─────────────────────────────── */
@@ -648,9 +651,44 @@ body::after {
 }
 `;
 
+/** GSAP + ScrollTrigger (CDN) — typings for APIs used on this page only. */
+type ScrollTriggerSelf = { scroll: () => number }
+type ScrollTriggerApi = {
+  create: (opts: { start?: string; onUpdate?: (self: ScrollTriggerSelf) => void }) => void
+  getAll: () => Array<{ kill: () => void }>
+}
+type GsapTimeline = {
+  fromTo: (
+    targets: string,
+    fromVars: Record<string, unknown>,
+    toVars: Record<string, unknown>,
+    position?: string
+  ) => GsapTimeline
+}
+type GsapApi = {
+  registerPlugin: (plugin: unknown) => void
+  timeline: (opts?: { delay?: number }) => GsapTimeline
+  fromTo: (
+    targets: string | Element,
+    fromVars: Record<string, unknown>,
+    toVars: Record<string, unknown>,
+    position?: string
+  ) => void
+  /** GSAP animates DOM nodes, selectors, and plain objects (e.g. counter `{ v: 0 }`). */
+  to: (targets: string | Element | Record<string, unknown>, toVars: Record<string, unknown>) => void
+  utils: { toArray: (selector: string) => Element[] }
+}
+
+function getGsapRuntime(): { gsap: GsapApi; ScrollTrigger: ScrollTriggerApi } | null {
+  const w = window as Window & { gsap?: GsapApi; ScrollTrigger?: ScrollTriggerApi }
+  if (!w.gsap || !w.ScrollTrigger) return null
+  return { gsap: w.gsap, ScrollTrigger: w.ScrollTrigger }
+}
+
 export default function HomePage() {
   const [plan, setPlan] = useState<'monthly' | 'annual'>('monthly');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const socialLinks = getSocialLinks();
 
   useEffect(() => {
     // ── Inject fonts & icons ──────────────────
@@ -677,8 +715,9 @@ export default function HomePage() {
       await loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js');
       await loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js');
 
-      const { gsap } = window as any;
-      const { ScrollTrigger } = window as any;
+      const runtime = getGsapRuntime();
+      if (!runtime) return;
+      const { gsap, ScrollTrigger } = runtime;
 
       gsap.registerPlugin(ScrollTrigger);
 
@@ -695,8 +734,8 @@ export default function HomePage() {
       gsap.fromTo('#main-nav', { opacity:0, y:-20 }, { opacity:1, y:0, duration:.8, ease:'power2.out', delay:.05 });
 
       // ── Scroll reveals ────────────────────
-      const reveal = (sel: string, fromVars: object) => {
-        gsap.utils.toArray(sel).forEach((el: any, i: number) => {
+      const reveal = (sel: string, fromVars: Record<string, unknown>) => {
+        gsap.utils.toArray(sel).forEach((el, i: number) => {
           gsap.fromTo(el, { opacity:0, ...fromVars }, {
             opacity:1, x:0, y:0, scale:1,
             duration:.75, ease:'power2.out', delay: i * .08,
@@ -716,31 +755,18 @@ export default function HomePage() {
       });
 
       // Feature cards stagger
-      gsap.utils.toArray('.cl-feat-bento .cl-f-card').forEach((card: any, i: number) => {
+      gsap.utils.toArray('.cl-feat-bento .cl-f-card').forEach((card, i: number) => {
         gsap.fromTo(card, { opacity:0, y:30 }, {
           opacity:1, y:0, duration:.65, ease:'power2.out', delay: i * .1,
           scrollTrigger:{ trigger:card, start:'top 90%', toggleActions:'play none none none' }
         });
       });
 
-      // Stat counters
-      document.querySelectorAll('.cl-proof-num').forEach((el: any) => {
-        const text = el.textContent || '';
-        const obj = { v: 0 };
-        if (text.includes('5,000')) {
-          gsap.to(obj, { v:5000, duration:1.8, ease:'power2.out', onUpdate:()=>{ el.textContent = Math.round(obj.v).toLocaleString()+'+'; }, scrollTrigger:{ trigger:el, start:'top 85%', once:true } });
-        } else if (text.includes('12M')) {
-          gsap.to(obj, { v:12, duration:1.8, ease:'power2.out', onUpdate:()=>{ el.textContent = '$'+obj.v.toFixed(1)+'M+'; }, scrollTrigger:{ trigger:el, start:'top 85%', once:true } });
-        } else if (text.includes('68')) {
-          gsap.to(obj, { v:68, duration:1.8, ease:'power2.out', onUpdate:()=>{ el.textContent = Math.round(obj.v)+'%'; }, scrollTrigger:{ trigger:el, start:'top 85%', once:true } });
-        }
-      });
-
       // Mockup float
       gsap.to('.cl-mockup-frame', { y:-12, duration:4, ease:'sine.inOut', repeat:-1, yoyo:true });
 
       // Step numbers parallax
-      gsap.utils.toArray('.cl-step-num').forEach((el: any) => {
+      gsap.utils.toArray('.cl-step-num').forEach((el) => {
         gsap.to(el, { y:-30, ease:'none', scrollTrigger:{ trigger:el, start:'top bottom', end:'bottom top', scrub:true } });
       });
 
@@ -751,7 +777,7 @@ export default function HomePage() {
         let isHidden = false;
         ScrollTrigger.create({
           start: 'top -80',
-          onUpdate(self: any) {
+          onUpdate(self: ScrollTriggerSelf) {
             const y = self.scroll();
             const diff = y - lastY;
 
@@ -786,7 +812,7 @@ export default function HomePage() {
       }
 
       // Pipeline card hover
-      document.querySelectorAll('.m-pipe-card').forEach((card: any) => {
+      document.querySelectorAll('.m-pipe-card').forEach((card) => {
         card.addEventListener('mouseenter', () => gsap.to(card, { scale:1.03, borderColor:'rgba(73,125,203,0.35)', duration:.2 }));
         card.addEventListener('mouseleave', () => gsap.to(card, { scale:1, borderColor:'var(--border)', duration:.2 }));
       });
@@ -794,10 +820,9 @@ export default function HomePage() {
     })();
 
     return () => {
-      // Cleanup ScrollTrigger on unmount
-      const w = window as any;
-      if (w.ScrollTrigger) w.ScrollTrigger.getAll().forEach((t: any) => t.kill());
-    };
+      const w = window as Window & { ScrollTrigger?: ScrollTriggerApi }
+      w.ScrollTrigger?.getAll().forEach((t) => t.kill())
+    }
   }, []);
 
   return (
@@ -812,10 +837,13 @@ export default function HomePage() {
           <nav className="cl-nav" id="main-nav">
             <div className="cl-nav-inner">
               <a href="/" className="cl-nav-logo">
-                <img
+                <Image
                   src="/logo.svg"
                   alt="Clars.ai"
+                  width={120}
+                  height={32}
                   className="h-8 w-auto"
+                  priority
                 />
               </a>
               <div className="cl-nav-links">
@@ -850,12 +878,12 @@ export default function HomePage() {
               </p>
               <div className="cl-hero-ctas" id="hero-ctas">
       <a href="/signup" className="cl-btn-primary"><i className="ri-flashlight-fill" /> Start for Free</a>
-                <a href="#" className="cl-btn-ghost"><i className="ri-play-circle-line" /> Watch Demo</a>
+                <a href="/contact" className="cl-btn-ghost"><i className="ri-play-circle-line" /> Watch Demo</a>
               </div>
               <div className="cl-hero-note" id="hero-note">
                 <span><i className="ri-shield-check-line" /> No credit card</span>
                 <span><i className="ri-gift-line" /> Free forever plan</span>
-                <span><i className="ri-time-line" /> Setup in 2 minutes</span>
+                <span><i className="ri-time-line" /> Quick to get started</span>
               </div>
             </div>
 
@@ -876,10 +904,11 @@ export default function HomePage() {
                     <div className="cl-m-sidebar">
                     <div className="cl-m-brand">
                       <div className="m-logo">
-                        <img
+                        <Image
                           src="/logo.svg"
                           alt="Clars.ai logo"
-                          style={{ width: 18, height: 18 }}
+                          width={18}
+                          height={18}
                         />
                       </div>
                       <span className="m-name">clars.ai</span>
@@ -1110,10 +1139,10 @@ export default function HomePage() {
             <div className="cl-container">
               <div className="cl-proof-bar g-scale">
                 {[
-                  { num:'5,000+', lbl:'Freelancers using Clars.ai' },
-                  { num:'$12M+', lbl:'Revenue tracked through pipeline' },
-                  { num:'68%', lbl:'Average win rate improvement' },
-                  { num:'3 min', lbl:'Average setup time' },
+                  { num:'AI-first', lbl:'From inbox to pipeline, without the busywork' },
+                  { num:'One hub', lbl:'Clients, projects, invoices, and insights together' },
+                  { num:'Minutes', lbl:'To a workspace you can actually use daily' },
+                  { num:'You own it', lbl:'Your CRM data stays yours — export when you need' },
                 ].map((s, i) => (
                   <div className="cl-proof-stat" key={i}>
                     <div className="cl-proof-num">{s.num}</div>
@@ -1124,6 +1153,9 @@ export default function HomePage() {
               <div className="cl-section-header g-fade" style={{ marginBottom:40 }}>
                 <span className="cl-badge"><span className="pulse" /> Testimonials</span>
                 <h2>Freelancers who switched<br />never looked back.</h2>
+                <p className="mx-auto mt-3 max-w-lg text-xs text-muted-foreground">
+                  Illustrative examples — not endorsements; your results will vary.
+                </p>
               </div>
               <div className="cl-testi-grid">
                 {[
@@ -1258,7 +1290,7 @@ export default function HomePage() {
             <div className="cl-container">
               <div className="cl-cta-inner g-scale">
                 <h2>Know More. Act Faster.<br /><em>Close Smarter.</em></h2>
-                <p>Join 5,000+ freelancers who upgraded their client game with clars.ai.</p>
+                <p>Join freelancers who are simplifying how they run client work with Clars.ai.</p>
                 <div className="cl-cta-btns">
                   <a href="/signup" className="cl-btn-primary"><i className="ri-flashlight-fill" /> Get Started Free</a>
                   <a href="/contact" className="cl-btn-ghost"><i className="ri-calendar-schedule-line" /> Schedule a Demo</a>
@@ -1305,17 +1337,22 @@ export default function HomePage() {
           { label:'Log in',         href:'/login' },
           { label:'Privacy Policy', href:'/privacy' },
           { label:'Terms of Service', href:'/terms' },
+          { label:'Contact',          href:'/contact' },
         ].map((l, i) => <a href={l.href} key={i}>{l.label}</a>)}
       </nav>
 
       <div className="cl-footer-social-col">
-        {[
-          { icon:'ri-twitter-x-line', label:'X / Twitter', href:'#' },
-          { icon:'ri-linkedin-line',  label:'LinkedIn',    href:'#' },
-          { icon:'ri-instagram-line', label:'Instagram',   href:'#' },
-        ].map((s, i) => (
-          <a href={s.href} key={i}><i className={s.icon} />{s.label}</a>
-        ))}
+        {socialLinks.length > 0 ? (
+          socialLinks.map((s) => (
+            <a href={s.href} key={s.key} target="_blank" rel="noopener noreferrer">
+              <i className={s.icon} />{s.label}
+            </a>
+          ))
+        ) : (
+          <span className="text-[15px] text-muted-foreground">
+            <a href="/contact" className="transition hover:text-foreground">Follow us — get in touch</a>
+          </span>
+        )}
       </div>
     </div>
   </div>

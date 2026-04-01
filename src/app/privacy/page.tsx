@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Clars.ai",
@@ -56,7 +57,7 @@ export default function PrivacyPage() {
       <div className="mx-auto w-full max-w-3xl px-6 py-14">
         <header className="mb-8 border-b border-input pb-6">
           <a href="/" className="mb-6 inline-flex">
-            <img src="/logo.svg" alt="Clars.ai" className="h-9 w-auto" />
+            <Image src="/logo.svg" alt="Clars.ai" width={120} height={36} className="h-9 w-auto" priority />
           </a>
           <h1 className="text-3xl font-semibold tracking-tight">Privacy Policy</h1>
           <p className="mt-2 text-sm text-muted-foreground">Last updated: March 20, 2026</p>
