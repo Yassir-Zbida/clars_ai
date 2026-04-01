@@ -14,6 +14,13 @@ function getPageTitle(pathname: string | null): string {
   if (pathname.startsWith("/dashboard/clients/segments")) return "Clients · Segments"
   if (pathname.startsWith("/dashboard/clients/import")) return "Clients · Import / Export"
   if (pathname.startsWith("/dashboard/clients")) return "All clients"
+  if (pathname === "/dashboard/admin") return "Admin · Overview"
+  if (pathname.startsWith("/dashboard/admin/users")) return "Admin · Manage users"
+  if (pathname.startsWith("/dashboard/admin/status")) return "Admin · System status"
+  if (pathname.startsWith("/dashboard/admin/logs")) return "Admin · Logs and errors"
+  if (pathname.startsWith("/dashboard/admin/surveys")) return "Admin · Survey center"
+  if (pathname.startsWith("/dashboard/admin/ai-analytics")) return "Admin · AI analytics"
+  if (pathname.startsWith("/dashboard/admin/reports")) return "Admin · Reports"
   return "Overview"
 }
 

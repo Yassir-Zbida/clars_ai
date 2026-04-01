@@ -5,6 +5,7 @@ import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 
+import { useAdminSidebarMode } from "@/hooks/use-admin-sidebar-mode"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -42,6 +43,13 @@ const NAV_PAGES = [
   { label: "Client Analysis",   href: "/dashboard/analytics/clients",     icon: "ri-pie-chart-line",         cat: "Pages" },
   { label: "Productivity",      href: "/dashboard/analytics/productivity",icon: "ri-tools-line",             cat: "Pages" },
   { label: "Forecast",          href: "/dashboard/analytics/forecast",    icon: "ri-rocket-line",            cat: "Pages" },
+  { label: "Admin Overview",    href: "/dashboard/admin",                  icon: "ri-shield-keyhole-line",    cat: "Admin" },
+  { label: "System Status",     href: "/dashboard/admin/status",           icon: "ri-pulse-line",             cat: "Admin" },
+  { label: "Manage Users",      href: "/dashboard/admin/users",            icon: "ri-user-settings-line",     cat: "Admin" },
+  { label: "Logs & Errors",     href: "/dashboard/admin/logs",             icon: "ri-bug-line",               cat: "Admin" },
+  { label: "Survey Center",     href: "/dashboard/admin/surveys",          icon: "ri-survey-line",            cat: "Admin" },
+  { label: "AI Analytics",      href: "/dashboard/admin/ai-analytics",     icon: "ri-cpu-line",               cat: "Admin" },
+  { label: "Admin Reports",     href: "/dashboard/admin/reports",          icon: "ri-file-chart-line",        cat: "Admin" },
   { label: "AI Chat",           href: "/dashboard/ai",                    icon: "ri-sparkling-line",         cat: "Pages" },
   { label: "Email Generator",   href: "/dashboard/ai/email",              icon: "ri-mail-ai-line",           cat: "Pages" },
   { label: "Reports Generator", href: "/dashboard/ai/reports",            icon: "ri-file-chart-line",        cat: "Pages" },
@@ -60,7 +68,7 @@ function useDebounce<T>(value: T, ms: number): T {
   return d
 }
 
-function SidebarSearchRow() {
+function SidebarSearchRow({ isAdminMode }: { isAdminMode: boolean }) {
   const router = useRouter()
   const [query, setQuery] = React.useState("")
   const [liveResults, setLiveResults] = React.useState<SearchResult[]>([])
@@ -91,14 +99,20 @@ function SidebarSearchRow() {
   }, [])
 
   // Static filter
+  const allowedPages = React.useMemo(
+    () => NAV_PAGES.filter((p) => (isAdminMode ? p.cat === "Admin" : p.cat !== "Admin")),
+    [isAdminMode]
+  )
+
   const pageResults = React.useMemo<SearchResult[]>(() => {
     if (!dq.trim()) return []
     const q = dq.toLowerCase()
-    return NAV_PAGES.filter((p) => p.label.toLowerCase().includes(q))
-  }, [dq])
+    return allowedPages.filter((p) => p.label.toLowerCase().includes(q))
+  }, [dq, allowedPages])
 
   // Live API search for contacts + projects
   React.useEffect(() => {
+    if (isAdminMode) { setLiveResults([]); return }
     if (dq.trim().length < 2) { setLiveResults([]); return }
     let cancelled = false
     Promise.all([
@@ -125,7 +139,7 @@ function SidebarSearchRow() {
       setLiveResults(results)
     }).catch(() => {})
     return () => { cancelled = true }
-  }, [dq])
+  }, [dq, isAdminMode])
 
   const allResults = React.useMemo(() => [...pageResults, ...liveResults], [pageResults, liveResults])
 
@@ -177,27 +191,29 @@ function SidebarSearchRow() {
         )}
       </div>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none">
-          <i className="ri-add-line text-sm" />
-          New
-          <i className="ri-arrow-down-s-line text-sm" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" align="end" className="w-44">
-          <DropdownMenuItem onClick={() => router.push("/dashboard/clients")}>
-            <i className="ri-user-add-line mr-2" />Contact
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/projects")}>
-            <i className="ri-folder-add-line mr-2" />Project
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/invoices")}>
-            <i className="ri-file-add-line mr-2" />New invoice
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/invoices?type=quote")}>
-            <i className="ri-receipt-line mr-2" />New quote
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {!isAdminMode && (
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none">
+            <i className="ri-add-line text-sm" />
+            New
+            <i className="ri-arrow-down-s-line text-sm" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="bottom" align="end" className="w-44">
+            <DropdownMenuItem onClick={() => router.push("/dashboard/clients")}>
+              <i className="ri-user-add-line mr-2" />Contact
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/dashboard/projects")}>
+              <i className="ri-folder-add-line mr-2" />Project
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/dashboard/invoices")}>
+              <i className="ri-file-add-line mr-2" />New invoice
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/dashboard/invoices?type=quote")}>
+              <i className="ri-receipt-line mr-2" />New quote
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Search results dropdown */}
       {open && allResults.length > 0 && (
@@ -465,6 +481,8 @@ function BellButton() {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
+  const { adminMode } = useAdminSidebarMode()
+  const homeHref = adminMode ? "/dashboard/admin" : "/dashboard"
   const user = {
     name: session?.user?.name ?? "User",
     email: session?.user?.email ?? "",
@@ -478,19 +496,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               className="data-[slot=sidebar-menu-button]:!p-1.5"
-              render={<a href="/dashboard" />}
+              render={<a href={homeHref} />}
               tooltip="Workspace home"
             >
               <img src="/logo.svg" alt="Clars.ai" className="h-7 w-auto" />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <BellButton />
+        {!adminMode && <BellButton />}
       </SidebarHeader>
 
       <SidebarContent className="overflow-y-auto">
         <div className="p-2">
-          <SidebarSearchRow />
+          <SidebarSearchRow isAdminMode={adminMode} />
         </div>
         <NavMain />
       </SidebarContent>
