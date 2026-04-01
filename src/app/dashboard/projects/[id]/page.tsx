@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
@@ -430,11 +431,13 @@ export default function ProjectViewPage() {
                     : <ul className="space-y-2">
                       {project.contacts!.map((c) => (
                         <li key={c.id} className="flex items-center gap-2">
-                          <span className="flex size-7 shrink-0 items-center justify-center rounded-full overflow-hidden">
-                            <img
+                          <span className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                            <Image
                               src={getDicebearUrl(c.name || c.email || c.id)}
                               alt={c.name}
-                              className="size-full object-cover"
+                              fill
+                              className="object-cover"
+                              sizes="28px"
                             />
                           </span>
                           <div className="min-w-0">

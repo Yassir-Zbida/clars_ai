@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { FormEvent, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -67,8 +68,14 @@ function ContactCombobox({ options, selected, onAdd, onRemove, label }: ContactC
                 onMouseDown={(e) => { e.preventDefault(); onAdd(c.id); setSearch(""); setOpen(false) }}
                 className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition hover:bg-muted"
               >
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full overflow-hidden">
-                  <img src={getDicebearUrl(c.fullName || c.name || c.email || c.id)} alt="" className="size-full object-cover" />
+                <span className="relative flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                  <Image
+                    src={getDicebearUrl(c.fullName || c.name || c.email || c.id)}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="24px"
+                  />
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{c.fullName || c.name || c.id}</p>
@@ -462,11 +469,13 @@ export default function ProjectsPage() {
                       {(p.contacts ?? []).length > 0 ? (
                         <div className="flex items-center -space-x-2">
                           {p.contacts!.slice(0, 4).map((c) => (
-                            <span key={c.id} title={c.name} className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-card overflow-hidden">
-                              <img
+                            <span key={c.id} title={c.name} className="relative inline-flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-card">
+                              <Image
                                 src={getDicebearUrl(c.name || c.email || c.id)}
                                 alt={c.name}
-                                className="size-full object-cover"
+                                fill
+                                className="object-cover"
+                                sizes="28px"
                               />
                             </span>
                           ))}

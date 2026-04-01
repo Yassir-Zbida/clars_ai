@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRightIcon, BookOpenIcon, KeyboardIcon, LifeBuoyIcon } from "lucide-react"
+import { ArrowRightIcon, KeyboardIcon, LifeBuoyIcon } from "lucide-react"
 
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"

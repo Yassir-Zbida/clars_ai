@@ -68,9 +68,9 @@ const SEGMENTS: SegmentDefinition[] = [
 
 export default function ClientSegmentsPage() {
   const { data, isLoading, isError } = trpc.clients.list.useQuery()
-  const list = data ?? []
 
   const stats = useMemo(() => {
+    const list = data ?? []
     const now = new Date()
     const thirtyDaysAgo = new Date(now)
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
@@ -102,7 +102,7 @@ export default function ClientSegmentsPage() {
       needsEmail,
       noCompany,
     }
-  }, [list])
+  }, [data])
 
   return (
       <div className="flex flex-1 flex-col gap-4 px-4 pb-2 pt-0 lg:px-6 lg:pt-0">

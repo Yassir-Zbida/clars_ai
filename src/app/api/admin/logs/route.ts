@@ -131,7 +131,7 @@ export async function DELETE(request: Request) {
 
     await getDb()
 
-    let filter: Record<string, unknown> = {}
+    const filter: Record<string, unknown> = {}
     if (q.scope === "filtered") {
       if (q.type !== "all") filter.type = q.type
       if (q.level !== "all") filter.level = q.level

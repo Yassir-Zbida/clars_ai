@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -200,7 +201,7 @@ export default function OnboardingSurveyPage() {
           {/* Logo + progress */}
           <div className="mb-5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src="/logo.svg" alt="Clars.ai" className="h-6 w-auto" />
+              <Image src="/logo.svg" alt="Clars.ai" width={120} height={24} className="h-6 w-auto" priority />
             </div>
             {!isLastStep && (
               <div className="flex items-center gap-1.5">

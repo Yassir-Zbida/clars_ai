@@ -1,6 +1,7 @@
 "use client"
 
 import { FormEvent, useEffect, useRef, useState } from "react"
+import NextImage from "next/image"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { getDicebearUrl } from "@/lib/dicebear"
@@ -164,11 +165,13 @@ function TypingDots() {
 
 function UserAvatar({ initials, seed }: { initials: string; seed: string }) {
   return (
-    <div className="flex size-7 shrink-0 items-center justify-center rounded-full overflow-hidden">
-      <img
+    <div className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full">
+      <NextImage
         src={getDicebearUrl(seed || initials)}
         alt={initials}
-        className="size-full object-cover"
+        fill
+        className="object-cover"
+        sizes="28px"
         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
       />
     </div>
@@ -178,7 +181,7 @@ function UserAvatar({ initials, seed }: { initials: string; seed: string }) {
 function AiAvatar() {
   return (
     <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-input bg-card">
-      <img src="/favicon.svg" alt="" className="size-4" />
+      <NextImage src="/favicon.svg" alt="" width={16} height={16} className="size-4" />
     </div>
   )
 }
@@ -504,7 +507,7 @@ export default function AiChatPage() {
             /* Empty state */
             <div className="flex flex-col items-center justify-center gap-6 px-4 py-14 text-center">
               <div className="flex size-14 items-center justify-center rounded-2xl border border-input bg-card shadow-sm">
-                <img src="/favicon.svg" alt="" className="size-8" />
+                <NextImage src="/favicon.svg" alt="" width={32} height={32} className="size-8" />
               </div>
               <div>
                 <h2 className="text-base font-semibold">How can I help you today?</h2>
@@ -536,7 +539,15 @@ export default function AiChatPage() {
                       {msg.images?.length ? (
                         <div className="mb-2 flex flex-wrap justify-end gap-2">
                           {msg.images.map((img, i) => (
-                            <img key={i} src={img.dataUrl} alt={img.name} className="h-28 max-w-[180px] rounded-xl border border-input object-cover" />
+                            <NextImage
+                              key={i}
+                              src={img.dataUrl}
+                              alt={img.name}
+                              width={180}
+                              height={112}
+                              className="h-28 max-w-[180px] rounded-xl border border-input object-cover"
+                              unoptimized
+                            />
                           ))}
                         </div>
                       ) : null}
@@ -593,7 +604,14 @@ export default function AiChatPage() {
             <div className="mx-auto mb-2 flex max-w-2xl flex-wrap gap-2">
               {attachments.map((img, i) => (
                 <div key={i} className="relative">
-                  <img src={img.dataUrl} alt={img.name} className="h-14 w-14 rounded-lg border border-input object-cover" />
+                  <NextImage
+                    src={img.dataUrl}
+                    alt={img.name}
+                    width={56}
+                    height={56}
+                    className="h-14 w-14 rounded-lg border border-input object-cover"
+                    unoptimized
+                  />
                   <button type="button"
                     onClick={() => setAttachments((p) => p.filter((_, idx) => idx !== i))}
                     className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-foreground text-background"

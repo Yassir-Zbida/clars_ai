@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { FormEvent, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -37,28 +38,7 @@ const EMPTY_FORM = {
 
 const STATUS_OPTIONS  = ["LEAD", "QUALIFIED", "PROPOSAL", "ACTIVE", "INACTIVE"] as const
 const TYPE_OPTIONS    = ["INDIVIDUAL", "COMPANY"] as const
-const HEALTH_OPTIONS  = ["STRONG", "NEUTRAL", "AT_RISK"] as const
 const SOURCE_OPTIONS  = ["REFERRAL", "LINKEDIN", "UPWORK", "WEBSITE", "COLD_OUTREACH", "SOCIAL", "OTHER"] as const
-
-const STATUS_STYLE: Record<string, string> = {
-  LEAD:       "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  QUALIFIED:  "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-  PROPOSAL:   "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  ACTIVE:     "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  INACTIVE:   "bg-muted text-muted-foreground",
-}
-
-const HEALTH_STYLE: Record<string, string> = {
-  STRONG:  "text-emerald-500",
-  NEUTRAL: "text-amber-500",
-  AT_RISK: "text-red-500",
-}
-
-const HEALTH_ICON: Record<string, string> = {
-  STRONG:  "ri-shield-check-line",
-  NEUTRAL: "ri-shield-line",
-  AT_RISK: "ri-shield-cross-line",
-}
 
 type Filters = {
   statuses: string[]
@@ -409,11 +389,13 @@ export default function ClientsPage() {
                   <tr key={c.id} className="group transition hover:bg-muted/40">
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-full overflow-hidden">
-                          <img
+                        <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                          <Image
                             src={getDicebearUrl(c.fullName || c.name || c.email || c.id)}
                             alt={c.fullName || c.name || ""}
-                            className="size-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="32px"
                           />
                         </span>
                         <div>

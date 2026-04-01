@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { FormEvent, useState } from "react"
 import Link from "next/link"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -448,11 +449,13 @@ export default function InvoiceDetailPage() {
 
             {/* avatar + name */}
             <div className="flex items-center gap-4">
-              <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl overflow-hidden">
-                <img
+              <span className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl">
+                <Image
                   src={getDicebearUrl(contactDetail?.data?.fullName || contactDetail?.data?.name || inv.clientName || "")}
                   alt={inv.clientName || ""}
-                  className="size-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="64px"
                 />
               </span>
               <div className="min-w-0">

@@ -81,7 +81,7 @@ export default function AiEmailPage() {
           </div>
           <div>
             <p className="text-sm font-semibold leading-none">Email generator</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Describe the goal — we'll draft a subject + body</p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">Describe the goal — we&apos;ll draft a subject + body</p>
           </div>
         </div>
 

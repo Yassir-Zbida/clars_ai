@@ -515,7 +515,7 @@ export function TasksTab({ projectId }: Props) {
         <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-input py-16 text-center">
           <i className="ri-task-line text-3xl text-muted-foreground/40" />
           <p className="text-sm text-muted-foreground">No tasks yet</p>
-          <p className="text-xs text-muted-foreground/60">Click "Add task" to get started.</p>
+          <p className="text-xs text-muted-foreground/60">Click &ldquo;Add task&rdquo; to get started.</p>
         </div>
       ) : view === "kanban" ? (
 

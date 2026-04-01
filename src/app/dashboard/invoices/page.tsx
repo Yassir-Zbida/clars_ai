@@ -1,11 +1,12 @@
 "use client"
 
+import Image from "next/image"
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
-import { DocumentTypeBadge, InvoiceStatusBadge } from "@/components/finance/status-badges"
+import { DocumentTypeBadge } from "@/components/finance/status-badges"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -77,8 +78,14 @@ function ContactPickerSingle({
       {selected ? (
         /* selected state */
         <div className="mt-1 flex items-center gap-2.5 rounded-xl border border-input bg-background px-3 py-2">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full overflow-hidden">
-            <img src={getDicebearUrl(displayName(selected))} alt={displayName(selected)} className="size-full object-cover" />
+          <span className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full">
+            <Image
+              src={getDicebearUrl(displayName(selected))}
+              alt={displayName(selected)}
+              fill
+              className="object-cover"
+              sizes="28px"
+            />
           </span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium leading-none">{displayName(selected)}</p>
@@ -116,8 +123,14 @@ function ContactPickerSingle({
               <button key={c.id} type="button"
                 onMouseDown={(e) => { e.preventDefault(); onChange(c.id); setSearch(""); setOpen(false) }}
                 className="flex w-full items-center gap-2.5 px-3 py-2 text-left transition hover:bg-muted">
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full overflow-hidden">
-                  <img src={getDicebearUrl(displayName(c))} alt={displayName(c)} className="size-full object-cover" />
+                <span className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                  <Image
+                    src={getDicebearUrl(displayName(c))}
+                    alt={displayName(c)}
+                    fill
+                    className="object-cover"
+                    sizes="28px"
+                  />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{displayName(c)}</p>

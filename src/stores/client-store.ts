@@ -82,7 +82,7 @@ function computeActiveFilterCount(filters: ClientFilters) {
   return count;
 }
 
-export const useClientStore = create<ClientStore>((set, get) => ({
+export const useClientStore = create<ClientStore>((set) => ({
   filters: defaultFilters,
   setFilter: (key, value) =>
     set((state) => {

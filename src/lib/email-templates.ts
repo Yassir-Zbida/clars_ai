@@ -6,7 +6,6 @@
 const EMAIL_BG         = "#f0f2f8"
 const CARD_BG          = "#ffffff"
 const CARD_BORDER      = "#dde1ed"
-const FOOTER_BG        = "#eef0f7"
 const TEXT_HEADING     = "#0f0f18"
 const TEXT_BODY        = "#3d3d52"
 const TEXT_MUTED       = "#7a7a90"
