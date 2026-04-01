@@ -39,7 +39,7 @@ function StatCard({ icon, iconBg, iconColor, label, value, badge, footer, href }
         {badge}
       </div>
       <div>
-        <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">{label}</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</p>
         <p className="mt-0.5 text-2xl font-semibold tabular-nums tracking-tight text-foreground">{value}</p>
       </div>
       <div className="mt-auto border-t border-input pt-3 text-xs text-muted-foreground">{footer}</div>

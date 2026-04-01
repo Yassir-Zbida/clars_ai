@@ -133,7 +133,7 @@ function DraggableCard({ task, onEdit, onDelete, isActivelyDragging }: {
       </div>
 
       {task.description && (
-        <p className="ml-5 mt-1 line-clamp-2 text-[11px] text-muted-foreground">{task.description}</p>
+        <p className="ml-5 mt-1 line-clamp-2 text-xs text-muted-foreground">{task.description}</p>
       )}
 
       <div className="ml-5 mt-2 flex flex-wrap items-center gap-1.5">
@@ -540,7 +540,7 @@ export function TasksTab({ projectId }: Props) {
               <div className="w-[240px] rotate-[2deg] rounded-xl border-2 border-primary/40 bg-card p-3 shadow-2xl">
                 <p className="text-sm font-medium">{activeTask.title}</p>
                 {activeTask.description && (
-                  <p className="mt-1 line-clamp-1 text-[11px] text-muted-foreground">{activeTask.description}</p>
+                  <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{activeTask.description}</p>
                 )}
                 <div className="mt-2 flex gap-1.5">
                   <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-medium", PRIORITY_BADGE[activeTask.priority])}>
@@ -574,7 +574,7 @@ export function TasksTab({ projectId }: Props) {
                       {t.title}
                     </p>
                     {t.description && (
-                      <p className="max-w-xs truncate text-[11px] text-muted-foreground">{t.description}</p>
+                      <p className="max-w-xs truncate text-xs text-muted-foreground">{t.description}</p>
                     )}
                   </td>
                   <td className="px-4 py-2.5">

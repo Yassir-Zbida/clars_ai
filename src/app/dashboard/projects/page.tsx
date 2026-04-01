@@ -434,7 +434,7 @@ export default function ProjectsPage() {
                         </span>
                         <div>
                           <p className="font-medium text-foreground leading-none">{p.name || "Untitled"}</p>
-                          <p className="mt-0.5 truncate max-w-[200px] text-[11px] text-muted-foreground">{p.description || "No description"}</p>
+                          <p className="mt-0.5 truncate max-w-[200px] text-xs text-muted-foreground">{p.description || "No description"}</p>
                         </div>
                       </div>
                     </td>

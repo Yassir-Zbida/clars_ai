@@ -17,7 +17,7 @@ export function AnalyticsSubnav() {
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-wrap gap-1 rounded-lg border border-input bg-muted/20 p-1">
+    <div className="flex flex-wrap gap-1.5">
       {LINKS.map((item) => {
         const active =
           "end" in item && item.end ? pathname === item.href : pathname.startsWith(item.href)
@@ -26,15 +26,15 @@ export function AnalyticsSubnav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+              "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition",
               active
-                ? "bg-background text-foreground shadow-sm ring-1 ring-border"
-                : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
+                ? "border-primary/40 bg-primary/10 text-primary"
+                : "border-input bg-card text-foreground hover:bg-muted"
             )}
           >
             {item.label}
             {"badge" in item && item.badge ? (
-              <span className="rounded-full bg-violet-500/15 px-1.5 text-[10px] font-medium text-violet-400">
+              <span className="rounded-full bg-violet-500/15 px-1.5 text-[10px] font-medium text-violet-600 dark:text-violet-400">
                 {item.badge}
               </span>
             ) : null}

@@ -420,7 +420,7 @@ export default function ClientsPage() {
                           <p className="font-medium text-foreground leading-none">
                             {c.fullName || c.name || "Unnamed"}
                           </p>
-                          <p className="mt-0.5 text-[11px] text-muted-foreground">{c.jobTitle || "No title"}</p>
+                          <p className="mt-0.5 text-xs text-muted-foreground">{c.jobTitle || "No title"}</p>
                         </div>
                       </div>
                     </td>

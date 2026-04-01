@@ -14,8 +14,8 @@
     --secondary: 230 20% 96%;
     --secondary-foreground: 240 23% 8%;
     --muted: 230 20% 96%;
-    /* Secondary body / descriptions — lower L = darker, better contrast */
-    --muted-foreground: 240 10% 30%;
+    /* Secondary body / descriptions — dark enough to be readable at 12px */
+    --muted-foreground: 240 10% 22%;
     --accent: 216 55% 54%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
@@ -43,9 +43,9 @@
     --accent-light: #6b9fd4;
     --accent-dim: rgba(73, 125, 203, 0.1);
     --brand: #a3e635;
-    /* Sidebar — main nav text (no extra /opacity needed) */
+    /* Sidebar — main nav text */
     --sidebar: 230 33% 97%;
-    --sidebar-foreground: 240 11% 22%;
+    --sidebar-foreground: 240 15% 16%;
     --sidebar-primary: 216 55% 54%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 20% 95%;
@@ -65,7 +65,7 @@
     --secondary: 240 11% 12%;
     --secondary-foreground: 240 16% 94%;
     --muted: 240 11% 12%;
-    --muted-foreground: 240 8% 72%;
+    --muted-foreground: 240 8% 65%;
     --accent: 216 55% 54%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;

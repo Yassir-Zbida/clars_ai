@@ -1,13 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { Loader2, SparklesIcon } from "lucide-react"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { formatCents } from "@/lib/money"
 
+import { AnalyticsError, AnalyticsLoading, SectionCard, SectionHeader } from "../_components/analytics-page-shell"
 import { useAnalyticsOverview } from "../use-analytics-overview"
 
 export default function AnalyticsForecastPage() {
@@ -15,69 +14,68 @@ export default function AnalyticsForecastPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[200px] items-center justify-center text-sm text-muted-foreground">
-        <Loader2 className="mr-2 size-5 animate-spin" />
-        Loading…
-      </div>
+      <SectionCard>
+        <AnalyticsLoading message="Loading forecast…" />
+      </SectionCard>
     )
   }
 
   if (isError || !data) {
-    return <p className="text-sm text-muted-foreground">Could not load forecast inputs.</p>
+    return (
+      <SectionCard>
+        <AnalyticsError message="Could not load forecast inputs." />
+      </SectionCard>
+    )
   }
 
   const { forecast, revenueExpenseSeries, finance } = data
   const last3 = revenueExpenseSeries.slice(-3)
-  const avg =
-    last3.length > 0 ? last3.reduce((s, x) => s + x.revenueCents, 0) / last3.length : 0
+  const avg = last3.length > 0 ? last3.reduce((s, x) => s + x.revenueCents, 0) / last3.length : 0
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h2 className="flex items-center gap-2 text-lg font-semibold">
-          <SparklesIcon className="size-5 text-violet-400" />
-          Forecast
-        </h2>
-        <p className="text-xs text-muted-foreground">
-          Lightweight projection from your recent collected revenue—not a full FP&amp;A model.
-        </p>
-      </div>
 
-      <Card className="border-violet-500/25 bg-gradient-to-br from-violet-500/10 to-transparent">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Next month (heuristic)</CardTitle>
-          <CardDescription>
-            Average of the last {forecast.basedOnMonths} month(s) with payment activity: {formatCents(Math.round(avg))}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
+      {/* Next month projection */}
+      <SectionCard className="border-violet-500/30 bg-gradient-to-br from-violet-500/8 to-transparent">
+        <SectionHeader
+          icon="ri-magic-line"
+          iconBg="bg-violet-500/15"
+          iconColor="text-violet-600 dark:text-violet-400"
+          title="Next month (heuristic)"
+          description={`Avg of last ${forecast.basedOnMonths} month(s) with payments · ${formatCents(Math.round(avg))}/mo`}
+        />
+        <div className="px-5 py-4">
           <p className="text-4xl font-semibold tracking-tight">{formatCents(forecast.nextMonthRevenueCents)}</p>
-          <ul className="list-inside list-disc space-y-1 text-xs text-muted-foreground">
+          <ul className="mt-3 list-inside list-disc space-y-1 text-xs text-muted-foreground">
             <li>Based only on payments recorded against invoices.</li>
             <li>Does not include unsigned quotes or overdue risk.</li>
-            <li>AI-driven scenarios and seasonality can be layered on later.</li>
+            <li>Richer scenarios and seasonality can be added later.</li>
           </ul>
-        </CardContent>
-      </Card>
+        </div>
+      </SectionCard>
 
-      <Card className="border-input">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Current month context</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-2 text-sm sm:grid-cols-2">
-          <div className="flex justify-between gap-2 rounded-lg border border-input bg-muted/20 px-3 py-2">
+      {/* Current month context */}
+      <SectionCard>
+        <SectionHeader
+          icon="ri-calendar-line"
+          title="Current month context"
+          description="Balances that affect cash expectations"
+        />
+        <div className="grid gap-2 px-5 py-4 sm:grid-cols-2">
+          <div className="flex justify-between gap-2 rounded-xl border border-input bg-muted/20 px-3 py-2.5 text-sm">
             <span className="text-muted-foreground">Outstanding AR</span>
             <span className="font-medium">{formatCents(finance.outstandingCents)}</span>
           </div>
-          <div className="flex justify-between gap-2 rounded-lg border border-input bg-muted/20 px-3 py-2">
+          <div className="flex justify-between gap-2 rounded-xl border border-input bg-muted/20 px-3 py-2.5 text-sm">
             <span className="text-muted-foreground">Overdue</span>
-            <span className="font-medium text-red-400">{formatCents(finance.overdueCents)}</span>
+            <span className="font-medium text-red-500 dark:text-red-400">{formatCents(finance.overdueCents)}</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </SectionCard>
 
       <div className="flex flex-wrap gap-2">
         <Link href="/dashboard/finance" className={cn(buttonVariants({ size: "sm" }), "h-8 text-xs")}>
+          <i className="ri-wallet-3-line mr-1 text-sm" />
           Finance overview
         </Link>
         <Link href="/dashboard/invoices" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-8 text-xs")}>

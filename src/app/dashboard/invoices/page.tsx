@@ -82,7 +82,7 @@ function ContactPickerSingle({
           </span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium leading-none">{displayName(selected)}</p>
-            {selected.email && <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{selected.email}</p>}
+            {selected.email && <p className="mt-0.5 truncate text-xs text-muted-foreground">{selected.email}</p>}
           </div>
           <button type="button" onClick={() => { onChange(""); setSearch("") }}
             className="shrink-0 rounded-md p-0.5 text-muted-foreground transition hover:text-foreground">
@@ -121,7 +121,7 @@ function ContactPickerSingle({
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{displayName(c)}</p>
-                  {c.email && <p className="truncate text-[11px] text-muted-foreground">{c.email}</p>}
+                  {c.email && <p className="truncate text-xs text-muted-foreground">{c.email}</p>}
                 </div>
                 <i className="ri-add-circle-line ml-auto shrink-0 text-muted-foreground" />
               </button>
@@ -367,7 +367,7 @@ export default function InvoicesPage() {
                         </span>
                         <div>
                           <p className="font-medium">{row.number}</p>
-                          {row.title && <p className="text-[11px] text-muted-foreground">{row.title}</p>}
+                          {row.title && <p className="text-xs text-muted-foreground">{row.title}</p>}
                           <DocumentTypeBadge type={row.documentType} />
                         </div>
                       </div>

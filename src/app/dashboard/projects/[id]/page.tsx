@@ -101,7 +101,7 @@ function ContactCombobox({ options, selected, onAdd, onRemove }: {
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{c.fullName || c.name || c.id}</p>
-                  {c.email && <p className="truncate text-[11px] text-muted-foreground">{c.email}</p>}
+                  {c.email && <p className="truncate text-xs text-muted-foreground">{c.email}</p>}
                 </div>
                 <i className="ri-add-line ml-auto shrink-0 text-muted-foreground" />
               </button>
@@ -373,16 +373,16 @@ export default function ProjectViewPage() {
               <div className="rounded-2xl border border-input bg-card shadow-sm">
                 <div className="grid gap-4 p-5 md:grid-cols-2">
                   <div>
-                    <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Start date</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Start date</p>
                     <p className="mt-0.5 text-sm">{project.startDate ? new Date(project.startDate).toLocaleDateString() : "—"}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">End date</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">End date</p>
                     <p className="mt-0.5 text-sm">{project.endDate ? new Date(project.endDate).toLocaleDateString() : "—"}</p>
                   </div>
                   {daysUntilEnd != null && !Number.isNaN(daysUntilEnd) && (
                     <div>
-                      <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Timeline</p>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Timeline</p>
                       <p className={cn("mt-0.5 text-sm font-medium",
                         daysUntilEnd < 0 ? "text-red-500" : daysUntilEnd <= 7 ? "text-amber-500" : "text-foreground"
                       )}>
@@ -391,7 +391,7 @@ export default function ProjectViewPage() {
                     </div>
                   )}
                   <div>
-                    <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Budget</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Budget</p>
                     <p className="mt-0.5 text-sm">
                       {typeof project.budgetCents === "number"
                         ? `${project.currency || "USD"} ${(project.budgetCents / 100).toFixed(2)}`
@@ -400,13 +400,13 @@ export default function ProjectViewPage() {
                   </div>
                   {project.description && (
                     <div className="md:col-span-2">
-                      <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Description</p>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Description</p>
                       <p className="mt-0.5 text-sm">{project.description}</p>
                     </div>
                   )}
                   {project.notes && (
                     <div className="md:col-span-2">
-                      <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Internal notes</p>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Internal notes</p>
                       <p className="mt-0.5 whitespace-pre-wrap text-sm text-muted-foreground">{project.notes}</p>
                     </div>
                   )}
@@ -441,7 +441,7 @@ export default function ProjectViewPage() {
                             <Link href={`/dashboard/clients/${c.id}`} className="block truncate text-sm font-medium hover:text-primary hover:underline underline-offset-4 transition">
                               {c.name}
                             </Link>
-                            {c.email && <p className="truncate text-[11px] text-muted-foreground">{c.email}</p>}
+                            {c.email && <p className="truncate text-xs text-muted-foreground">{c.email}</p>}
                           </div>
                         </li>
                       ))}

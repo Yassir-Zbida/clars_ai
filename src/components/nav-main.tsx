@@ -108,7 +108,7 @@ export function NavMain() {
         <SidebarDivider />
 
         <div className="mb-0.5 px-2">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/55">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/60">
             System
           </span>
         </div>
@@ -117,7 +117,7 @@ export function NavMain() {
         <SidebarDivider />
 
         <div className="mb-0.5 px-2">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/55">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/60">
             Support
           </span>
         </div>

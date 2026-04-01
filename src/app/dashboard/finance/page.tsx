@@ -70,7 +70,7 @@ function KpiCard({ label, value, hint, icon, iconBg, iconColor, tone }: KpiConfi
         <div className="min-w-0">
           <p className="text-xs font-medium text-muted-foreground">{label}</p>
           <p className="mt-1.5 text-2xl font-semibold tracking-tight">{value}</p>
-          <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
         </div>
         <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", iconBg)}>
           <i className={cn(icon, iconColor, "text-lg")} />

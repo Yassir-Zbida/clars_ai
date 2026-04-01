@@ -86,10 +86,10 @@ export function SectionGroup({
                 <SidebarMenuButton
                   size="sm"
                   className={[
-                    "h-[34px] justify-between rounded-md px-2 text-xs",
+                    "h-[34px] justify-between rounded-md px-2 text-xs font-medium",
                     anyChildActive
-                      ? "bg-primary/10 font-medium text-[#6b9fd4]"
-                      : "text-sidebar-foreground hover:text-foreground",
+                      ? "bg-primary/10 text-primary"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   ].join(" ")}
                   {...(isSingleLink ? { render: <a href={section.href!} /> } : { onClick: () => toggleSection(section.id) })}
                 >
@@ -140,8 +140,8 @@ export function SectionGroup({
                           isActive={active}
                           className={
                             active
-                              ? "h-[30px] rounded-md bg-primary/10 font-medium text-[#6b9fd4]"
-                              : "h-[30px] rounded-md text-sidebar-foreground/90 hover:text-foreground"
+                              ? "h-[30px] rounded-md bg-primary/10 font-semibold text-primary"
+                              : "h-[30px] rounded-md font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                           }
                         >
                           <span>{item.label}</span>
