@@ -9,6 +9,14 @@ const userSchema = new mongoose.Schema(
     password: { type: String },
     passwordResetToken: { type: String },
     passwordResetTokenExpiry: { type: Date },
+    /** OTP two-factor login */
+    otpEnabled:              { type: Boolean, default: false },
+    otpCodeHash:             { type: String },
+    otpCodeExpiry:           { type: Date },
+    otpPendingTokenHash:     { type: String },
+    otpPendingTokenExpiry:   { type: Date },
+    otpVerifiedTokenHash:    { type: String },
+    otpVerifiedTokenExpiry:  { type: Date },
     deletedAt: { type: Date },
     /** Set when the user submits or skips the post-signup survey */
     onboardingSurveyCompletedAt: { type: Date },

@@ -26,13 +26,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       name: 'credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Mot de passe', type: 'password' },
+        email:         { label: 'Email',          type: 'email'    },
+        password:      { label: 'Password',        type: 'password' },
+        verifiedToken: { label: 'Verified Token',  type: 'text'     },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email) return null;
         await getDb();
         const email = String(credentials.email).trim();
+
+        // ── Path A: OTP-verified token (second-factor flow) ──────────
+        if (credentials.verifiedToken) {
+          const user = await User.findOne({
+            email: { $regex: new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
+            deletedAt: { $in: [null, undefined] },
+          })
+            .select('otpVerifiedTokenHash otpVerifiedTokenExpiry name image')
+            .lean();
+          const doc = user as { _id: { toString(): string }; email?: string; name?: string; image?: string; otpVerifiedTokenHash?: string; otpVerifiedTokenExpiry?: Date } | null;
+          if (!doc?.otpVerifiedTokenHash || !doc.otpVerifiedTokenExpiry) return null;
+          if (new Date() > doc.otpVerifiedTokenExpiry) return null;
+          const ok = await bcrypt.compare(String(credentials.verifiedToken), doc.otpVerifiedTokenHash);
+          if (!ok) return null;
+          // Consume the token (one-time use)
+          await User.updateOne({ _id: (doc as { _id: { toString(): string } })._id }, { $unset: { otpVerifiedTokenHash: '', otpVerifiedTokenExpiry: '' } });
+          return { id: String(doc._id), email, name: doc.name ?? undefined, image: doc.image ?? undefined };
+        }
+
+        // ── Path B: Normal email + password ──────────────────────────
+        if (!credentials.password) return null;
         const user = await User.findOne({
           email: { $regex: new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
           deletedAt: { $in: [null, undefined] },
@@ -43,12 +65,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!doc?.password) return null;
         const ok = await bcrypt.compare(String(credentials.password), doc.password);
         if (!ok) return null;
-        return {
-          id: String(doc._id),
-          email: doc.email ?? undefined,
-          name: doc.name ?? undefined,
-          image: doc.image ?? undefined,
-        };
+        return { id: String(doc._id), email: doc.email ?? undefined, name: doc.name ?? undefined, image: doc.image ?? undefined };
       },
     }),
   ],
