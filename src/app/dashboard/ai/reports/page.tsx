@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
 import { MessageBody } from "../message-body"
+import { useAiSurfacePageView } from "../use-ai-surface-view"
 
 const AUDIENCES = [
   { value: "executive", label: "Executive summary", desc: "High-level KPIs and decisions", icon: "ri-briefcase-4-line" },
@@ -20,6 +21,7 @@ const AUDIENCES = [
 type Audience = (typeof AUDIENCES)[number]["value"]
 
 export default function AiReportsPage() {
+  useAiSurfacePageView("reports")
   const [audience, setAudience] = useState<Audience>("executive")
   const [focus, setFocus] = useState("")
   const [output, setOutput] = useState<string | null>(null)

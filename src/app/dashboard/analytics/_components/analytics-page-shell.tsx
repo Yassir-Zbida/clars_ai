@@ -3,6 +3,48 @@
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
+/** KPI tile — matches analytics overview: `rounded-2xl border border-input bg-card`, optional success/danger tone. */
+export function KpiCard({
+  title,
+  value,
+  hint,
+  icon,
+  iconBg,
+  iconColor,
+  tone = "default",
+  footer,
+}: {
+  title: string
+  value: string
+  hint: string
+  icon: string
+  iconBg: string
+  iconColor: string
+  tone?: "default" | "success" | "danger"
+  footer?: ReactNode
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-2xl border bg-card p-4 shadow-sm",
+        tone === "danger" ? "border-red-500/20 bg-red-500/5" : tone === "success" ? "border-emerald-500/20 bg-emerald-500/5" : "border-input"
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium text-muted-foreground">{title}</p>
+          <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums">{value}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+          {footer ? <div className="mt-2">{footer}</div> : null}
+        </div>
+        <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", iconBg)}>
+          <i className={cn(icon, iconColor, "text-lg leading-none")} />
+        </span>
+      </div>
+    </div>
+  )
+}
+
 /** Section card matching Finance/Contacts: `rounded-2xl border border-input bg-card shadow-sm`. */
 export function SectionCard({ className, children }: { className?: string; children: ReactNode }) {
   return (
@@ -20,6 +62,7 @@ export function SectionHeader({
   title,
   description,
   action,
+  divider = true,
 }: {
   icon: string
   iconBg?: string
@@ -27,9 +70,16 @@ export function SectionHeader({
   title: ReactNode
   description?: string
   action?: ReactNode
+  /** When false, no bottom border (e.g. header card sits above sibling tiles). */
+  divider?: boolean
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-input px-5 py-3.5">
+    <div
+      className={cn(
+        "flex flex-wrap items-center justify-between gap-3 px-5 py-3.5",
+        divider && "border-b border-input"
+      )}
+    >
       <div className="flex items-center gap-2.5">
         <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-lg", iconBg)}>
           <i className={cn(icon, iconColor, "text-sm")} />

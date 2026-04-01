@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { MessageBody } from "./message-body"
+import { useAiSurfacePageView } from "./use-ai-surface-view"
 import { toast } from "sonner"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -291,6 +292,7 @@ export default function AiChatPage() {
   const router = useRouter()
   const { data: session } = useSession()
   const initials = getInitials(session?.user?.name)
+  useAiSurfacePageView("chat")
 
   const [convId, setConvId] = useState(uid)
   const [convs, setConvs] = useState<Conversation[]>([])

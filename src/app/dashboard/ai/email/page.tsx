@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
 import { MessageBody } from "../message-body"
+import { useAiSurfacePageView } from "../use-ai-surface-view"
 
 const TONES = [
   { value: "professional", label: "Professional", desc: "Formal and business-appropriate" },
@@ -21,6 +22,7 @@ const TONES = [
 type Tone = (typeof TONES)[number]["value"]
 
 export default function AiEmailPage() {
+  useAiSurfacePageView("email")
   const [purpose, setPurpose] = useState("")
   const [tone, setTone] = useState<Tone>("professional")
   const [contactName, setContactName] = useState("")

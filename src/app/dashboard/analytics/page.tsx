@@ -13,7 +13,7 @@ import { formatCents } from "@/lib/money"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-import { AnalyticsError, AnalyticsLoading, SectionCard, SectionHeader } from "./_components/analytics-page-shell"
+import { AnalyticsError, AnalyticsLoading, KpiCard, SectionCard, SectionHeader } from "./_components/analytics-page-shell"
 import { useAnalyticsOverview } from "./use-analytics-overview"
 
 const revenueChartConfig = {
@@ -246,31 +246,6 @@ export default function AnalyticsOverviewPage() {
           <p className="mt-1 text-xs text-muted-foreground">Projected next-month revenue · heuristic from invoice payments.</p>
         </div>
       </SectionCard>
-    </div>
-  )
-}
-
-function KpiCard({ title, value, hint, icon, iconBg, iconColor, tone = "default" }: {
-  title: string; value: string; hint: string
-  icon: string; iconBg: string; iconColor: string
-  tone?: "default" | "success" | "danger"
-}) {
-  return (
-    <div className={cn("rounded-2xl border bg-card p-4 shadow-sm",
-      tone === "danger"  ? "border-red-500/20 bg-red-500/5" :
-      tone === "success" ? "border-emerald-500/20 bg-emerald-500/5" :
-      "border-input"
-    )}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-medium text-muted-foreground">{title}</p>
-          <p className="mt-1.5 text-2xl font-semibold tracking-tight">{value}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-        </div>
-        <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", iconBg)}>
-          <i className={cn(icon, iconColor, "text-lg")} />
-        </span>
-      </div>
     </div>
   )
 }
