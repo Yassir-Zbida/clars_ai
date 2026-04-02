@@ -85,6 +85,14 @@ Target markets: Mena & Morocco (EN/AR/FR multilingual).
 - RTL support: use `rtl:` prefix utilities for Arabic layout
 - Never use inline styles; never write raw CSS outside of `globals.css`
 
+### Design quality (Impeccable)
+- **Project context**: `.impeccable.md` at repo root; keep `## Design Context` current. Run `/teach-impeccable` in Cursor when branding or audience shifts materially.
+- **Skill source**: `.cursor/skills/frontend-design/SKILL.md` and `reference/*.md` — typography pairing, OKLCH/tinted neutrals, spatial rhythm, motion, forms, responsive patterns, UX copy.
+- **Command skills** (same `.cursor/skills/` folder): e.g. `audit`, `critique`, `normalize`, `polish`, `typeset`, `arrange` — use for review and refinement workflows.
+- **Avoid generic AI UI**: Inter-only or system-default stacks, purple/cyan-on-dark clichés, nested “icon + title + text” card grids, gray body text on saturated backgrounds, bounce/elastic easing, glassmorphism without purpose.
+- **Differentiation**: This is a multilingual pro CRM — aim for **confident, calm, efficient** layouts (clear hierarchy, purposeful motion) rather than templated SaaS hero patterns.
+- **Attribution**: [Impeccable](https://github.com/pbakaus/impeccable) (Apache-2.0; builds on Anthropic’s frontend-design skill).
+
 ### AI / Gemini
 - All AI calls go through `src/lib/ai/` — never call Gemini directly in components
 - Always stream responses for long-form generation (email drafts, summaries)
