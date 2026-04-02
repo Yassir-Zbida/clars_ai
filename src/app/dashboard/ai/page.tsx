@@ -7,8 +7,10 @@ import { useRouter } from "next/navigation"
 import { getDicebearUrl } from "@/lib/dicebear"
 import {
   ArrowUpIcon,
+  BarChart3Icon,
   CheckIcon,
   CopyIcon,
+  CreditCardIcon,
   FolderPlusIcon,
   HistoryIcon,
   ImageIcon,
@@ -38,6 +40,62 @@ type ActionPayload =
   | { type: "create_client"; data: { fullName: string; company?: string; email?: string } }
   | { type: "create_project"; data: { name: string; description?: string; priority?: string } }
   | { type: "create_task"; data: { projectName: string; title: string; priority?: string } }
+  | { type: "edit_client"; data: { clientName: string; patch: Record<string, unknown> } }
+  | { type: "archive_client"; data: { clientName: string } }
+  | { type: "edit_project"; data: { projectName: string; patch: Record<string, unknown> } }
+  | { type: "delete_project"; data: { projectName: string } }
+  | { type: "edit_task"; data: { projectName: string; taskTitle: string; patch: Record<string, unknown> } }
+  | { type: "delete_task"; data: { projectName: string; taskTitle: string } }
+  | { type: "edit_contact"; data: { clientName: string; contactName: string; patch: Record<string, unknown> } }
+  | { type: "delete_contact"; data: { clientName: string; contactName: string } }
+  | {
+      type: "create_invoice"
+      data: {
+        clientName: string
+        documentType?: "INVOICE" | "QUOTE"
+        dueDate: string
+        currency?: string
+        taxRatePercent?: number
+        title?: string
+        notes?: string
+        lineItems?: Array<{ description: string; quantity?: number; unitAmountCents: number }>
+        amountCents?: number
+        projectName?: string
+      }
+    }
+  | { type: "edit_invoice"; data: { invoiceNumberOrId: string; patch: Record<string, unknown> } }
+  | { type: "delete_invoice"; data: { invoiceNumberOrId: string } }
+  | {
+      type: "record_invoice_payment"
+      data: { invoiceNumberOrId: string; amountCents: number; method?: string; reference?: string; paidAt?: string }
+    }
+  | {
+      type: "create_expense"
+      data: {
+        vendor?: string
+        category?: string
+        status?: string
+        amountCents: number
+        currency?: string
+        incurredAt?: string
+        notes?: string
+        receiptUrl?: string
+        clientName?: string
+        projectName?: string
+      }
+    }
+  | { type: "edit_expense"; data: { expenseId: string; patch: Record<string, unknown> } }
+  | { type: "delete_expense"; data: { expenseId: string } }
+  | { type: "get_analytics_overview"; data: Record<string, never> }
+  | { type: "admin_get_dashboard"; data: Record<string, never> }
+  | { type: "admin_run_status_checks"; data: Record<string, never> }
+  | { type: "admin_clear_logs"; data: { scope: "all" | "filtered"; filters?: Record<string, unknown> } }
+  | { type: "admin_user_update"; data: { userEmailOrId: string; patch: { action: "DEACTIVATE" | "ACTIVATE" } } }
+  | { type: "admin_user_delete_permanently"; data: { userEmailOrId: string } }
+  | { type: "admin_report_create"; data: { name: string; schedule: string; destination?: string; status?: "active" | "draft" } }
+  | { type: "admin_report_update"; data: { reportId: string; patch: Record<string, unknown> } }
+  | { type: "admin_report_delete"; data: { reportId: string } }
+  | { type: "admin_report_run"; data: { reportId: string } }
   | { type: "navigate"; data: { path: string; label: string } }
 
 type Msg = {
@@ -75,6 +133,21 @@ function persist(convs: Conversation[]) {
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
 const uid = () => Math.random().toString(36).slice(2)
+
+function normName(s: string) {
+  return String(s || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+}
+
+function pickPatch(patch: Record<string, unknown>, allowed: string[]) {
+  const out: Record<string, unknown> = {}
+  for (const k of allowed) {
+    if (Object.prototype.hasOwnProperty.call(patch, k)) out[k] = patch[k]
+  }
+  return out
+}
 
 function parseAction(raw: string): { text: string; action: ActionPayload | null } {
   const match = raw.match(/<action>([\s\S]*?)<\/action>/i)
@@ -210,20 +283,67 @@ function ActionCard({ action, status, onConfirm, onCancel }: {
   action: ActionPayload; status: Msg["actionStatus"]
   onConfirm: () => void; onCancel: () => void
 }) {
+  const [dangerText, setDangerText] = useState("")
+
   if (status === "done") return <p className="mt-3 flex items-center gap-1.5 text-xs text-emerald-600"><CheckIcon className="size-3" /> Done</p>
   if (status === "cancelled") return <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground"><XIcon className="size-3" /> Cancelled</p>
+
+  const isDestructive =
+    action.type === "delete_project" ||
+    action.type === "delete_task" ||
+    action.type === "delete_contact" ||
+    action.type === "archive_client" ||
+    action.type === "delete_invoice" ||
+    action.type === "delete_expense" ||
+    action.type === "admin_clear_logs" ||
+    action.type === "admin_user_delete_permanently" ||
+    action.type === "admin_report_delete"
 
   const loading = status === "loading"
   const Icon =
     action.type === "create_client" ? UserPlusIcon
     : action.type === "create_project" ? FolderPlusIcon
     : action.type === "create_task" ? CheckIcon
-    : NavigationIcon
-  const label =
-    action.type === "create_client" ? `Create client — ${action.data.fullName}`
-    : action.type === "create_project" ? `Create project — ${action.data.name}`
-    : action.type === "create_task" ? `Add task "${action.data.title}" to ${action.data.projectName}`
-    : `Go to ${(action as { type: "navigate"; data: { label: string } }).data.label}`
+    : action.type === "navigate" ? NavigationIcon
+    : action.type === "get_analytics_overview" ? BarChart3Icon
+    : action.type.startsWith("admin_") ? HistoryIcon
+    : action.type === "create_invoice" ? FolderPlusIcon
+    : action.type === "record_invoice_payment" ? CreditCardIcon
+    : action.type.startsWith("edit_") ? PencilLineIcon
+    : TrashIcon
+  const label = (() => {
+    if (action.type === "create_client") return `Create client — ${action.data.fullName}`
+    if (action.type === "create_project") return `Create project — ${action.data.name}`
+    if (action.type === "create_task") return `Add task "${action.data.title}" to ${action.data.projectName}`
+    if (action.type === "edit_client") return `Edit client — ${action.data.clientName}`
+    if (action.type === "archive_client") return `Archive client — ${action.data.clientName}`
+    if (action.type === "edit_project") return `Edit project — ${action.data.projectName}`
+    if (action.type === "delete_project") return `Delete project — ${action.data.projectName}`
+    if (action.type === "edit_task") return `Edit task "${action.data.taskTitle}" in ${action.data.projectName}`
+    if (action.type === "delete_task") return `Delete task "${action.data.taskTitle}" from ${action.data.projectName}`
+    if (action.type === "edit_contact") return `Edit contact — ${action.data.contactName} (${action.data.clientName})`
+    if (action.type === "delete_contact") return `Delete contact — ${action.data.contactName} (${action.data.clientName})`
+    if (action.type === "create_invoice") return `Create ${action.data.documentType ?? "invoice"} — ${action.data.clientName}`
+    if (action.type === "edit_invoice") return `Edit invoice — ${action.data.invoiceNumberOrId}`
+    if (action.type === "delete_invoice") return `Delete invoice — ${action.data.invoiceNumberOrId}`
+    if (action.type === "record_invoice_payment") return `Record payment — ${action.data.amountCents} cents on ${action.data.invoiceNumberOrId}`
+    if (action.type === "create_expense") return `Create expense — ${action.data.amountCents} cents`
+    if (action.type === "edit_expense") return `Edit expense — ${action.data.expenseId}`
+    if (action.type === "delete_expense") return `Delete expense — ${action.data.expenseId}`
+    if (action.type === "get_analytics_overview") return "Get analytics overview"
+    if (action.type === "admin_get_dashboard") return "Admin: load dashboard snapshot"
+    if (action.type === "admin_run_status_checks") return "Admin: run status checks"
+    if (action.type === "admin_clear_logs") return `Admin: clear logs (${action.data.scope})`
+    if (action.type === "admin_user_update") return `Admin: ${action.data.patch.action.toLowerCase()} user — ${action.data.userEmailOrId}`
+    if (action.type === "admin_user_delete_permanently") return `Admin: permanently delete user — ${action.data.userEmailOrId}`
+    if (action.type === "admin_report_create") return `Admin: create report — ${action.data.name}`
+    if (action.type === "admin_report_update") return `Admin: update report — ${action.data.reportId}`
+    if (action.type === "admin_report_delete") return `Admin: delete report — ${action.data.reportId}`
+    if (action.type === "admin_report_run") return `Admin: run report — ${action.data.reportId}`
+    return `Go to ${action.data.label}`
+  })()
+
+  const dangerOk = !isDestructive || dangerText.trim().toUpperCase() === "DELETE"
 
   return (
     <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3">
@@ -232,8 +352,21 @@ function ActionCard({ action, status, onConfirm, onCancel }: {
         <p className="text-xs font-medium">{label}</p>
       </div>
       {status === "error" && <p className="mt-2 text-xs text-destructive">Failed — please try manually.</p>}
+      {isDestructive && status !== "error" && (
+        <div className="mt-2 rounded-lg border border-destructive/20 bg-destructive/5 px-2.5 py-2">
+          <p className="text-[11px] font-medium text-destructive">This can’t be undone.</p>
+          <div className="mt-1.5 flex items-center gap-2">
+            <input
+              value={dangerText}
+              onChange={(e) => setDangerText(e.target.value)}
+              placeholder='Type "DELETE" to confirm'
+              className="h-7 flex-1 rounded-md border border-input bg-background px-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-destructive/30"
+            />
+          </div>
+        </div>
+      )}
       <div className="mt-2.5 flex gap-2">
-        <Button size="sm" className="h-7 gap-1 text-xs" disabled={loading} onClick={onConfirm}>
+        <Button size="sm" className="h-7 gap-1 text-xs" disabled={loading || !dangerOk} onClick={onConfirm}>
           {loading ? <Loader2 className="size-3 animate-spin" /> : <CheckIcon className="size-3" />}
           {loading ? "Running…" : "Confirm"}
         </Button>
@@ -411,6 +544,124 @@ export default function AiChatPage() {
         toast.success(`Navigating to ${action.data.label}…`)
         return
       }
+      const appendAssistant = async (text: string) => {
+        setMessages((p) => [...p, { id: uid(), role: "assistant" as Role, content: text, ts: new Date().toISOString() }])
+        scrollDown()
+      }
+
+      const findOneByName = async <T extends { id: string; name: string },>(
+        kindLabel: string,
+        list: T[],
+        targetName: string,
+        viewHref: (id: string) => string
+      ): Promise<T | null> => {
+        const n = normName(targetName)
+        const exact = list.filter((x) => normName(x.name) === n)
+        if (exact.length === 1) return exact[0]!
+        if (exact.length > 1) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "idle" } : m))
+          await appendAssistant(
+            `I found multiple ${kindLabel}s named **${targetName}**. Which one do you mean?\n\n` +
+              exact.slice(0, 6).map((x) => `- **${x.name}** ([View →](${viewHref(x.id)}))`).join("\n")
+          )
+          return null
+        }
+        const partial = list.filter((x) => normName(x.name).includes(n) || n.includes(normName(x.name)))
+        if (partial.length === 1) return partial[0]!
+        if (partial.length > 1) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "idle" } : m))
+          await appendAssistant(
+            `I found multiple possible matches for **${targetName}**. Which ${kindLabel} do you mean?\n\n` +
+              partial.slice(0, 6).map((x) => `- **${x.name}** ([View →](${viewHref(x.id)}))`).join("\n")
+          )
+          return null
+        }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "error" } : m))
+        await appendAssistant(`I couldn't find a ${kindLabel} named **${targetName}**.`)
+        return null
+      }
+
+      const looksLikeObjectId = (s: string) => /^[a-f\d]{24}$/i.test(String(s || "").trim())
+
+      const resolveClientByName = async (clientName: string) => {
+        const listRes = await fetch(`/api/clients?page=1&limit=200&search=${encodeURIComponent(clientName)}`, { credentials: "include" })
+        if (!listRes.ok) throw new Error("Could not load clients")
+        const { data: clients } = (await listRes.json()) as { data?: Array<{ id: string; fullName?: string; name?: string }> }
+        const clientRows = (clients ?? []).map((c) => ({ id: c.id, name: String(c.name ?? c.fullName ?? "") }))
+        return await findOneByName("client", clientRows, clientName, (id) => `/dashboard/clients/${id}`)
+      }
+
+      const resolveProjectByName = async (projectName: string) => {
+        const listRes = await fetch(`/api/projects?limit=200&search=${encodeURIComponent(projectName)}`, { credentials: "include" })
+        if (!listRes.ok) throw new Error("Could not load projects")
+        const { data: projects } = (await listRes.json()) as { data?: Array<{ id: string; name: string }> }
+        return await findOneByName("project", projects ?? [], projectName, (id) => `/dashboard/projects/${id}`)
+      }
+
+      const resolveInvoiceByNumberOrId = async (invoiceNumberOrId: string) => {
+        const raw = String(invoiceNumberOrId || "").trim()
+        if (looksLikeObjectId(raw)) return { id: raw, number: raw }
+
+        const listRes = await fetch(`/api/invoices?limit=50&search=${encodeURIComponent(raw)}`, { credentials: "include" })
+        if (!listRes.ok) throw new Error("Could not load invoices")
+        const { data: rows } = (await listRes.json()) as { data?: Array<{ id: string; number: string }> }
+        const n = normName(raw)
+        const exact = (rows ?? []).filter((r) => normName(r.number) === n)
+        if (exact.length === 1) return exact[0]!
+        if (exact.length > 1) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "idle" } : m))
+          await appendAssistant(
+            `I found multiple invoices matching **${raw}**. Which one do you mean?\n\n` +
+              exact.slice(0, 8).map((x) => `- **${x.number}** ([View →](/dashboard/invoices/${x.id}))`).join("\n")
+          )
+          return null
+        }
+        const partial = (rows ?? []).filter((r) => normName(r.number).includes(n) || n.includes(normName(r.number)))
+        if (partial.length === 1) return partial[0]!
+        if (partial.length > 1) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "idle" } : m))
+          await appendAssistant(
+            `I found multiple possible invoices for **${raw}**. Which one should I use?\n\n` +
+              partial.slice(0, 8).map((x) => `- **${x.number}** ([View →](/dashboard/invoices/${x.id}))`).join("\n")
+          )
+          return null
+        }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "error" } : m))
+        await appendAssistant(`I couldn't find an invoice matching **${raw}**.`)
+        return null
+      }
+
+      const resolveAdminUserByEmailOrId = async (userEmailOrId: string) => {
+        const raw = String(userEmailOrId || "").trim()
+        if (looksLikeObjectId(raw)) return { id: raw, email: raw }
+        const listRes = await fetch(`/api/admin/users?limit=50&search=${encodeURIComponent(raw)}`, { credentials: "include" })
+        if (!listRes.ok) throw new Error("Could not load admin users")
+        const { data } = (await listRes.json()) as { data?: Array<{ id: string; email: string; name: string }> }
+        const exact = (data ?? []).filter((u) => normName(u.email) === normName(raw))
+        if (exact.length === 1) return { id: exact[0]!.id, email: exact[0]!.email }
+        if (exact.length > 1) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "idle" } : m))
+          await appendAssistant(
+            `I found multiple users matching **${raw}**. Which one?\n\n` +
+              exact.slice(0, 8).map((u) => `- **${u.email}** (${u.name})`).join("\n")
+          )
+          return null
+        }
+        const partial = (data ?? []).filter((u) => normName(u.email).includes(normName(raw)) || normName(u.name).includes(normName(raw)))
+        if (partial.length === 1) return { id: partial[0]!.id, email: partial[0]!.email }
+        if (partial.length > 1) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "idle" } : m))
+          await appendAssistant(
+            `I found multiple possible users for **${raw}**. Which one?\n\n` +
+              partial.slice(0, 8).map((u) => `- **${u.email}** (${u.name})`).join("\n")
+          )
+          return null
+        }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "error" } : m))
+        await appendAssistant(`I couldn't find a user matching **${raw}**.`)
+        return null
+      }
+
       if (action.type === "create_client") {
         const res = await fetch("/api/clients", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fullName: action.data.fullName, company: action.data.company || undefined, type: action.data.company ? "COMPANY" : "INDIVIDUAL", status: "LEAD", currency: "USD" }) })
         if (!res.ok) throw new Error()
@@ -431,12 +682,12 @@ export default function AiChatPage() {
       }
       if (action.type === "create_task") {
         // Find the project by name then create the task under it
-        const listRes = await fetch("/api/projects?limit=100", { credentials: "include" })
+        const listRes = await fetch(`/api/projects?limit=200&search=${encodeURIComponent(action.data.projectName)}`, { credentials: "include" })
         if (!listRes.ok) throw new Error("Could not load projects")
         const { data: projects } = (await listRes.json()) as { data?: Array<{ id: string; name: string }> }
-        const match = (projects ?? []).find(
-          (p) => p.name.toLowerCase().trim() === action.data.projectName.toLowerCase().trim()
-        ) ?? (projects ?? [])[0]
+        const match =
+          (projects ?? []).find((p) => normName(p.name) === normName(action.data.projectName)) ??
+          (projects ?? [])[0]
         if (!match) throw new Error("Project not found")
         const taskRes = await fetch(`/api/projects/${match.id}/tasks`, {
           method: "POST", credentials: "include",
@@ -448,6 +699,578 @@ export default function AiChatPage() {
         setMessages((p) => [...p, { id: uid(), role: "assistant" as Role, content: `✅ Task **${action.data.title}** added to project **${match.name}**. [View →](/dashboard/projects/${match.id})`, ts: new Date().toISOString() }])
         toast.success(`Task "${action.data.title}" added to "${match.name}"`)
         scrollDown(); return
+      }
+
+      if (action.type === "create_invoice") {
+        const client = await resolveClientByName(action.data.clientName)
+        if (!client) return
+        const project =
+          action.data.projectName ? await resolveProjectByName(action.data.projectName) : null
+        if (action.data.projectName && !project) return
+
+        const lineItems = (action.data.lineItems ?? []).map((li) => ({
+          description: String(li.description ?? "").trim(),
+          quantity: li.quantity ?? 1,
+          unitAmountCents: li.unitAmountCents,
+        })).filter((li) => li.description && Number.isFinite(li.unitAmountCents))
+
+        const payload: Record<string, unknown> = {
+          clientId: client.id,
+          projectId: project?.id || undefined,
+          documentType: action.data.documentType ?? "INVOICE",
+          dueDate: action.data.dueDate,
+          currency: action.data.currency ?? "EUR",
+          taxRatePercent: action.data.taxRatePercent,
+          title: action.data.title,
+          notes: action.data.notes,
+          lineItems,
+        }
+        if (!lineItems.length && action.data.amountCents != null) {
+          payload.amountCents = action.data.amountCents
+        } else if (action.data.amountCents != null) {
+          payload.amountCents = action.data.amountCents
+        }
+
+        const res = await fetch("/api/invoices", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error()
+        const { data } = (await res.json()) as { data?: { id?: string; number?: string } }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(
+          `✅ ${action.data.documentType ?? "Invoice"} **${data?.number ?? ""}** created for **${client.name}**.${data?.id ? ` [View →](/dashboard/invoices/${data.id})` : ""}`
+        )
+        toast.success("Invoice created")
+        return
+      }
+
+      if (action.type === "edit_invoice" || action.type === "delete_invoice" || action.type === "record_invoice_payment") {
+        const inv = await resolveInvoiceByNumberOrId(action.data.invoiceNumberOrId)
+        if (!inv) return
+
+        if (action.type === "delete_invoice") {
+          const delRes = await fetch(`/api/invoices/${inv.id}`, { method: "DELETE", credentials: "include" })
+          if (!delRes.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant(`✅ Invoice **${inv.number}** deleted.`)
+          toast.success("Invoice deleted")
+          return
+        }
+
+        if (action.type === "record_invoice_payment") {
+          const payRes = await fetch(`/api/invoices/${inv.id}/payments`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              amountCents: action.data.amountCents,
+              method: action.data.method || undefined,
+              reference: action.data.reference || undefined,
+              paidAt: action.data.paidAt || undefined,
+            }),
+          })
+          if (!payRes.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant(`✅ Payment recorded for invoice **${inv.number}**. [View →](/dashboard/invoices/${inv.id})`)
+          toast.success("Payment recorded")
+          return
+        }
+
+        const patchIn = action.data.patch ?? {}
+        // Allow patch to specify clientName/projectName for convenience.
+        const resolved: Record<string, unknown> = { ...patchIn }
+        if (typeof resolved.clientName === "string") {
+          const c = await resolveClientByName(resolved.clientName)
+          if (!c) return
+          resolved.clientId = c.id
+          delete resolved.clientName
+        }
+        if (typeof resolved.projectName === "string") {
+          const p = await resolveProjectByName(resolved.projectName)
+          if (!p) return
+          resolved.projectId = p.id
+          delete resolved.projectName
+        }
+
+        const patch = pickPatch(resolved, [
+          "clientId",
+          "projectId",
+          "documentType",
+          "title",
+          "status",
+          "amountCents",
+          "taxRatePercent",
+          "currency",
+          "dueDate",
+          "issuedAt",
+          "notes",
+          "lineItems",
+        ])
+        const putRes = await fetch(`/api/invoices/${inv.id}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        })
+        if (!putRes.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ Invoice **${inv.number}** updated. [View →](/dashboard/invoices/${inv.id})`)
+        toast.success("Invoice updated")
+        return
+      }
+
+      if (action.type === "create_expense") {
+        const client =
+          action.data.clientName ? await resolveClientByName(action.data.clientName) : null
+        if (action.data.clientName && !client) return
+        const project =
+          action.data.projectName ? await resolveProjectByName(action.data.projectName) : null
+        if (action.data.projectName && !project) return
+
+        const payload: Record<string, unknown> = {
+          vendor: action.data.vendor,
+          category: action.data.category,
+          status: action.data.status,
+          amountCents: action.data.amountCents,
+          currency: action.data.currency ?? "EUR",
+          incurredAt: action.data.incurredAt,
+          notes: action.data.notes,
+          receiptUrl: action.data.receiptUrl,
+          clientId: client?.id,
+          projectId: project?.id,
+        }
+
+        const res = await fetch("/api/expenses", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error()
+        const { data } = (await res.json()) as { data?: { id?: string } }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ Expense created.${data?.id ? ` [View →](/dashboard/expenses)` : ""}`)
+        toast.success("Expense created")
+        return
+      }
+
+      if (action.type === "edit_expense" || action.type === "delete_expense") {
+        const id = String(action.data.expenseId || "").trim()
+        if (!looksLikeObjectId(id)) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "error" } : m))
+          await appendAssistant("That expense id doesn't look valid.")
+          return
+        }
+
+        if (action.type === "delete_expense") {
+          const delRes = await fetch(`/api/expenses/${id}`, { method: "DELETE", credentials: "include" })
+          if (!delRes.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant("✅ Expense deleted.")
+          toast.success("Expense deleted")
+          return
+        }
+
+        const patch = pickPatch(action.data.patch ?? {}, [
+          "vendor",
+          "category",
+          "status",
+          "amountCents",
+          "currency",
+          "incurredAt",
+          "notes",
+          "receiptUrl",
+          "clientId",
+          "projectId",
+        ])
+        const putRes = await fetch(`/api/expenses/${id}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        })
+        if (!putRes.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant("✅ Expense updated.")
+        toast.success("Expense updated")
+        return
+      }
+
+      if (action.type === "get_analytics_overview") {
+        const res = await fetch("/api/analytics/overview", { credentials: "include" })
+        if (!res.ok) throw new Error()
+        const json = (await res.json()) as { data?: Record<string, unknown> }
+        const d = json.data ?? {}
+        const revenueMtdCents = Number(d.revenueMtdCents ?? 0)
+        const expensesMtdCents = Number(d.expensesMtdCents ?? 0)
+        const netMtdCents = Number(d.netMtdCents ?? (revenueMtdCents - expensesMtdCents))
+        const outstandingCents = Number(d.outstandingCents ?? 0)
+        const overdueCents = Number(d.overdueCents ?? 0)
+        const interactions30Days = Number(d.interactions30Days ?? 0)
+
+        const fmt = (c: number) => {
+          const val = (Number.isFinite(c) ? c : 0) / 100
+          return val.toLocaleString(undefined, { style: "currency", currency: "EUR", maximumFractionDigits: 2 })
+        }
+
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(
+          `### Analytics overview\n` +
+            `- **Revenue (MTD)**: ${fmt(revenueMtdCents)}\n` +
+            `- **Expenses (MTD)**: ${fmt(expensesMtdCents)}\n` +
+            `- **Net (MTD)**: ${fmt(netMtdCents)}\n` +
+            `- **Outstanding AR**: ${fmt(outstandingCents)}\n` +
+            `- **Overdue**: ${fmt(overdueCents)}\n` +
+            `- **Interactions (30d)**: ${Number.isFinite(interactions30Days) ? interactions30Days : 0}\n\n` +
+            `[Open Analytics →](/dashboard/analytics)`
+        )
+        toast.success("Analytics loaded")
+        return
+      }
+
+      if (action.type === "admin_get_dashboard") {
+        const res = await fetch("/api/admin/dashboard", { credentials: "include" })
+        if (!res.ok) throw new Error()
+        const json = (await res.json()) as { data?: Record<string, unknown> }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(
+          `### Admin dashboard\n\n` +
+            `\`\`\`\n${JSON.stringify(json.data ?? {}, null, 2).slice(0, 4000)}\n\`\`\`\n\n` +
+            `[Open Admin →](/dashboard/admin)`
+        )
+        toast.success("Admin dashboard loaded")
+        return
+      }
+
+      if (action.type === "admin_run_status_checks") {
+        const res = await fetch("/api/admin/status", { credentials: "include" })
+        if (!res.ok) throw new Error()
+        const json = (await res.json()) as { data?: Record<string, unknown> }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(
+          `### Admin status checks\n\n` +
+            `\`\`\`\n${JSON.stringify(json.data ?? {}, null, 2).slice(0, 4000)}\n\`\`\`\n\n` +
+            `[Open Status →](/dashboard/admin/status)`
+        )
+        toast.success("Status checks complete")
+        return
+      }
+
+      if (action.type === "admin_clear_logs") {
+        const scope = action.data.scope
+        const filters = action.data.filters ?? {}
+        const sp = new URLSearchParams()
+        sp.set("scope", scope)
+        if (scope === "filtered") {
+          const type = typeof filters.type === "string" ? filters.type : undefined
+          const level = typeof filters.level === "string" ? filters.level : undefined
+          const userId = typeof filters.userId === "string" ? filters.userId : undefined
+          const q = typeof filters.q === "string" ? filters.q : undefined
+          if (type) sp.set("type", type)
+          if (level) sp.set("level", level)
+          if (userId) sp.set("userId", userId)
+          if (q) sp.set("q", q)
+        }
+        const res = await fetch(`/api/admin/logs?${sp.toString()}`, { method: "DELETE", credentials: "include" })
+        if (!res.ok) throw new Error()
+        const json = (await res.json()) as { deletedCount?: number }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ Logs cleared (${scope}). Deleted: **${json.deletedCount ?? "?"}**.`)
+        toast.success("Logs cleared")
+        return
+      }
+
+      if (action.type === "admin_user_update") {
+        const u = await resolveAdminUserByEmailOrId(action.data.userEmailOrId)
+        if (!u) return
+        const res = await fetch(`/api/admin/users/${u.id}`, {
+          method: "PATCH",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: action.data.patch.action }),
+        })
+        if (!res.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ User updated (**${action.data.patch.action}**): **${u.email}**.`)
+        toast.success("User updated")
+        return
+      }
+
+      if (action.type === "admin_user_delete_permanently") {
+        const u = await resolveAdminUserByEmailOrId(action.data.userEmailOrId)
+        if (!u) return
+        const res = await fetch(`/api/admin/users/${u.id}`, { method: "DELETE", credentials: "include" })
+        if (!res.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ User permanently deleted: **${u.email}**.`)
+        toast.success("User deleted")
+        return
+      }
+
+      if (action.type === "admin_report_create") {
+        const res = await fetch("/api/admin/reports", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: action.data.name,
+            schedule: action.data.schedule,
+            destination: action.data.destination ?? "",
+            status: action.data.status ?? "draft",
+          }),
+        })
+        if (!res.ok) throw new Error()
+        const json = (await res.json()) as { data?: { id?: string; name?: string } }
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ Admin report created: **${json.data?.name ?? action.data.name}**.`)
+        toast.success("Report created")
+        return
+      }
+
+      if (action.type === "admin_report_update" || action.type === "admin_report_delete" || action.type === "admin_report_run") {
+        const reportId = String(action.data.reportId || "").trim()
+        if (!looksLikeObjectId(reportId)) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "error" } : m))
+          await appendAssistant("That report id doesn't look valid.")
+          return
+        }
+
+        if (action.type === "admin_report_delete") {
+          const res = await fetch(`/api/admin/reports/${reportId}`, { method: "DELETE", credentials: "include" })
+          if (!res.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant("✅ Admin report deleted.")
+          toast.success("Report deleted")
+          return
+        }
+
+        if (action.type === "admin_report_run") {
+          const res = await fetch(`/api/admin/reports/${reportId}/run`, { method: "POST", credentials: "include" })
+          if (!res.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant(`✅ Admin report run complete. [Open Reports →](/dashboard/admin/reports)`)
+          toast.success("Report ran")
+          return
+        }
+
+        const patch = pickPatch(action.data.patch ?? {}, ["name", "schedule", "destination", "status"])
+        const res = await fetch(`/api/admin/reports/${reportId}`, {
+          method: "PATCH",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        })
+        if (!res.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant("✅ Admin report updated.")
+        toast.success("Report updated")
+        return
+      }
+
+      if (action.type === "edit_project" || action.type === "delete_project") {
+        const listRes = await fetch(`/api/projects?limit=200&search=${encodeURIComponent(action.data.projectName)}`, { credentials: "include" })
+        if (!listRes.ok) throw new Error("Could not load projects")
+        const { data: projects } = (await listRes.json()) as { data?: Array<{ id: string; name: string }> }
+        const project = await findOneByName("project", projects ?? [], action.data.projectName, (id) => `/dashboard/projects/${id}`)
+        if (!project) return
+
+        if (action.type === "delete_project") {
+          const delRes = await fetch(`/api/projects/${project.id}`, { method: "DELETE", credentials: "include" })
+          if (!delRes.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant(`✅ Project **${project.name}** deleted.`)
+          toast.success(`Project "${project.name}" deleted`)
+          return
+        }
+
+        const patch = pickPatch(action.data.patch ?? {}, [
+          "name",
+          "description",
+          "notes",
+          "status",
+          "priority",
+          "progress",
+          "startDate",
+          "endDate",
+          "budgetCents",
+          "currency",
+          "clientId",
+          "assignedClientIds",
+        ])
+        const putRes = await fetch(`/api/projects/${project.id}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        })
+        if (!putRes.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ Project **${project.name}** updated. [View →](/dashboard/projects/${project.id})`)
+        toast.success(`Project "${project.name}" updated`)
+        return
+      }
+
+      if (
+        action.type === "edit_task" ||
+        action.type === "delete_task"
+      ) {
+        const listRes = await fetch(`/api/projects?limit=200&search=${encodeURIComponent(action.data.projectName)}`, { credentials: "include" })
+        if (!listRes.ok) throw new Error("Could not load projects")
+        const { data: projects } = (await listRes.json()) as { data?: Array<{ id: string; name: string }> }
+        const project = await findOneByName("project", projects ?? [], action.data.projectName, (id) => `/dashboard/projects/${id}`)
+        if (!project) return
+
+        const tasksRes = await fetch(`/api/projects/${project.id}/tasks`, { credentials: "include" })
+        if (!tasksRes.ok) throw new Error("Could not load tasks")
+        const { data: tasks } = (await tasksRes.json()) as { data?: Array<{ id: string; title: string }> }
+        const tNorm = normName(action.data.taskTitle)
+        const exact = (tasks ?? []).filter((t) => normName(t.title) === tNorm)
+        const task =
+          exact.length === 1 ? exact[0] :
+          exact.length > 1 ? null :
+          (tasks ?? []).find((t) => normName(t.title).includes(tNorm) || tNorm.includes(normName(t.title))) ?? null
+
+        if (!task) {
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: exact.length > 1 ? "idle" : "error" } : m))
+          if (exact.length > 1) {
+            await appendAssistant(
+              `I found multiple tasks titled **${action.data.taskTitle}** in **${project.name}**. Which one should I use?\n\n` +
+                exact.slice(0, 8).map((x) => `- **${x.title}**`).join("\n")
+            )
+          } else {
+            await appendAssistant(`I couldn't find a task titled **${action.data.taskTitle}** in **${project.name}**.`)
+          }
+          return
+        }
+
+        if (action.type === "delete_task") {
+          const delRes = await fetch(`/api/projects/${project.id}/tasks/${task.id}`, { method: "DELETE", credentials: "include" })
+          if (!delRes.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant(`✅ Task **${task.title}** deleted from **${project.name}**. [View →](/dashboard/projects/${project.id})`)
+          toast.success(`Task "${task.title}" deleted`)
+          return
+        }
+
+        const patch = pickPatch(action.data.patch ?? {}, [
+          "title",
+          "description",
+          "status",
+          "priority",
+          "dueDate",
+          "order",
+        ])
+        const patchRes = await fetch(`/api/projects/${project.id}/tasks/${task.id}`, {
+          method: "PATCH",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        })
+        if (!patchRes.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ Task **${task.title}** updated in **${project.name}**. [View →](/dashboard/projects/${project.id})`)
+        toast.success(`Task "${task.title}" updated`)
+        return
+      }
+
+      if (action.type === "edit_client" || action.type === "archive_client" || action.type === "edit_contact" || action.type === "delete_contact") {
+        const listRes = await fetch(`/api/clients?page=1&limit=200&search=${encodeURIComponent(action.data.clientName)}`, { credentials: "include" })
+        if (!listRes.ok) throw new Error("Could not load clients")
+        const { data: clients } = (await listRes.json()) as { data?: Array<{ id: string; fullName?: string; name?: string; company?: string; email?: string }> }
+        const clientRows = (clients ?? []).map((c) => ({ id: c.id, name: String(c.name ?? c.fullName ?? "") }))
+        const client = await findOneByName("client", clientRows, action.data.clientName, (id) => `/dashboard/clients/${id}`)
+        if (!client) return
+
+        if (action.type === "archive_client") {
+          const delRes = await fetch(`/api/clients/${client.id}`, { method: "DELETE", credentials: "include" })
+          if (!delRes.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant(`✅ Client **${client.name}** archived. [View →](/dashboard/clients/${client.id})`)
+          toast.success(`Client "${client.name}" archived`)
+          return
+        }
+
+        if (action.type === "edit_client") {
+          const patch = pickPatch(action.data.patch ?? {}, [
+            "fullName",
+            "email",
+            "phone",
+            "avatarUrl",
+            "company",
+            "jobTitle",
+            "website",
+            "birthday",
+            "type",
+            "status",
+            "source",
+            "industry",
+            "language",
+            "country",
+            "city",
+            "address",
+            "timezone",
+            "currency",
+            "defaultRate",
+            "notes",
+            "tags",
+            "isFavorite",
+            "isArchived",
+            "healthScore",
+            "healthLabel",
+            "firstContactAt",
+            "nextFollowUpAt",
+          ])
+          const putRes = await fetch(`/api/clients/${client.id}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(patch),
+          })
+          if (!putRes.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant(`✅ Client **${client.name}** updated. [View →](/dashboard/clients/${client.id})`)
+          toast.success(`Client "${client.name}" updated`)
+          return
+        }
+
+        // Contact edit/delete need contact resolution within client
+        const clientRes = await fetch(`/api/clients/${client.id}`, { credentials: "include" })
+        if (!clientRes.ok) throw new Error("Could not load client details")
+        const { data: clientData } = (await clientRes.json()) as { data?: { contacts?: Array<{ id: string; fullName?: string; email?: string }> } }
+        const contacts = (clientData?.contacts ?? []).map((c) => ({ id: c.id, name: String(c.fullName ?? c.email ?? "") }))
+        const contact = await findOneByName("contact", contacts, action.data.contactName, () => `/dashboard/clients/${client.id}`)
+        if (!contact) return
+
+        if (action.type === "delete_contact") {
+          const delRes = await fetch(`/api/clients/${client.id}/contacts/${contact.id}`, { method: "DELETE", credentials: "include" })
+          if (!delRes.ok) throw new Error()
+          setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+          await appendAssistant(`✅ Contact **${contact.name}** removed from **${client.name}**. [View →](/dashboard/clients/${client.id})`)
+          toast.success(`Contact "${contact.name}" removed`)
+          return
+        }
+
+        const patch = pickPatch(action.data.patch ?? {}, [
+          "fullName",
+          "email",
+          "phone",
+          "jobTitle",
+          "isPrimary",
+        ])
+        const putRes = await fetch(`/api/clients/${client.id}/contacts/${contact.id}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        })
+        if (!putRes.ok) throw new Error()
+        setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "done" } : m))
+        await appendAssistant(`✅ Contact **${contact.name}** updated for **${client.name}**. [View →](/dashboard/clients/${client.id})`)
+        toast.success(`Contact "${contact.name}" updated`)
+        return
       }
     } catch {
       setMessages((p) => p.map((m) => m.id === msgId ? { ...m, actionStatus: "error" } : m))
